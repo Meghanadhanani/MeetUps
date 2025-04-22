@@ -187,7 +187,7 @@ const CreateProfile = ({navigation}) => {
           <TouchableOpacity
             style={styles.loginButton}
             onPress={() => {
-              navigation.navigate('CreateProfile');
+              navigation.navigate('OnboardingScreen1');
             }}>
             <Text style={styles.loginButtonText}>Finalize It!!</Text>
           </TouchableOpacity>

@@ -47,7 +47,7 @@ const OnboardingScreen3 = ({navigation}) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.navigate('LoginScreen');
+              navigation.navigate('HomeScreen');
             }}>
             <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
               Get Started
