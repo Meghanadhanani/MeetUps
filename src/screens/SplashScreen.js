@@ -2,24 +2,8 @@ import { Animated, StyleSheet, Text, View, Image } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 
 const SplashScreen = ({ navigation }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.2,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start()
-
     const timer = setTimeout(() => {
       navigation.replace('OnboardingScreen1')
     }, 800)
@@ -29,9 +13,9 @@ const SplashScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Animated.Image
+      <Image
         source={require('../assest/logo.png')}
-        style={[styles.logo, { transform: [{ scale: scaleAnim }] }]}
+        style={styles.logo}
         resizeMode='contain'
       />
     </View>

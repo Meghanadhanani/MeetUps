@@ -13,21 +13,24 @@ const OnboardingScreen3 = ({navigation}) => {
       </View>
       <View style={styles.meetContainer}>
         <Text style={{fontSize: 30, fontWeight: '500', color: 'white'}}>
-        Share Your Personal Experiences
+          Share Your Personal Experiences
         </Text>
-        <Text style={{fontSize: 20, color: 'white', fontWeight: '300', paddingRight: 20}}>
-        Share your experiences with people and get connected with each other 
+        <Text style={{fontSize: 20, color: 'white', fontWeight: '300'}}>
+          Share your experiences with people and get connected with each other
         </Text>
-        <View
+       
+      </View>
+      <View
           style={{
             width: '100%',
             gap: 3,
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: 2,
-            position: 'absolute',
-            bottom: 20,
+            paddingHorizontal: 16,
+            paddingBottom: 10,
+            // position: 'absolute',
+            //  bottom: 10,
           }}>
           <View
             style={{
@@ -37,17 +40,20 @@ const OnboardingScreen3 = ({navigation}) => {
               width: '40%',
               justifyContent: 'space-between',
             }}>
-            <View style={styles.lines} />
-            <View style={styles.lines} />
-            <View style={styles.lines} />
+            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
           </View>
-          <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('Login')}}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate('LoginScreen');
+            }}>
             <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
-            Get Started
+              Get Started
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
     </View>
   );
 };
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6d5cff',
   },
   imagecontainer: {
-    flex:2.5/3,
+    flex: 2 / 3,
     width: '100%',
     paddingHorizontal: 20,
   },
@@ -71,12 +77,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   meetContainer: {
-    flex: 1/3,
+    flex: 1 / 3,
     width: '100%',
     paddingHorizontal: 22,
     alignItems: 'center',
     gap: 10,
-    
   },
   button: {
     backgroundColor: '#FFFFFF',

@@ -15,20 +15,21 @@ const OnboardingScreen1 = ({navigation}) => {
         <Text style={{fontSize: 30, fontWeight: '500', color: 'white'}}>
           Meet Your Favorite Influencers
         </Text>
-        <Text style={{fontSize: 18, color: 'white', fontWeight: '300'}}>
+  <Text style={{fontSize: 20, color: 'white', fontWeight: '300'}}>
           Explore and meet your favorite influencer by signing up here
         </Text>
-        <View
-          style={{
-            width: '100%',
-            gap: 3,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 2,
-            position: 'absolute',
-            bottom: 20,
-          }}>
+       
+      </View>
+      <View
+         style={{
+          width: '100%',
+          gap: 3,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+         paddingBottom: 10,
+         paddingHorizontal: 16,
+        }}>
           <View
             style={{
               flexDirection: 'row',
@@ -37,9 +38,9 @@ const OnboardingScreen1 = ({navigation}) => {
               width: '40%',
               justifyContent: 'space-between',
             }}>
-            <View style={styles.lines} />
-            <View style={styles.lines} />
-            <View style={styles.lines} />
+           <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+                                 <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
+                                 <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
           </View>
           <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('OnboardingScreen2')}}>
             <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
@@ -47,7 +48,6 @@ const OnboardingScreen1 = ({navigation}) => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
     </View>
   );
 };
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6d5cff',
   },
   imagecontainer: {
-    flex:2.5/3,
+    flex:2/3,
     width: '100%',
     paddingHorizontal: 20,
   },

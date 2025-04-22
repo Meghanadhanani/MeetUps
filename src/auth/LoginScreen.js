@@ -15,7 +15,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
 import EmailIcon from '../assest/svgs/Email.svg';
-import FrameIcon from '../assest/svgs/Frame.svg';
+import FrameIcon from '../assest/svgs/Frame1.svg';
 import InstaIcon from '../assest/svgs/SocialIcons.svg';
 import GoogleIcon from '../assest/svgs/GoogleIcon.svg';
 import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
@@ -57,19 +57,22 @@ const LoginScreen = ({navigation}) => {
 
     // Validate email
     if (!isEmailValid) {
+      const errorMessage = 'Please enter a valid email address';
       setEmailError(true);
-      setEmail({...email, error: 'Please enter a valid email address'});
+      setEmail({...email, error: errorMessage});
+      showToastMSGError(errorMessage); // Use the message directly
       return false;
     }
 
     // Validate password
     if (!isPasswordValid) {
+      const errorMessagePass = 'Password must be at least 2 characters with numbers and letters';
       setPasswordError(true);
       setPassword({
         ...password,
-        error:
-          'Password must be at least 2 characters with numbers and letters',
+        error: errorMessagePass
       });
+      showToastMSGError(errorMessagePass)
       return false;
     }
 
@@ -211,7 +214,7 @@ const LoginScreen = ({navigation}) => {
             </View>
           </View>
           <View style={styles.errorCpontainer}>
-          {emailError && <Text style={styles.errorText}>{email.error}</Text>}
+         
 </View>
           <View style={styles.inputContainer}>
             <TextInput
@@ -231,9 +234,7 @@ const LoginScreen = ({navigation}) => {
               <FrameIcon width={22} height={22} />
             </TouchableOpacity>
           </View>
-          {passwordError && (
-            <Text style={styles.errorText}>{password.error}</Text>
-          )}
+         
           <TouchableOpacity style={styles.forgotPasswordContainer}>
             <Text style={styles.forgotPassword}>Forgot password?</Text>
           </TouchableOpacity>
@@ -244,7 +245,7 @@ const LoginScreen = ({navigation}) => {
 
           <View style={styles.noAccountContainer}>
             <Text style={styles.noAccountText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
           </View>

@@ -13,21 +13,22 @@ const OnboardingScreen2 = ({navigation}) => {
       </View>
       <View style={styles.meetContainer}>
         <Text style={{fontSize: 30, fontWeight: '500', color: 'white'}}>
-        Expand Your Friends’ Network
+          Expand Your Friends’ Network
         </Text>
-        <Text style={{fontSize: 20, color: 'white', fontWeight: '300', paddingRight: 20}}>
-        Expand your network by attending carzy tech meetups 
+        <Text style={{fontSize: 20, color: 'white', fontWeight: '300'}}>
+          Expand your network by attending carzy tech meetups
         </Text>
-        <View
+        
+      </View>
+      <View
           style={{
             width: '100%',
             gap: 3,
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: 2,
-            position: 'absolute',
-            bottom: 20,
+         paddingHorizontal:16,
+         paddingBottom:10
           }}>
           <View
             style={{
@@ -37,17 +38,20 @@ const OnboardingScreen2 = ({navigation}) => {
               width: '40%',
               justifyContent: 'space-between',
             }}>
-            <View style={styles.lines} />
-            <View style={styles.lines} />
-            <View style={styles.lines} />
+            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+                       <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+                       <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
           </View>
-          <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('OnboardingScreen3')}}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate('OnboardingScreen3');
+            }}>
             <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
               Contiune
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
     </View>
   );
 };
@@ -62,7 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6d5cff',
   },
   imagecontainer: {
-    flex:2.5/3,
+    flex:2/3,
     width: '100%',
     paddingHorizontal: 20,
   },
@@ -71,12 +75,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   meetContainer: {
-    flex: 1/3,
+    flex: 1 / 3,
     width: '100%',
     paddingHorizontal: 22,
     alignItems: 'center',
     gap: 10,
-    
   },
   button: {
     backgroundColor: '#FFFFFF',
