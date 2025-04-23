@@ -14,11 +14,11 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import EmailIcon from '../assest/svgs/Email.svg';
-import FrameIcon from '../assest/svgs/Frame1.svg';
-import InstaIcon from '../assest/svgs/SocialIcons.svg';
-import GoogleIcon from '../assest/svgs/GoogleIcon.svg';
-import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
+import EmailIcon from '../assests/svgs/Email.svg';
+import FrameIcon from '../assests/svgs/Frame1.svg';
+import InstaIcon from '../assests/svgs/SocialIcons.svg';
+import GoogleIcon from '../assests/svgs/GoogleIcon.svg';
+import {API, LOGIN_API, SIGNUP_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
 import axios from 'axios';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
 import {passwordValidater} from '../utils/validations/passwordValidater';
@@ -52,28 +52,28 @@ const SignupScreen = ({navigation}) => {
 
     // Reset errors
     setEmailError(false);
-
+    if (!email.value.trim()) {
+      const errorMessage = 'Email is required';
+      showToastMSGError(errorMessage);
+      return false;
+    } 
     // Validate email
     if (!isEmailValid) {
       const errorMessage = 'Please enter a valid email address';
-    setEmailError(true);
-    setEmail({...email, error: errorMessage});
-    showToastMSGError(errorMessage); // Use the message directly
+    showToastMSGError(errorMessage);
     return false;
     }
 
     return true;
   };
 
-  const handleLogin = async () => {
-    console.log('rrreddddddddddddddd');
+  const handleSignUp = async () => {
     if (checkValidation() === false) {
       return;
     }
     try {
       const data = {
         email: email.value,
-        password: password.value,
       };
       const config = {
         headers: {
@@ -81,26 +81,33 @@ const SignupScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Login Data:', data); // Log the data being sent
-      console.log('Login API URL:', LOGIN_API); // Log the API URL
-
-      const response = await axios.post(LOGIN_API, data, config);
+      console.log('Sign up Data:', data);
+  
+      const response = await axios.post(SIGNUP_API, data, config);
+      
       if (response.status === 200) {
-        // showToastMSGNormal('Login Successful');
         await StorageUtils.setItem('userData', response.data);
+        showToastMSGNormal(response.data.message);
         setTimeout(() => {
           navigation.reset({
+            reset: true,
             index: 0,
-            routes: [{name: 'HomeScreen'}],
+            routes: [{name: 'OTPScreen'}],
           });
-        }, 100);
+        }, 2000);
       }
-      console.log('Response:', response); // Log the response data
+      console.log('Response:', response);
     } catch (error) {
-      showToastMSGError(error.response.data.error);
-      console.log('Login Error:', error.response.data.error); // Log the error response
+      // Improved error handling
+      const errorMessage = error.response?.data?.message || 
+                           error.response?.data?.error || 
+                           error.message || 
+                           'An error occurred during signup';
+      showToastMSGError(errorMessage);
+      console.log('Sign up Error:', error); 
     }
   };
+  
 
   const onGLoginPressed = async () => {
     try {
@@ -173,9 +180,8 @@ const SignupScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.content}>
-          {/* 3D Illustration - Replace with your actual image */}
           <Image
-            source={require('../assest/DRIP_5.png')}
+            source={require('../assests/DRIP_5.png')}
             style={styles.illustration}
             resizeMode="contain"
           />
@@ -199,7 +205,7 @@ const SignupScreen = ({navigation}) => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={()=>{navigation.navigate("OTPScreen")}}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
             <Text style={styles.loginButtonText}>Send Code</Text>
           </TouchableOpacity>
 

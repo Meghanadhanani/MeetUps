@@ -14,10 +14,10 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import EmailIcon from '../assest/svgs/Email.svg';
-import FrameIcon from '../assest/svgs/Frame1.svg';
-import InstaIcon from '../assest/svgs/SocialIcons.svg';
-import GoogleIcon from '../assest/svgs/GoogleIcon.svg';
+import EmailIcon from '../assests/svgs/Email.svg';
+import FrameIcon from '../assests/svgs/Frame1.svg';
+import InstaIcon from '../assests/svgs/SocialIcons.svg';
+import GoogleIcon from '../assests/svgs/GoogleIcon.svg';
 import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
 import axios from 'axios';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
@@ -54,7 +54,14 @@ const LoginScreen = ({navigation}) => {
     // Reset errors
     setEmailError(false);
     setPasswordError(false);
-
+    setEmailError(false);
+    if (!email.value.trim()) {
+      const errorMessage = 'Email is required';
+      setEmailError(true);
+      setEmail({...email, error: errorMessage});
+      showToastMSGError(errorMessage);
+      return false;
+    } 
     // Validate email
     if (!isEmailValid) {
       const errorMessage = 'Please enter a valid email address';
@@ -63,7 +70,14 @@ const LoginScreen = ({navigation}) => {
       showToastMSGError(errorMessage); // Use the message directly
       return false;
     }
-
+    setEmailError(false);
+    if (!assword.value.trim()) {
+      const errorMessage = 'Password is required';
+      setEmailError(true);
+      setEmail({...email, error: errorMessage});
+      showToastMSGError(errorMessage);
+      return false;
+    } 
     // Validate password
     if (!isPasswordValid) {
       const errorMessagePass = 'Password must be at least 2 characters with numbers and letters';
@@ -190,7 +204,7 @@ const LoginScreen = ({navigation}) => {
         <View style={styles.content}>
           {/* 3D Illustration - Replace with your actual image */}
           <Image
-            source={require('../assest/DRIP_16.png')}
+            source={require('../assests/DRIP_16.png')}
             style={styles.illustration}
             resizeMode="contain"
           />

@@ -6,7 +6,7 @@ const OnboardingScreen2 = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.imagecontainer}>
         <Image
-          source={require('../assest/DRIP_16.png')}
+          source={require('../assests/DRIP_16.png')}
           style={styles.image1}
           resizeMode="contain"
         />

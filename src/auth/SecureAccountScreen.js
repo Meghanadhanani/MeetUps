@@ -14,10 +14,10 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import ConfirmIcon from '../assest/svgs/Password.svg';
-import PasswordIcon from '../assest/svgs/Frame1.svg';
-import InstaIcon from '../assest/svgs/SocialIcons.svg';
-import GoogleIcon from '../assest/svgs/GoogleIcon.svg';
+import ConfirmIcon from '../assests/svgs/Password.svg';
+import PasswordIcon from '../assests/svgs/Frame1.svg';
+import InstaIcon from '../assests/svgs/SocialIcons.svg';
+import GoogleIcon from '../assests/svgs/GoogleIcon.svg';
 import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
 import axios from 'axios';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
@@ -101,7 +101,7 @@ const SecureAccountScreen = ({navigation}) => {
         <View style={styles.content}>
           {/* 3D Illustration - Replace with your actual image */}
           <Image
-            source={require('../assest/DRIP_6.png')}
+            source={require('../assests/DRIP_6.png')}
             style={styles.illustration}
             resizeMode="contain"
           />
