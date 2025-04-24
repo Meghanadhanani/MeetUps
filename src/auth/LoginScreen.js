@@ -71,7 +71,7 @@ const LoginScreen = ({navigation}) => {
       return false;
     }
     setEmailError(false);
-    if (!assword.value.trim()) {
+    if (!password.value.trim()) {
       const errorMessage = 'Password is required';
       setEmailError(true);
       setEmail({...email, error: errorMessage});

@@ -6,3 +6,4 @@ export const LOGIN_API = BASEURL + 'login';
 export const SIGNWITHGOOGLE_API = BASEURL + 'signwithgoogle';
 export const SIGNUP_API = BASEURL + 'register';
 export const OTP_VERIFICATION_API = BASEURL + 'verify-otp';
+export const SECURE_PASSWORD_API = BASEURL + 'secure-password';

@@ -1,71 +1,78 @@
-import React, {useEffect, useRef, useState} from 'react';
+import axios from 'axios';
+import React, { useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   Image,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from '@react-native-google-signin/google-signin';
-import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import ConfirmIcon from '../assests/svgs/Password.svg';
 import PasswordIcon from '../assests/svgs/Frame1.svg';
-import InstaIcon from '../assests/svgs/SocialIcons.svg';
-import GoogleIcon from '../assests/svgs/GoogleIcon.svg';
-import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
-import axios from 'axios';
-import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
-import {passwordValidater} from '../utils/validations/passwordValidater';
-import {emailValidater} from '../utils/validations/emailValidater';
-import {StorageUtils} from '../utils/StorageUtils';
+import ConfirmIcon from '../assests/svgs/Password.svg';
+import { LOGIN_API, SECURE_PASSWORD_API } from '../utils/ApiHelper';
+import { StorageUtils } from '../utils/StorageUtils';
+import { showToastMSGError, showToastMSGNormal } from '../utils/ToastMessages';
+import { emailValidater } from '../utils/validations/emailValidater';
+import { passwordValidater } from '../utils/validations/passwordValidater';
 const SecureAccountScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
-  const [email, setEmail] = useState({value: '', error: ''});
+  const [confirmPassword, setconfirmPassword] = useState({value: '', error: ''});
   const [password, setPassword] = useState({value: '', error: ''});
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] =useState(false)
+  const confirmPasswordInputRef = useRef(null);
 
-  const passwordInputRef = useRef(null);
-
-  const handleEmailSubmitEditing = () => {
-    passwordInputRef.current?.focus();
+  const handlePasswordSubmitEditing = () => {
+    confirmPasswordInputRef.current?.focus();
   };
 
   const checkValidation = () => {
-    const isEmailValid = emailValidater(email.value);
-
-    // Reset errors
-    setEmailError(false);
-
-    // Validate email
-    if (!isEmailValid) {
-      const errorMessage = 'Please enter a valid email address';
-    setEmailError(true);
-    setEmail({...email, error: errorMessage});
-    showToastMSGError(errorMessage); // Use the message directly
-    return false;
+    const isPasswordValid = passwordValidater(password.value);
+     const isConfirmPasswordValid = passwordValidater(confirmPassword.value);
+      if (!password.value.trim()) {
+         const errorMessage = 'Password is required';
+         showToastMSGError(errorMessage);
+         return false;
+       } 
+       // Validate password
+       if (!isPasswordValid) {
+         const errorMessagePass = 'Password must be at least 2 characters with numbers and letters';
+         setPasswordError(true);
+         setPassword({
+           ...password,
+           error: errorMessagePass
+         });
+         showToastMSGError(errorMessagePass)
+         return false;
+       }
+   if (!confirmPassword.value.trim()) {
+      const errorMessage = 'Confirm Password is required';
+      showToastMSGError(errorMessage);
+      return false;
+    } 
+    // Validate password
+    if (confirmPassword.value != password.value) {
+      const errorMessagePass = 'Password do not match';
+      showToastMSGError(errorMessagePass)
+      return false;
     }
-
     return true;
   };
 
-  const handleLogin = async () => {
-    console.log('rrreddddddddddddddd');
+  const handleSecurePassword = async () => {
     if (checkValidation() === false) {
       return;
     }
     try {
       const data = {
-        email: email.value,
         password: password.value,
+        confirmPassword: confirmPassword.value,
       };
       const config = {
         headers: {
@@ -73,24 +80,26 @@ const SecureAccountScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Login Data:', data); // Log the data being sent
-      console.log('Login API URL:', LOGIN_API); // Log the API URL
+console.log("data",data);
 
-      const response = await axios.post(LOGIN_API, data, config);
+      const response = await axios.post(SECURE_PASSWORD_API, data, config);
       if (response.status === 200) {
+        console.log("Password resss", response.data.message);
+        
         // showToastMSGNormal('Login Successful');
         await StorageUtils.setItem('userData', response.data);
+        showToastMSGNormal(response.data.message)
         setTimeout(() => {
           navigation.reset({
             index: 0,
-            routes: [{name: 'HomeScreen'}],
+            routes: [{name: 'CreateProfile'}],
           });
         }, 100);
       }
       console.log('Response:', response); // Log the response data
     } catch (error) {
-      showToastMSGError(error.response.data.error);
-      console.log('Login Error:', error.response.data.error); // Log the error response
+      showToastMSGError(error.response.data.message);
+      console.log('PAssword Error:', error.response.data.message); // Log the error response
     }
   };
 
@@ -110,38 +119,44 @@ const SecureAccountScreen = ({navigation}) => {
 
           <View style={styles.inputContainer}>
             <TextInput
-              value={email.value}
-              onChangeText={text => setEmail({value: text, error: ''})}
+              value={password.value}
+              onChangeText={text => setPassword({value: text, error: ''})}
               placeholder="Enter Your Password"
               placeholderTextColor="#C2C7FF"
               style={styles.input}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onSubmitEditing={handleEmailSubmitEditing}
+              // keyboardType="email-address"
+              // autoCapitalize="none"
+              secureTextEntry={!showPassword}
+              onSubmitEditing={handlePasswordSubmitEditing}
               returnKeyType="next"
             />
-            <View style={styles.iconContainer}>
+           <TouchableOpacity
+                         style={styles.iconContainer}
+                         onPress={() => setShowPassword(!showPassword)}>
               <PasswordIcon width={22} height={22} />
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.inputContainer}>
             <TextInput
-              value={email.value}
-              onChangeText={text => setEmail({value: text, error: ''})}
+            ref={confirmPasswordInputRef}
+              value={confirmPassword.value}
+              onChangeText={text => setconfirmPassword({value: text, error: ''})}
               placeholder="Confirm Your Password"
               placeholderTextColor="#C2C7FF"
               style={styles.input}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onSubmitEditing={handleEmailSubmitEditing}
-              returnKeyType="next"
+              secureTextEntry={!showConfirmPassword}
+              // keyboardType="email-address"
+              // autoCapitalize="none"
+              returnKeyType="done"
             />
-            <View style={styles.iconContainer}>
+<TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
               <ConfirmIcon width={22} height={22} />
-            </View>
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={()=>{navigation.navigate("CreateProfile")}}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleSecurePassword}>
             <Text style={styles.loginButtonText}>Secure</Text>
           </TouchableOpacity>
 

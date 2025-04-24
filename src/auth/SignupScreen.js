@@ -23,15 +23,12 @@ import axios from 'axios';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
 import {passwordValidater} from '../utils/validations/passwordValidater';
 import {emailValidater} from '../utils/validations/emailValidater';
-import {StorageUtils} from '../utils/StorageUtils';
+import {isDebug, StorageUtils} from '../utils/StorageUtils';
+import Loader from '../utils/Loader';
 const SignupScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
   const [email, setEmail] = useState({value: '', error: ''});
-  const [password, setPassword] = useState({value: '', error: ''});
-  const [emailError, setEmailError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -51,7 +48,6 @@ const SignupScreen = ({navigation}) => {
     const isEmailValid = emailValidater(email.value);
 
     // Reset errors
-    setEmailError(false);
     if (!email.value.trim()) {
       const errorMessage = 'Email is required';
       showToastMSGError(errorMessage);
@@ -71,6 +67,7 @@ const SignupScreen = ({navigation}) => {
     if (checkValidation() === false) {
       return;
     }
+    setLoading(true)
     try {
       const data = {
         email: email.value,
@@ -81,30 +78,29 @@ const SignupScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Sign up Data:', data);
   
       const response = await axios.post(SIGNUP_API, data, config);
+      setLoading(false)
       
-      if (response.status === 200) {
-        await StorageUtils.setItem('userData', response.data);
-        showToastMSGNormal(response.data.message);
-        setTimeout(() => {
-          navigation.reset({
-            reset: true,
-            index: 0,
-            routes: [{name: 'OTPScreen'}],
-          });
-        }, 2000);
+      if (response.data.success) {
+        const { is_verified } = response.data.status;
+  
+        if (is_verified) {
+          showToastMSGError(response.data.message);
+        } else {
+          showToastMSGNormal(response.data.message);
+          setTimeout(() => {
+            navigation.navigate("OTPScreen", {email});
+          }, 2000);
+        }
+      } else {
+        showToastMSGError(response.data.message);
       }
-      console.log('Response:', response);
+      isDebug && console.log('Response:', response);
     } catch (error) {
-      // Improved error handling
-      const errorMessage = error.response?.data?.message || 
-                           error.response?.data?.error || 
-                           error.message || 
-                           'An error occurred during signup';
-      showToastMSGError(errorMessage);
-      console.log('Sign up Error:', error); 
+      setLoading(false)
+      showToastMSGError(error.response?.data?.message);
+     isDebug && console.log('Sign up Error:', error); 
     }
   };
   
@@ -133,9 +129,9 @@ const SignupScreen = ({navigation}) => {
       console.log('Google Sign-In Error:', error);
 
       if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
-        // Handle error for Google Play Services not available
+showToastMSGError("Google Services not available")
       } else {
-        // Handle general Google Sign-In errors
+        showToastMSGError(error)
       }
     } finally {
       setLoading(false);
@@ -236,6 +232,7 @@ const SignupScreen = ({navigation}) => {
             <Text style={styles.instagramButtonText}>Sign in with Google</Text>
           </TouchableOpacity>
         </View>
+        {loading && (<Loader/>)}
       </ScrollView>
     </SafeAreaView>
   );

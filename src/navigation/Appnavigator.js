@@ -19,7 +19,7 @@ export default function AppNavigator() {
     <>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="SplashScreen"
+          initialRouteName="HomeScreen"
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
