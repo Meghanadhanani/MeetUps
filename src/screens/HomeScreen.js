@@ -76,11 +76,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   profileContainer: {
-    aspectRatio: 1, // This ensures the container stays square
-    width: 40, // Base width that can be changed
+    aspectRatio: 1, 
+    width: 40, 
     borderRadius: 50,
-    overflow: 'hidden', // This ensures the image doesn't spill outside the border radius
-    // Removed the green background color
+    overflow: 'hidden',
+   
   },
   iconContainer: {
     backgroundColor: '#9ca2ff',
@@ -88,6 +88,6 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    aspectRatio: 1, // This ensures icons stay square
+    aspectRatio: 1,
   },
 });

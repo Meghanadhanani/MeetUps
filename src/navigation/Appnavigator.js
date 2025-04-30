@@ -11,7 +11,6 @@ import OnboardingScreen1 from '../screens/OnboardingScreen1';
 import OnboardingScreen2 from '../screens/OnboardingScreen2';
 import OnboardingScreen3 from '../screens/OnboardingScreen3';
 import SplashScreen from '../screens/SplashScreen';
-
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
