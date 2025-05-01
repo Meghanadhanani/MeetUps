@@ -14,19 +14,19 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import ConfirmIcon from '../assests/svgs/Password.svg';
-import PasswordIcon from '../assests/svgs/Frame1.svg';
-import InstaIcon from '../assests/svgs/SocialIcons.svg';
-import GoogleIcon from '../assests/svgs/GoogleIcon.svg';
+import ConfirmIcon from '../assets/svgs/Password.svg';
+import PasswordIcon from '../assets/svgs/Frame1.svg';
+import InstaIcon from '../assets/svgs/SocialIcons.svg';
+import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
 import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
 import axios from 'axios';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
 import {passwordValidater} from '../utils/validations/passwordValidater';
 import {emailValidater} from '../utils/validations/emailValidater';
 import {StorageUtils} from '../utils/StorageUtils';
-import FemaleIcon from '../assests/svgs/FemaleIcon.svg';
-import MaleIcon from '../assests/svgs/MaleIcon.svg';
-import PersionIcon from "../assests/svgs/Person.svg"
+import FemaleIcon from '../assets/svgs/FemaleIcon.svg';
+import MaleIcon from '../assets/svgs/MaleIcon.svg';
+import PersionIcon from "../assets/svgs/Person.svg"
 const CreateProfile = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
@@ -104,7 +104,7 @@ const CreateProfile = ({navigation}) => {
         <View style={styles.content}>
           {/* 3D Illustration - Replace with your actual image */}
           <Image
-            source={require('../assests/DRIP_6.png')}
+            source={require('../assets/DRIP_6.png')}
             style={styles.illustration}
             resizeMode="contain"
           />

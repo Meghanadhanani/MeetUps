@@ -6,48 +6,63 @@ const OnboardingScreen1 = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.imagecontainer}>
         <Image
-          source={require('../assests/DRIP_19.png')}
+          source={require('../assets/DRIP_19.png')}
           style={styles.image1}
           resizeMode="contain"
         />
       </View>
       <View style={styles.meetContainer}>
-        <Text style={{fontSize: 30, fontWeight: '500', color: 'white'}}>
+        <Text
+          style={{
+            fontSize: 30,
+            fontWeight: '600',
+            color: 'white',
+            fontFamily: 'SpaceGrotesk-Regular',
+          }}>
           Meet Your Favorite Influencers
         </Text>
-  <Text style={{fontSize: 20, color: 'white', fontWeight: '300'}}>
+        <Text
+          style={{
+            fontSize: 20,
+            color: 'white',
+            fontWeight: '300',
+            fontFamily: 'BricolageGrotesque_24pt-Regular',
+          }}>
           Explore and meet your favorite influencer by signing up here
         </Text>
-       
       </View>
       <View
-         style={{
+        style={{
           width: '100%',
           gap: 3,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-         paddingBottom: 10,
-         paddingHorizontal: 16,
+          paddingBottom: 10,
+          paddingHorizontal: 16,
         }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '40%',
-              justifyContent: 'space-between',
-            }}>
-           <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
-                                 <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
-                                 <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
-          </View>
-          <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate('OnboardingScreen2')}}>
-            <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
-              Contiune
-            </Text>
-          </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '40%',
+            justifyContent: 'space-between',
+          }}>
+          <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+          <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
+          <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
         </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.navigate('OnboardingScreen2');
+          }}>
+          <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
+            Contiune
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -62,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6d5cff',
   },
   imagecontainer: {
-    flex:2/3,
+    flex: 2 / 3,
     width: '100%',
     paddingHorizontal: 20,
   },
@@ -71,12 +86,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   meetContainer: {
-    flex: 1/3,
+    flex: 1 / 3,
     width: '100%',
     paddingHorizontal: 22,
     alignItems: 'center',
     gap: 10,
-    
   },
   button: {
     backgroundColor: '#FFFFFF',

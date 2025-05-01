@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import PasswordIcon from '../assests/svgs/Frame1.svg';
-import ConfirmIcon from '../assests/svgs/Password.svg';
+import PasswordIcon from '../assets/svgs/Frame1.svg';
+import ConfirmIcon from '../assets/svgs/Password.svg';
 import { LOGIN_API, SECURE_PASSWORD_API } from '../utils/ApiHelper';
 import { StorageUtils } from '../utils/StorageUtils';
 import { showToastMSGError, showToastMSGNormal } from '../utils/ToastMessages';
@@ -110,7 +110,7 @@ console.log("data",data);
         <View style={styles.content}>
           {/* 3D Illustration - Replace with your actual image */}
           <Image
-            source={require('../assests/DRIP_6.png')}
+            source={require('../assets/DRIP_6.png')}
             style={styles.illustration}
             resizeMode="contain"
           />

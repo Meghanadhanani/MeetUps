@@ -1,0 +1,33 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/BricolageGrotesque-VariableFont_opsz,wdth,wght.ttf",
+      "sha1": "e10ab1194080615b513411fb615eaadb82cd5160"
+    },
+    {
+      "path": "src/assets/fonts/BricolageGrotesque_36pt-Regular.ttf",
+      "sha1": "304ced79d1b4c61178c2e922a395c44411a41efd"
+    },
+    {
+      "path": "src/assets/fonts/SpaceGrotesk-Bold.ttf",
+      "sha1": "14f3d7d974d0232f0fba31566783b2c262b4d2a2"
+    },
+    {
+      "path": "src/assets/fonts/SpaceGrotesk-Light.ttf",
+      "sha1": "d28b8bb3609a9c65c5ad097360a55b24094b0451"
+    },
+    {
+      "path": "src/assets/fonts/SpaceGrotesk-Medium.ttf",
+      "sha1": "7d2fe2b9e0c9e76ab5bebf7cd766acd1d5c4dcbb"
+    },
+    {
+      "path": "src/assets/fonts/SpaceGrotesk-Regular.ttf",
+      "sha1": "23aaf86d93b2c94ebf6fd588f0bc5f62194889f6"
+    },
+    {
+      "path": "src/assets/fonts/SpaceGrotesk-SemiBold.ttf",
+      "sha1": "e99da7dd55ac9ed7675a533c5a98cd7797613a67"
+    }
+  ]
+}

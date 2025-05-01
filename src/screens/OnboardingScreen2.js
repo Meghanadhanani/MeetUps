@@ -6,52 +6,63 @@ const OnboardingScreen2 = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.imagecontainer}>
         <Image
-          source={require('../assests/DRIP_16.png')}
+          source={require('../assets/DRIP_16.png')}
           style={styles.image1}
           resizeMode="contain"
         />
       </View>
       <View style={styles.meetContainer}>
-        <Text style={{fontSize: 30, fontWeight: '500', color: 'white'}}>
+        <Text
+          style={{
+            fontSize: 30,
+            fontWeight: '500',
+            color: 'white',
+            fontFamily: 'SpaceGrotesk-Regular',
+          }}>
           Expand Your Friends’ Network
         </Text>
-        <Text style={{fontSize: 20, color: 'white', fontWeight: '300'}}>
+        <Text
+          style={{
+            fontSize: 20,
+            color: 'white',
+            fontWeight: '300',
+            fontFamily: 'BricolageGrotesque_24pt-Regular',
+          }}>
           Expand your network by attending carzy tech meetups
         </Text>
-        
       </View>
       <View
+        style={{
+          width: '100%',
+          gap: 3,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingBottom: 10,
+        }}>
+        <View
           style={{
-            width: '100%',
-            gap: 3,
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             alignItems: 'center',
-         paddingHorizontal:16,
-         paddingBottom:10
+            width: '40%',
+            justifyContent: 'space-between',
           }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '40%',
-              justifyContent: 'space-between',
-            }}>
-            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
-                       <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
-                       <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
-          </View>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate('OnboardingScreen3');
-            }}>
-            <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
-              Contiune
-            </Text>
-          </TouchableOpacity>
+          <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+          <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+          <View style={[styles.lines, {backgroundColor: '#998DFF'}]} />
         </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.navigate('OnboardingScreen3');
+          }}>
+          <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
+            Contiune
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -66,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6d5cff',
   },
   imagecontainer: {
-    flex:2/3,
+    flex: 2 / 3,
     width: '100%',
     paddingHorizontal: 20,
   },

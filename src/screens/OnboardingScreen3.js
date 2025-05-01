@@ -6,54 +6,65 @@ const OnboardingScreen3 = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.imagecontainer}>
         <Image
-          source={require('../assests/DRIP_15.png')}
+          source={require('../assets/DRIP_15.png')}
           style={styles.image1}
           resizeMode="contain"
         />
       </View>
       <View style={styles.meetContainer}>
-        <Text style={{fontSize: 30, fontWeight: '500', color: 'white'}}>
+        <Text
+          style={{
+            fontSize: 30,
+            fontWeight: '500',
+            color: 'white',
+            fontFamily: 'SpaceGrotesk-Regular',
+          }}>
           Share Your Personal Experiences
         </Text>
-        <Text style={{fontSize: 20, color: 'white', fontWeight: '300'}}>
+        <Text
+          style={{
+            fontSize: 20,
+            color: 'white',
+            fontWeight: '300',
+            fontFamily: 'BricolageGrotesque_24pt-Regular',
+          }}>
           Share your experiences with people and get connected with each other
         </Text>
-       
       </View>
       <View
+        style={{
+          width: '100%',
+          gap: 3,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingBottom: 10,
+          // position: 'absolute',
+          //  bottom: 10,
+        }}>
+        <View
           style={{
-            width: '100%',
-            gap: 3,
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingBottom: 10,
-            // position: 'absolute',
-            //  bottom: 10,
+            width: '40%',
+            justifyContent: 'space-between',
           }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '40%',
-              justifyContent: 'space-between',
-            }}>
-            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
-            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
-            <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
-          </View>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              navigation.navigate('HomeScreen');
-            }}>
-            <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
-              Get Started
-            </Text>
-          </TouchableOpacity>
+          <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+          <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
+          <View style={[styles.lines, {backgroundColor: '#FFFFFF'}]} />
         </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            navigation.navigate('HomeScreen');
+          }}>
+          <Text style={{color: '#6D5CFF', fontSize: 20, fontWeight: '500'}}>
+            Get Started
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

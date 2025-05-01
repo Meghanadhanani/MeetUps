@@ -14,7 +14,7 @@ const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assests/logo.png')}
+        source={require('../assets/logo.png')}
         style={styles.logo}
         resizeMode='contain'
       />

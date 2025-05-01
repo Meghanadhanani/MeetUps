@@ -14,10 +14,10 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import EmailIcon from '../assests/svgs/Email.svg';
-import FrameIcon from '../assests/svgs/Frame1.svg';
-import InstaIcon from '../assests/svgs/SocialIcons.svg';
-import GoogleIcon from '../assests/svgs/GoogleIcon.svg';
+import EmailIcon from '../assets/svgs/Email.svg';
+import FrameIcon from '../assets/svgs/Frame1.svg';
+import InstaIcon from '../assets/svgs/SocialIcons.svg';
+import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
 import {
   API,
   LOGIN_API,
@@ -160,7 +160,7 @@ const OTPScreen = ({navigation, route}) => {
       <ScrollView>
         <View style={styles.content}>
           <Image
-            source={require('../assests/DRIP_9.png')}
+            source={require('../assets/DRIP_9.png')}
             style={styles.illustration}
             resizeMode="contain"
           />
