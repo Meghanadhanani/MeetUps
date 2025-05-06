@@ -23,7 +23,6 @@ const EventCard = ({
 }) => {
   return (
     <View style={styles.cardContainer}>
-      {/* User info header */}
       <View style={styles.userHeader}>
         <View style={styles.userInfo}>
           <Image
@@ -44,8 +43,12 @@ const EventCard = ({
       <View
         style={{height: 1, backgroundColor: '#F1F0FF', marginVertical: 10}}
       />
-      {/* Event image */}
-      <View style={{paddingHorizontal: 10,justifyContent: 'space-between',gap:10,}}>
+      <View
+        style={{
+          paddingHorizontal: 10,
+          justifyContent: 'space-between',
+          gap: 10,
+        }}>
         <View style={styles.imageContainer}>
           <Image
             source={imageUrl || require('../assets/UpcomingEventImage.png')}
@@ -54,7 +57,6 @@ const EventCard = ({
           />
         </View>
 
-        {/* Event tags */}
         <View style={styles.tagContainer}>
           {tags &&
             tags.map((tag, index) => (
@@ -64,10 +66,8 @@ const EventCard = ({
             ))}
         </View>
 
-        {/* Event title */}
         <Text style={styles.eventTitle}>{title || 'Music Show 1.0'}</Text>
 
-        {/* Event date and location */}
         <View style={styles.eventDetails}>
           <View style={styles.detailItem}>
             <TimerIcon width={16} height={16} color="#6A66FF" />
@@ -83,7 +83,6 @@ const EventCard = ({
           </View>
         </View>
 
-        {/* Event engagement stats */}
         <View style={styles.engagementContainer}>
           <View
             style={{
@@ -141,18 +140,14 @@ const EventCard = ({
         </View>
       </View>
     </View>
-    
   );
 };
-
-// Example usage:
 
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: '#FFFFFF',
     width: '100%',
     borderRadius: 20,
-    // marginTop: 10,
     paddingVertical: 10,
     overflow: 'hidden',
     elevation: 1,
@@ -165,7 +160,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginBottom: 10,
     paddingHorizontal: 10,
   },
   userInfo: {
@@ -198,7 +192,6 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 15,
     overflow: 'hidden',
-    // marginBottom: 10,
   },
   eventImage: {
     width: '100%',
@@ -207,7 +200,6 @@ const styles = StyleSheet.create({
   tagContainer: {
     flexDirection: 'row',
     gap: 10,
-    // marginTop:5
   },
   tag: {
     backgroundColor: '#EDEBFF',
@@ -225,25 +217,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2A2A2A',
     fontFamily: 'BricolageGrotesque_24pt-Regular',
-
   },
   eventDetails: {
     gap: 10,
-
-    // marginBottom: 10,
   },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-
   },
   detailText: {
     color: '#4A4A4A',
     fontSize: 13,
     fontWeight: '600',
     fontFamily: 'BricolageGrotesque_24pt-Regular',
-    
   },
   engagementContainer: {
     flexDirection: 'row',

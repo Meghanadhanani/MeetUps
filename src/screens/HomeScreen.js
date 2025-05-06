@@ -190,7 +190,7 @@ const HomeScreen = () => {
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
         onScroll={handleScroll}
-        scrollEventThrottle={16} // Important for smooth scrolling
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>Featured Events</Text>
 
