@@ -1,5 +1,6 @@
 import {
   Animated,
+  Button,
   Image,
   ScrollView,
   StyleSheet,
@@ -8,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import ArrowIcon from '../assets/svgs/ArrowIcon.svg';
 import DownArrowIcon from '../assets/svgs/DownArrow.svg';
 
@@ -25,12 +26,24 @@ import VerifiedIcon from '../assets/svgs/Verified.svg';
 import SearchIcon from '../assets/svgs/search.svg';
 import CreateEventLogo from '../assets/svgs/DRIP_18.svg';
 import EventCard from '../common/EventCard';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const HomeScreen = () => {
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = useMemo(() => ['70%', '100%'], []);
+
+  const handlePresentModalPress = useCallback(() => {
+    console.log("Opening sheet...");
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleClosePress = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
+  }, []);
 
   const handleSearch = () => {
     setQuery(input);
@@ -199,7 +212,7 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           style={styles.horizontalScrollView}>
           {[1, 2, 3, 4].map((item, index) => (
-            <View style={styles.featuredEventCard}>
+            <View style={styles.featuredEventCard} key={index}>
               <Image
                 source={require('../assets/FeatureEvent.png')}
                 width={'100%'}
@@ -235,6 +248,7 @@ const HomeScreen = () => {
             location="Square Game Hub"
             likes="476k"
             comments="14k"
+            handlePresentModalPress={handlePresentModalPress}
             tags={['Music', 'Drum Show']}
             userAvatar={require('../assets/PersonImage.png')}
             performers={[
@@ -268,6 +282,7 @@ const HomeScreen = () => {
             likes="476k"
             comments="14k"
             tags={['Music', 'Drum Show']}
+            handlePresentModalPress={handlePresentModalPress}
             userAvatar={require('../assets/PersonImage.png')}
             performers={[
               require('../assets/PersonImage.png'),
@@ -298,6 +313,18 @@ const HomeScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
+                 <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+            backgroundStyle={styles.bottomSheetBackground}
+            handleIndicatorStyle={styles.bottomSheetIndicator}
+          >
+            <BottomSheetView style={styles.bottomSheetContent}>
+              <Text style={styles.bottomSheetText}>Hello from Bottom Sheet 👋</Text>
+              <Button title="Close" onPress={handleClosePress} />
+            </BottomSheetView>
+          </BottomSheetModal>
       </Animated.ScrollView>
     </View>
   );
@@ -457,4 +484,120 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
   },
+  bottomSheetContent: {
+    padding: 20,
+    alignItems: 'center',
+    
+  },
+  bottomSheetText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  bottomSheet: {
+    backgroundColor: 'red', // Change this to whatever color you want
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  bottomSheetBackground: {
+    backgroundColor: '#e8f4ff',
+    borderRadius: 25,
+  },
+  bottomSheetIndicator: {
+    backgroundColor: '#3498db',
+    width: 40,
+    height: 5,
+  },
 });
+// 
+// import React, { useMemo, useRef, useCallback } from 'react';
+// HomeScreen.js
+
+// import React, { useMemo, useRef, useCallback } from 'react';
+// import { View, Text, Button, StyleSheet } from 'react-native';
+// import {
+//   BottomSheetModal,
+//   BottomSheetModalProvider,
+//   BottomSheetView,
+// } from '@gorhom/bottom-sheet';
+// import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+// const HomeScreen = () => {
+//   const bottomSheetModalRef = useRef(null);
+//   const snapPoints = useMemo(() => ['70%', '100%'], []);
+
+//   const handlePresentModalPress = useCallback(() => {
+//     console.log("Opening sheet...");
+//     bottomSheetModalRef.current?.present();
+//   }, []);
+
+//   const handleClosePress = useCallback(() => {
+//     bottomSheetModalRef.current?.dismiss();
+//   }, []);
+
+//   return (
+//     // <GestureHandlerRootView style={styles.container}>
+//       // <BottomSheetModalProvider>
+//         <View style={styles.contentContainer}>
+//           <Text style={styles.title}>Bottom Sheet Example</Text>
+//           <Button title="Open Bottom Sheet" onPress={handlePresentModalPress} />
+          
+//           <BottomSheetModal
+//             ref={bottomSheetModalRef}
+//             index={1}
+//             snapPoints={snapPoints}
+//             backgroundStyle={styles.bottomSheetBackground}
+//             handleIndicatorStyle={styles.bottomSheetIndicator}
+//           >
+//             <BottomSheetView style={styles.bottomSheetContent}>
+//               <Text style={styles.bottomSheetText}>Hello from Bottom Sheet 👋</Text>
+//               <Button title="Close" onPress={handleClosePress} />
+//             </BottomSheetView>
+//           </BottomSheetModal>
+//         </View>
+//       // </BottomSheetModalProvider>
+//     // </GestureHandlerRootView>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
+//   contentContainer: {
+//     flex: 1,
+//     padding: 24,
+//     backgroundColor: '#f5f5f5',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   title: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     marginBottom: 20,
+//   },
+//   bottomSheetContent: {
+//     padding: 20,
+//     alignItems: 'center',
+    
+//   },
+//   bottomSheetText: {
+//     fontSize: 18,
+//     marginBottom: 20,
+//   },
+//   bottomSheet: {
+//     backgroundColor: 'red', // Change this to whatever color you want
+//     borderTopLeftRadius: 24,
+//     borderTopRightRadius: 24,
+//   },
+//   bottomSheetBackground: {
+//     backgroundColor: '#e8f4ff',
+//     borderRadius: 25,
+//   },
+//   bottomSheetIndicator: {
+//     backgroundColor: '#3498db',
+//     width: 40,
+//     height: 5,
+//   },
+// });
+
+// export default HomeScreen;

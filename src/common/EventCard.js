@@ -20,6 +20,7 @@ const EventCard = ({
   performers,
   tags,
   userAvatar,
+  handlePresentModalPress
 }) => {
   return (
     <View style={styles.cardContainer}>
@@ -103,9 +104,9 @@ const EventCard = ({
               <CommentIcon width={20} height={20} color="#6A66FF" />
               <Text style={styles.engagementText}>{comments || '14k'}</Text>
             </View>
-            <View style={styles.engagementItem}>
+            <TouchableOpacity style={styles.engagementItem}  onPress={handlePresentModalPress}>
               <SaveIcon width={20} height={20} color="#6A66FF" />
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.attendeesContainer}>
             {performers && performers.length > 0 ? (
