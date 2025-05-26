@@ -1,11 +1,10 @@
-// styles.js
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#242424', // dark background
+    backgroundColor: '#242424',
     justifyContent: 'center',
   },
   logo: {
@@ -13,7 +12,7 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
     marginBottom: 40,
-    color: '#fff', // white text
+    color: '#fff',
   },
   input: {
     height: 50,
@@ -24,10 +23,10 @@ export default StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     color: '#fff',
-    backgroundColor: '#1e1e1e', // dark input bg
+    backgroundColor: '#1e1e1e',
   },
   button: {
-    backgroundColor: '#FFAB11', // Instagram blue
+    backgroundColor: '#FFAB11',
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -51,7 +50,7 @@ export default StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#444', // lighter line for contrast
+    backgroundColor: '#444',
   },
   or: {
     marginHorizontal: 10,
@@ -66,14 +65,11 @@ export default StyleSheet.create({
     fontWeight: '600',
   },
   googleButton: {
-    // backgroundColor: '#FFAB11',
-    // padding: 12,
-    // borderRadius: 8,
     alignItems: 'center',
     marginBottom: 10,
   },
   customGoogleBtn: {
-    backgroundColor: '#FFAB11', // Google red
+    backgroundColor: '#FFAB11',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

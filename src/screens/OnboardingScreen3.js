@@ -40,8 +40,6 @@ const OnboardingScreen3 = ({navigation}) => {
           alignItems: 'center',
           paddingHorizontal: 16,
           paddingBottom: 10,
-          // position: 'absolute',
-          //  bottom: 10,
         }}>
         <View
           style={{

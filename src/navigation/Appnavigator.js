@@ -12,6 +12,8 @@
   import OnboardingScreen3 from '../screens/OnboardingScreen3';
   import SplashScreen from '../screens/SplashScreen';
   import BottomTabs from './BottomTabs';
+import CreateEventScreen from '../screens/CreateEventScreen';
+import CustomBackBtn from '../common/CustomBackBtn';
   const Stack = createNativeStackNavigator();
 
   export default function AppNavigator() {
@@ -49,8 +51,12 @@
               name="SecureAccountScreen"
               component={SecureAccountScreen}
             />
+               <Stack.Screen
+              name="CreateEventScreen"
+              component={CreateEventScreen}
+            />
             <Stack.Screen name="CreateProfile" component={CreateProfile} />
-
+<Stack.Screen name='CustomBackBtn' component={CustomBackBtn} />
             {/* Add more screens here */}
           </Stack.Navigator>
         </NavigationContainer>

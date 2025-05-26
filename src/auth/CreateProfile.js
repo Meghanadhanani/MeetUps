@@ -1,32 +1,24 @@
-import React, {useEffect, useRef, useState} from 'react';
+import axios from 'axios';
+import React, { useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   Image,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from '@react-native-google-signin/google-signin';
-import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import ConfirmIcon from '../assets/svgs/Password.svg';
-import PasswordIcon from '../assets/svgs/Frame1.svg';
-import InstaIcon from '../assets/svgs/SocialIcons.svg';
-import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
-import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
-import axios from 'axios';
-import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
-import {passwordValidater} from '../utils/validations/passwordValidater';
-import {emailValidater} from '../utils/validations/emailValidater';
-import {StorageUtils} from '../utils/StorageUtils';
 import FemaleIcon from '../assets/svgs/FemaleIcon.svg';
+import PasswordIcon from '../assets/svgs/Frame1.svg';
 import MaleIcon from '../assets/svgs/MaleIcon.svg';
-import PersionIcon from "../assets/svgs/Person.svg"
+import ConfirmIcon from '../assets/svgs/Password.svg';
+import PersionIcon from "../assets/svgs/Person.svg";
+import { LOGIN_API } from '../utils/ApiHelper';
+import { StorageUtils } from '../utils/StorageUtils';
+import { showToastMSGError } from '../utils/ToastMessages';
+import { emailValidater } from '../utils/validations/emailValidater';
 const CreateProfile = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
@@ -46,15 +38,13 @@ const CreateProfile = ({navigation}) => {
   const checkValidation = () => {
     const isEmailValid = emailValidater(email.value);
 
-    // Reset errors
     setEmailError(false);
 
-    // Validate email
     if (!isEmailValid) {
       const errorMessage = 'Please enter a valid email address';
       setEmailError(true);
       setEmail({...email, error: errorMessage});
-      showToastMSGError(errorMessage); // Use the message directly
+      showToastMSGError(errorMessage);
       return false;
     }
 
@@ -77,12 +67,11 @@ const CreateProfile = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Login Data:', data); // Log the data being sent
-      console.log('Login API URL:', LOGIN_API); // Log the API URL
+      console.log('Login Data:', data); 
+      console.log('Login API URL:', LOGIN_API); 
 
       const response = await axios.post(LOGIN_API, data, config);
       if (response.status === 200) {
-        // showToastMSGNormal('Login Successful');
         await StorageUtils.setItem('userData', response.data);
         setTimeout(() => {
           navigation.reset({
@@ -91,10 +80,10 @@ const CreateProfile = ({navigation}) => {
           });
         }, 100);
       }
-      console.log('Response:', response); // Log the response data
+      console.log('Response:', response); 
     } catch (error) {
       showToastMSGError(error.response.data.error);
-      console.log('Login Error:', error.response.data.error); // Log the error response
+      console.log('Login Error:', error.response.data.error);
     }
   };
 
@@ -102,7 +91,6 @@ const CreateProfile = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.content}>
-          {/* 3D Illustration - Replace with your actual image */}
           <Image
             source={require('../assets/DRIP_6.png')}
             style={styles.illustration}
@@ -220,7 +208,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   genderButtons: {
-    // backgroundColor: '#6D5CFF',
     width: '50%',
     height: '100%',
     flexDirection: 'row',
@@ -233,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6D5CFF',
     borderColor: '#E2DEFF',
     borderWidth: 1,
-    borderRadius: 10, // selected background color
+    borderRadius: 10,
   },
 
   genderText: {
@@ -247,8 +234,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#FF0000',
     fontSize: 12,
-    // marginTop: 5,
-    // marginLeft: 10,
   },
   errorCpontainer: {
     width: '100%',
@@ -289,7 +274,6 @@ const styles = StyleSheet.create({
     height: 56,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 5,
-    // gap:2
     paddingVertical: 5,
   },
   input: {

@@ -1,30 +1,25 @@
 import React from 'react';
-import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
-// import strings from '../core/strings';
+import {ActivityIndicator, Modal, StyleSheet, Text, View} from 'react-native';
 
-const Loader = (props) => {
-  const { loadings, ...attributes } = props;
+const Loader = props => {
+  const {loadings, ...attributes} = props;
 
   return (
     <Modal
       transparent={true}
       animationType={'none'}
       visible={loadings}
-      onRequestClose={() => {
-      }}>
+      onRequestClose={() => {}}>
       <View style={styles.modalBackground}>
-        {/* <View style={styles.activityIndicatorWrapper}> */}
-          <ActivityIndicator
-            animating={true}
-            color="#6D5CFF"
-            size="large"
-            style={styles.activityIndicator}
-          />
-          {/* <Text style={{ color: "#121212", marginBottom: 16, fontWeight: 'bold' }}>Please wait...</Text> */}
-        {/* </View> */}
+        <ActivityIndicator
+          animating={true}
+          color="#6D5CFF"
+          size="large"
+          style={styles.activityIndicator}
+        />
       </View>
     </Modal>
-  )
+  );
 };
 
 export default Loader;
@@ -37,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   activityIndicatorWrapper: {
-    backgroundColor: "#7E66EA",
+    backgroundColor: '#7E66EA',
     height: 80,
     width: 100,
     borderRadius: 10,
@@ -48,5 +43,5 @@ const styles = StyleSheet.create({
   activityIndicator: {
     alignItems: 'center',
     height: 80,
-  }
+  },
 });

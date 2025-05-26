@@ -1,28 +1,27 @@
-import { Animated, StyleSheet, Text, View, Image } from 'react-native'
-import React, { useEffect, useRef } from 'react'
+import {Animated, StyleSheet, Text, View, Image} from 'react-native';
+import React, {useEffect, useRef} from 'react';
 
-const SplashScreen = ({ navigation }) => {
-
+const SplashScreen = ({navigation}) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('SignupScreen')
-    }, 800)
+      navigation.replace('SignupScreen');
+    }, 800);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <View style={styles.container}>
       <Image
         source={require('../assets/logo.png')}
         style={styles.logo}
-        resizeMode='contain'
+        resizeMode="contain"
       />
     </View>
-  )
-}
+  );
+};
 
-export default SplashScreen
+export default SplashScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -35,4 +34,4 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
   },
-})
+});

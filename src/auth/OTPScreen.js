@@ -1,35 +1,20 @@
-import React, {useEffect, useRef, useState} from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   Image,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from '@react-native-google-signin/google-signin';
-import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
-import EmailIcon from '../assets/svgs/Email.svg';
-import FrameIcon from '../assets/svgs/Frame1.svg';
-import InstaIcon from '../assets/svgs/SocialIcons.svg';
-import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
-import {
-  API,
-  LOGIN_API,
   OTP_VERIFICATION_API,
-  SIGNUP_API,
-  SIGNWITHGOOGLE_API,
+  SIGNUP_API
 } from '../utils/ApiHelper';
-import axios from 'axios';
-import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
-import {passwordValidater} from '../utils/validations/passwordValidater';
-import {emailValidater} from '../utils/validations/emailValidater';
-import {StorageUtils} from '../utils/StorageUtils';
+import { showToastMSGError, showToastMSGNormal } from '../utils/ToastMessages';
 
 const OTPScreen = ({navigation, route}) => {
   const {email} = route.params;
@@ -249,8 +234,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   otpContainer: {
-    flexDirection: 'row', // Align inputs in a single line
-    justifyContent: 'space-between', // Add spacing between inputs
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
     alignItems: 'center',
     width: '100%',
   },
@@ -293,8 +278,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#FF0000',
     fontSize: 12,
-    // marginTop: 5,
-    // marginLeft: 10,
   },
   errorCpontainer: {
     width: '100%',

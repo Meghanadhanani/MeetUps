@@ -1,3 +1,4 @@
+import React, { useRef, useState } from 'react';
 import {
   Animated,
   Image,
@@ -8,26 +9,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
 import ArrowIcon from '../assets/svgs/ArrowIcon.svg';
 import DownArrowIcon from '../assets/svgs/DownArrow.svg';
-
-import NotificationIcon from '../assets/svgs/notification.svg';
-import HameBurgerIcon from '../assets/svgs/HamBurger.svg';
-import Logo from '../assets/svgs/LogoSvg.svg';
-import BlueLogo from '../assets/svgs/LogoInBlue.svg';
-import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
-import SaveIcon from '../assets/svgs/SaveIcon.svg';
-import TimerIcon from '../assets/svgs/TimerIcon.svg';
-import LocationIcon from '../assets/svgs/LocationIcon.svg';
-import CommentIcon from '../assets/svgs/CommentICon.svg';
-import VerifiedIcon from '../assets/svgs/Verified.svg';
-import SearchIcon from '../assets/svgs/search.svg';
 import CreateEventLogo from '../assets/svgs/DRIP_18.svg';
+import HameBurgerIcon from '../assets/svgs/HamBurger.svg';
+import BlueLogo from '../assets/svgs/LogoInBlue.svg';
+import Logo from '../assets/svgs/LogoSvg.svg';
+import NotificationIcon from '../assets/svgs/notification.svg';
+import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
+
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -199,7 +193,7 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           style={styles.horizontalScrollView}>
           {[1, 2, 3, 4].map((item, index) => (
-            <View style={styles.featuredEventCard}>
+            <View key={index} style={styles.featuredEventCard}>
               <Image
                 source={require('../assets/FeatureEvent.png')}
                 width={'100%'}
@@ -280,6 +274,7 @@ const HomeScreen = () => {
           <Text style={styles.createText}>Want To Create Your Own Event?</Text>
           <CreateEventLogo width={'100%'} />
           <TouchableOpacity
+            onPress={() => navigation.navigate('CustomBackBtn')}
             style={{
               backgroundColor: '#6D5CFF',
               width: '100%',
@@ -418,7 +413,6 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     height: 50,
-    // backgroundColor: '#9ca2ff',
     borderRadius: 10,
     padding: 10,
     width: '15%',
@@ -437,7 +431,6 @@ const styles = StyleSheet.create({
     fontFamily: 'BricolageGrotesque_24pt-Regular',
     fontSize: 20,
     fontWeight: '600',
-    // paddingVertical: 20,
     color: '#2A2A2A',
   },
   horizontalScrollView: {

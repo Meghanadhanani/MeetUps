@@ -1,29 +1,27 @@
-import React, {useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
+  GoogleSignin
+} from '@react-native-google-signin/google-signin';
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import {
   Image,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from '@react-native-google-signin/google-signin';
-import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
 import EmailIcon from '../assets/svgs/Email.svg';
 import FrameIcon from '../assets/svgs/Frame1.svg';
-import InstaIcon from '../assets/svgs/SocialIcons.svg';
 import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
-import {API, LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
-import axios from 'axios';
-import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
-import {passwordValidater} from '../utils/validations/passwordValidater';
-import {emailValidater} from '../utils/validations/emailValidater';
+import InstaIcon from '../assets/svgs/SocialIcons.svg';
+import { LOGIN_API, SIGNWITHGOOGLE_API } from '../utils/ApiHelper';
 import { StorageUtils } from '../utils/StorageUtils';
+import { showToastMSGError } from '../utils/ToastMessages';
+import { emailValidater } from '../utils/validations/emailValidater';
+import { passwordValidater } from '../utils/validations/passwordValidater';
 const LoginScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
@@ -51,7 +49,6 @@ const LoginScreen = ({navigation}) => {
     const isEmailValid = emailValidater(email.value);
     const isPasswordValid = passwordValidater(password.value);
 
-    // Reset errors
     setEmailError(false);
     setPasswordError(false);
     setEmailError(false);
@@ -62,12 +59,11 @@ const LoginScreen = ({navigation}) => {
       showToastMSGError(errorMessage);
       return false;
     } 
-    // Validate email
     if (!isEmailValid) {
       const errorMessage = 'Please enter a valid email address';
       setEmailError(true);
       setEmail({...email, error: errorMessage});
-      showToastMSGError(errorMessage); // Use the message directly
+      showToastMSGError(errorMessage);
       return false;
     }
     setEmailError(false);
@@ -78,7 +74,6 @@ const LoginScreen = ({navigation}) => {
       showToastMSGError(errorMessage);
       return false;
     } 
-    // Validate password
     if (!isPasswordValid) {
       const errorMessagePass = 'Password must be at least 2 characters with numbers and letters';
       setPasswordError(true);
@@ -109,12 +104,11 @@ const LoginScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Login Data:', data); // Log the data being sent
-      console.log('Login API URL:', LOGIN_API); // Log the API URL
+      console.log('Login Data:', data); 
+      console.log('Login API URL:', LOGIN_API);
 
       const response = await axios.post(LOGIN_API, data, config);
       if (response.status === 200) {
-        // showToastMSGNormal('Login Successful');
         await StorageUtils.setItem('userData', response.data);
         setTimeout(() => {
           
@@ -124,10 +118,10 @@ const LoginScreen = ({navigation}) => {
           });
         }, 100);
       }
-      console.log('Response:', response); // Log the response data
+      console.log('Response:', response);
     } catch (error) {
       showToastMSGError(error.response.data.error);
-      console.log('Login Error:', error.response.data.error); // Log the error response
+      console.log('Login Error:', error.response.data.error);
     }
   };
 
@@ -155,9 +149,7 @@ const LoginScreen = ({navigation}) => {
       console.log('Google Sign-In Error:', error);
 
       if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
-        // Handle error for Google Play Services not available
       } else {
-        // Handle general Google Sign-In errors
       }
     } finally {
       setLoading(false);
@@ -181,7 +173,6 @@ const LoginScreen = ({navigation}) => {
         {headers: {'Content-Type': 'application/json'}},
       );
       if (response.status === 200) {
-        // showToastMSGNormal('Login Successful');
         await StorageUtils.setItem('userData', response.data);
         setTimeout(() => {
           
@@ -191,10 +182,8 @@ const LoginScreen = ({navigation}) => {
           });
         }, 100);}
       console.log('Response:', response.data);
-      // Handle successful login (store user data, navigate, etc.)
     } catch (error) {
       console.error('SSO Login Error:', error.response?.data || error.message);
-      // Show appropriate error message to user
     }
   };
 
@@ -313,8 +302,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#FF0000",
     fontSize: 12,
-    // marginTop: 5,
-    // marginLeft: 10,
   },
   errorCpontainer:{
     width: '100%',

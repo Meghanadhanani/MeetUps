@@ -1,15 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { isDebug } from './Defines';
 export const isDebug = true;
-
 
 export const StorageUtils = {
   async setItem(key, value) {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(value));
-    
     } catch (error) {
-     console.error("Error setting item in AsyncStorage", error);
+      console.error('Error setting item in AsyncStorage', error);
     }
   },
 
@@ -18,7 +15,7 @@ export const StorageUtils = {
       const value = await AsyncStorage.getItem(key);
       return value != null ? JSON.parse(value) : null;
     } catch (error) {
-     console.error("Error getting item from AsyncStorage", error);
+      console.error('Error getting item from AsyncStorage', error);
     }
   },
 
@@ -26,20 +23,19 @@ export const StorageUtils = {
     try {
       await AsyncStorage.removeItem(key);
     } catch (error) {
-     console.error("Error removing item from AsyncStorage", error);
+      console.error('Error removing item from AsyncStorage', error);
     }
-  }
+  },
 };
 export const getCurrentUserId = async () => {
   try {
-    const value = await AsyncStorage.getItem("userData");
+    const value = await AsyncStorage.getItem('userData');
 
     if (value != null) {
-      const a = JSON.parse(value)
+      const a = JSON.parse(value);
       return a.id;
     } else {
-      return null
+      return null;
     }
-  } catch (e) {
-  }
+  } catch (e) {}
 };

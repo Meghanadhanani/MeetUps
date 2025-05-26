@@ -1,6 +1,5 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
-// Import your icons for like, comment, etc.
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
 import SaveIcon from '../assets/svgs/SaveIcon.svg';
 import TimerIcon from '../assets/svgs/TimerIcon.svg';
@@ -236,8 +235,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
-    // marginTop: 5,
   },
   engagementItem: {
     flexDirection: 'row',

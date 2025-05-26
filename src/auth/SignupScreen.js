@@ -1,30 +1,24 @@
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import axios from 'axios';
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
   Image,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from '@react-native-google-signin/google-signin';
-import {InstagramLogin} from 'react-native-social-login'; // You'll need to install an appropriate package
 import EmailIcon from '../assets/svgs/Email.svg';
-import FrameIcon from '../assets/svgs/Frame1.svg';
-import InstaIcon from '../assets/svgs/SocialIcons.svg';
 import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
-import {API, LOGIN_API, SIGNUP_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
-import axios from 'axios';
-import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
-import {passwordValidater} from '../utils/validations/passwordValidater';
-import {emailValidater} from '../utils/validations/emailValidater';
-import {isDebug, StorageUtils} from '../utils/StorageUtils';
+import InstaIcon from '../assets/svgs/SocialIcons.svg';
+import {SIGNUP_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
 import Loader from '../utils/Loader';
+import {isDebug, StorageUtils} from '../utils/StorageUtils';
+import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
+import {emailValidater} from '../utils/validations/emailValidater';
 const SignupScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
@@ -47,17 +41,15 @@ const SignupScreen = ({navigation}) => {
   const checkValidation = () => {
     const isEmailValid = emailValidater(email.value);
 
-    // Reset errors
     if (!email.value.trim()) {
       const errorMessage = 'Email is required';
       showToastMSGError(errorMessage);
       return false;
-    } 
-    // Validate email
+    }
     if (!isEmailValid) {
       const errorMessage = 'Please enter a valid email address';
-    showToastMSGError(errorMessage);
-    return false;
+      showToastMSGError(errorMessage);
+      return false;
     }
 
     return true;
@@ -67,7 +59,7 @@ const SignupScreen = ({navigation}) => {
     if (checkValidation() === false) {
       return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
       const data = {
         email: email.value,
@@ -78,19 +70,19 @@ const SignupScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-  
+
       const response = await axios.post(SIGNUP_API, data, config);
-      setLoading(false)
-      
+      setLoading(false);
+
       if (response.data.success) {
-        const { is_verified } = response.data.status;
-  
+        const {is_verified} = response.data.status;
+
         if (is_verified) {
           showToastMSGError(response.data.message);
         } else {
           showToastMSGNormal(response.data.message);
           setTimeout(() => {
-            navigation.navigate("OTPScreen", {email});
+            navigation.navigate('OTPScreen', {email});
           }, 2000);
         }
       } else {
@@ -98,12 +90,11 @@ const SignupScreen = ({navigation}) => {
       }
       isDebug && console.log('Response:', response);
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       showToastMSGError(error.response?.data?.message);
-     isDebug && console.log('Sign up Error:', error); 
+      isDebug && console.log('Sign up Error:', error);
     }
   };
-  
 
   const onGLoginPressed = async () => {
     try {
@@ -129,9 +120,9 @@ const SignupScreen = ({navigation}) => {
       console.log('Google Sign-In Error:', error);
 
       if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
-showToastMSGError("Google Services not available")
+        showToastMSGError('Google Services not available');
       } else {
-        showToastMSGError(error)
+        showToastMSGError(error);
       }
     } finally {
       setLoading(false);
@@ -155,7 +146,6 @@ showToastMSGError("Google Services not available")
         {headers: {'Content-Type': 'application/json'}},
       );
       if (response.status === 200) {
-        // showToastMSGNormal('Login Successful');
         await StorageUtils.setItem('userData', response.data);
         setTimeout(() => {
           navigation.reset({
@@ -165,10 +155,8 @@ showToastMSGError("Google Services not available")
         }, 100);
       }
       console.log('Response:', response.data);
-      // Handle successful login (store user data, navigate, etc.)
     } catch (error) {
       console.error('SSO Login Error:', error.response?.data || error.message);
-      // Show appropriate error message to user
     }
   };
 
@@ -232,7 +220,7 @@ showToastMSGError("Google Services not available")
             <Text style={styles.instagramButtonText}>Sign in with Google</Text>
           </TouchableOpacity>
         </View>
-        {loading && (<Loader/>)}
+        {loading && <Loader />}
       </ScrollView>
     </SafeAreaView>
   );
@@ -263,8 +251,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#FF0000',
     fontSize: 12,
-    // marginTop: 5,
-    // marginLeft: 10,
   },
   errorCpontainer: {
     width: '100%',
