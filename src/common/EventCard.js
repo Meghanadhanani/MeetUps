@@ -8,24 +8,34 @@ import CommentIcon from '../assets/svgs/CommentICon.svg';
 import VerifiedIcon from '../assets/svgs/Verified.svg';
 import DotsIcon from '../assets/svgs/3Dots.svg';
 
-const EventCard = ({
-  imageUrl,
-  title,
-  date,
-  time,
-  location,
-  likes,
-  comments,
-  performers,
-  tags,
-  userAvatar,
-}) => {
+const EventCard = ({item}) => {
+  const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+const formatTime = (timeString) => {
+  const [hours, minutes] = timeString.split(':');
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes);
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }) + ' onwards';
+};
+
   return (
     <View style={styles.cardContainer}>
       <View style={styles.userHeader}>
         <View style={styles.userInfo}>
           <Image
-            source={userAvatar || require('../assets/PersonImage.png')}
+            source={require('../assets/PersonImage.png')}
             style={styles.userAvatar}
           />
           <View>
@@ -50,34 +60,34 @@ const EventCard = ({
         }}>
         <View style={styles.imageContainer}>
           <Image
-            source={imageUrl || require('../assets/UpcomingEventImage.png')}
+            source={require('../assets/UpcomingEventImage.png')}
             style={styles.eventImage}
             resizeMode="cover"
           />
         </View>
 
         <View style={styles.tagContainer}>
-          {tags &&
-            tags.map((tag, index) => (
+          {item.tags &&
+            item.tags.map((tag, index) => (
               <View key={index} style={styles.tag}>
                 <Text style={styles.tagText}>{tag}</Text>
               </View>
             ))}
         </View>
 
-        <Text style={styles.eventTitle}>{title || 'Music Show 1.0'}</Text>
+        <Text style={styles.eventTitle}>{item.name}</Text>
 
         <View style={styles.eventDetails}>
           <View style={styles.detailItem}>
             <TimerIcon width={16} height={16} color="#6A66FF" />
             <Text style={styles.detailText}>
-              {date || '4 March, 2025'} | {time || '9 AM onwards'}
+              {formatDate(item.event_date) || '4 March, 2025'} | {formatTime(item.event_time) || '9 AM onwards'}
             </Text>
           </View>
           <View style={styles.detailItem}>
             <LocationIcon width={16} height={16} color="#6A66FF" />
             <Text style={styles.detailText}>
-              {location || 'Square Game Hub'}
+              {item.location || 'Square Game Hub'}
             </Text>
           </View>
         </View>
@@ -96,18 +106,18 @@ const EventCard = ({
                 color="#6A66FF"
                 fill="#6A66FF"
               />
-              <Text style={styles.engagementText}>{likes || '476k'}</Text>
+              <Text style={styles.engagementText}>{'476k'}</Text>
             </View>
             <View style={styles.engagementItem}>
               <CommentIcon width={20} height={20} color="#6A66FF" />
-              <Text style={styles.engagementText}>{comments || '14k'}</Text>
+              <Text style={styles.engagementText}>{'14k'}</Text>
             </View>
             <View style={styles.engagementItem}>
               <SaveIcon width={20} height={20} color="#6A66FF" />
             </View>
           </View>
           <View style={styles.attendeesContainer}>
-            {performers && performers.length > 0 ? (
+            {/* {performers && performers.length > 0 ? (
               performers.map((performer, index) => (
                 <Image
                   key={index}
@@ -118,7 +128,7 @@ const EventCard = ({
                   ]}
                 />
               ))
-            ) : (
+            ) : ( */}
               <>
                 <Image
                   source={require('../assets/PersonImage.png')}
@@ -133,7 +143,7 @@ const EventCard = ({
                   style={[styles.attendeeAvatar, {marginLeft: -10}]}
                 />
               </>
-            )}
+            {/* )} */}
             <Text style={styles.attendeeCount}>+40k</Text>
           </View>
         </View>

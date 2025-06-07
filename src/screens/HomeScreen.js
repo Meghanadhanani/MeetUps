@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Animated,
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -18,6 +19,9 @@ import Logo from '../assets/svgs/LogoSvg.svg';
 import NotificationIcon from '../assets/svgs/notification.svg';
 import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
+import axios from 'axios';
+import { GET_EVENTLIST_API } from '../utils/ApiHelper';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -25,10 +29,36 @@ const HomeScreen = ({navigation}) => {
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
-
+const [events, setEvents] = useState([]);
   const handleSearch = () => {
     setQuery(input);
   };
+
+  const GetEventList = async() => {
+    // This function can be used to fetch events based on the query
+    try {
+    const resposne = await axios.get(GET_EVENTLIST_API);
+      // Handle the response data
+   console.log('resposne', resposne.data);
+setEvents(resposne.data);
+   
+    } catch (error) {
+      // Handle any errors that occur during the request
+      console.error('Error fetching event list:', error);
+    }
+  }
+
+
+useFocusEffect(
+    useCallback(() => {
+      // This will run when the screen is focused
+      GetEventList();
+      return () => {
+        // This will run when the screen is unfocused
+      };
+    }, []),
+  );
+
 
   const headerItemOpacity = scrollY.interpolate({
     inputRange: [0, 30],
@@ -220,56 +250,14 @@ const HomeScreen = ({navigation}) => {
             <DownArrowIcon />
           </View>
         </View>
-        <View style={{gap: 15}}>
-          <EventCard
-            imageUrl={require('../assets/UpcomingEventImage.png')}
-            title="Music Show 1.0"
-            date="4 March, 2025"
-            time="9 AM onwards"
-            location="Square Game Hub"
-            likes="476k"
-            comments="14k"
-            tags={['Music', 'Drum Show']}
-            userAvatar={require('../assets/PersonImage.png')}
-            performers={[
-              require('../assets/PersonImage.png'),
-              require('../assets/PersonImage.png'),
-              require('../assets/PersonImage.png'),
-            ]}
+        <ScrollView style={{gap: 15}}>
+         <FlatList
+            data={events}
+            renderItem={({item}) => <EventCard item={item} />}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
           />
-          <EventCard
-            imageUrl={require('../assets/UpcomingEventImage.png')}
-            title="Music Show 1.0"
-            date="4 March, 2025"
-            time="9 AM onwards"
-            location="Square Game Hub"
-            likes="476k"
-            comments="14k"
-            tags={['Music', 'Drum Show']}
-            userAvatar={require('../assets/PersonImage.png')}
-            performers={[
-              require('../assets/PersonImage.png'),
-              require('../assets/PersonImage.png'),
-              require('../assets/PersonImage.png'),
-            ]}
-          />
-          <EventCard
-            imageUrl={require('../assets/UpcomingEventImage.png')}
-            title="Music Show 1.0"
-            date="4 March, 2025"
-            time="9 AM onwards"
-            location="Square Game Hub"
-            likes="476k"
-            comments="14k"
-            tags={['Music', 'Drum Show']}
-            userAvatar={require('../assets/PersonImage.png')}
-            performers={[
-              require('../assets/PersonImage.png'),
-              require('../assets/PersonImage.png'),
-              require('../assets/PersonImage.png'),
-            ]}
-          />
-        </View>
+        </ScrollView>
         <View style={styles.createEventCard}>
           <Text style={styles.createText}>Want To Create Your Own Event?</Text>
           <CreateEventLogo width={'100%'} />
