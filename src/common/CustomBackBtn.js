@@ -7,12 +7,13 @@ const CustomBackBtn = ({navigation, iconName = []}) => {
   return (
     <View
       style={{
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#FFFFFF',
         height: 60,
         width: '100%',
         paddingHorizontal: 16,
         justifyContent: 'space-between',
         flexDirection: 'row',
+        alignItems:"center"
       }}>
       <TouchableOpacity
         onPress={navigation}
@@ -23,7 +24,9 @@ const CustomBackBtn = ({navigation, iconName = []}) => {
           justifyContent: 'center',
         }}>
         <BackBtnIcon />
+    
       </TouchableOpacity>
+          <Text style={{textAlign:"center", fontSize:16, fontFamily:"BricolageGrotesque_24pt", fontWeight:500}}>Musica Show 1.0</Text>
       <TouchableOpacity
         style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
         {

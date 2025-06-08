@@ -268,7 +268,7 @@ const HomeScreen = ({navigation}) => {
               </Text>
               <CreateEventLogo width={'100%'} />
               <TouchableOpacity
-                onPress={() => navigation.navigate('CustomBackBtn')}
+                onPress={() => navigation.navigate('CreateEventScreen')}
                 style={{
                   backgroundColor: '#6D5CFF',
                   width: '100%',

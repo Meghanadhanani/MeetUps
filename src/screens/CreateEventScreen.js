@@ -1,15 +1,17 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-
+import CustomBackBtn from '../common/CustomBackBtn'
+import ShareBtn from "../assets/svgs/ShareBtn.svg"
 const CreateEventScreen = () => {
   return (
  <View style={styles.container}>
-  <Text>CreateEventScreen</Text>
-  <Image 
-    source={{ uri: 'https://picsum.photos/200' }} 
-    style={{ width: 200, height: 200, backgroundColor: 'gray' }} 
-    resizeMode="cover" 
-  />
+   <CustomBackBtn
+        navigation={() => console.log('reeeeeeee')}
+        iconName={[
+          {icon: <ShareBtn />, onPress: () => console.log('Share')},
+          
+        ]}
+      />
 </View>
   )
 }
@@ -19,7 +21,7 @@ export default CreateEventScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    // padding: 20,
+    backgroundColor: '#FFFFFF',
   },
 });
