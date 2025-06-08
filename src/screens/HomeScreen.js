@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -20,8 +20,10 @@ import NotificationIcon from '../assets/svgs/notification.svg';
 import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
 import axios from 'axios';
-import { GET_EVENTLIST_API } from '../utils/ApiHelper';
-import { useFocusEffect } from '@react-navigation/native';
+import {GET_EVENTLIST_API} from '../utils/ApiHelper';
+import {useFocusEffect} from '@react-navigation/native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -29,36 +31,28 @@ const HomeScreen = ({navigation}) => {
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
-const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([]);
+  
   const handleSearch = () => {
     setQuery(input);
   };
 
-  const GetEventList = async() => {
-    // This function can be used to fetch events based on the query
+  const GetEventList = async () => {
     try {
-    const resposne = await axios.get(GET_EVENTLIST_API);
-      // Handle the response data
-   console.log('resposne', resposne.data);
-setEvents(resposne.data);
-   
+      const resposne = await axios.get(GET_EVENTLIST_API);
+      console.log('resposne', resposne.data);
+      setEvents(resposne.data);
     } catch (error) {
-      // Handle any errors that occur during the request
       console.error('Error fetching event list:', error);
     }
-  }
+  };
 
-
-useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
-      // This will run when the screen is focused
       GetEventList();
-      return () => {
-        // This will run when the screen is unfocused
-      };
+      return () => {};
     }, []),
   );
-
 
   const headerItemOpacity = scrollY.interpolate({
     inputRange: [0, 30],
@@ -101,6 +95,7 @@ useFocusEffect(
     outputRange: ['#9ca2ff', '#F6F6F6'],
     extrapolate: 'clamp',
   });
+  
   const seatchIconBgColor = scrollY.interpolate({
     inputRange: [0, 80],
     outputRange: ['#9ca2ff', '#7975FF'],
@@ -128,161 +123,174 @@ useFocusEffect(
   );
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            height: headerHeight,
-            backgroundColor: headerBackgroundColor,
-          },
-        ]}>
-        <Animated.View
-          style={[
-            styles.headerTopRow,
-            {
-              opacity: headerItemOpacity,
-            },
-          ]}>
-          <View style={styles.profileRow}>
-            <View style={styles.profileContainer}>
-              <Image
-                source={require('../assets/PersonImage.png')}
-                style={styles.image1}
-                resizeMode="cover"
-              />
-            </View>
-
-            <View style={styles.userInfoContainer}>
-              <Text style={styles.userGreeting}>Hello Alex</Text>
-              <View style={styles.locationContainer}>
-                <Text style={styles.locationText}>Ahmedabad</Text>
-                <ArrowIcon />
-              </View>
-            </View>
-          </View>
-          <View style={styles.iconsRow}>
-            <View style={styles.iconContainer}>
-              <NotificationIcon />
-            </View>
-            <View style={styles.iconContainer}>
-              <HameBurgerIcon />
-            </View>
-          </View>
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.searchBarContainer,
-            {
-              transform: [{translateY: searchBarTranslateY}],
-            },
-          ]}>
-          <View style={styles.logoWrapper}>
-            <Animated.View
-              style={[styles.logoContainer, {opacity: whiteLogoOpacity}]}>
-              <Logo />
-            </Animated.View>
-            <Animated.View
-              style={[styles.logoContainer, {opacity: blueLogoOpacity}]}>
-              <BlueLogo />
-            </Animated.View>
-          </View>
-
+    <GestureHandlerRootView style={styles.container}>
+      <BottomSheetModalProvider>
+        <View style={styles.container}>
           <Animated.View
             style={[
-              styles.searchInputContainer,
-              {backgroundColor: searchBgColor},
+              styles.header,
+              {
+                height: headerHeight,
+                backgroundColor: headerBackgroundColor,
+              },
             ]}>
-            <AnimatedTextInput
-              style={[styles.searchInput, {color: searchTextColor}]}
-              placeholder="Search Anything..."
-              placeholderTextColor={searchPlaceholderTextColor}
-              value={input}
-              onChangeText={setInput}
-            />
+            <Animated.View
+              style={[
+                styles.headerTopRow,
+                {
+                  opacity: headerItemOpacity,
+                },
+              ]}>
+              <View style={styles.profileRow}>
+                <View style={styles.profileContainer}>
+                  <Image
+                    source={require('../assets/PersonImage.png')}
+                    style={styles.image1}
+                    resizeMode="cover"
+                  />
+                </View>
+
+                <View style={styles.userInfoContainer}>
+                  <Text style={styles.userGreeting}>Hello Alex</Text>
+                  <View style={styles.locationContainer}>
+                    <Text style={styles.locationText}>Ahmedabad</Text>
+                    <ArrowIcon />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.iconsRow}>
+                <View style={styles.iconContainer}>
+                  <NotificationIcon />
+                </View>
+                <View style={styles.iconContainer}>
+                  <HameBurgerIcon />
+                </View>
+              </View>
+            </Animated.View>
+            <Animated.View
+              style={[
+                styles.searchBarContainer,
+                {
+                  transform: [{translateY: searchBarTranslateY}],
+                },
+              ]}>
+              <View style={styles.logoWrapper}>
+                <Animated.View
+                  style={[styles.logoContainer, {opacity: whiteLogoOpacity}]}>
+                  <Logo />
+                </Animated.View>
+                <Animated.View
+                  style={[styles.logoContainer, {opacity: blueLogoOpacity}]}>
+                  <BlueLogo />
+                </Animated.View>
+              </View>
+
+              <Animated.View
+                style={[
+                  styles.searchInputContainer,
+                  {backgroundColor: searchBgColor},
+                ]}>
+                <AnimatedTextInput
+                  style={[styles.searchInput, {color: searchTextColor}]}
+                  placeholder="Search Anything..."
+                  placeholderTextColor={searchPlaceholderTextColor}
+                  value={input}
+                  onChangeText={setInput}
+                />
+              </Animated.View>
+
+              <TouchableOpacity
+                onPress={handleSearch}
+                style={[
+                  styles.searchButton,
+                  {backgroundColor: seatchIconBgColor},
+                ]}>
+                <SearchIcon />
+              </TouchableOpacity>
+            </Animated.View>
           </Animated.View>
 
-          <TouchableOpacity
-            onPress={handleSearch}
-            style={[styles.searchButton, {backgroundColor: seatchIconBgColor}]}>
-            <SearchIcon />
-          </TouchableOpacity>
-        </Animated.View>
-      </Animated.View>
+          <Animated.ScrollView
+            contentContainerStyle={styles.scrollContent}
+            style={styles.scrollView}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}>
+            <Text style={styles.sectionTitle}>Featured Events</Text>
 
-      <Animated.ScrollView
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollView}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Featured Events</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.horizontalScrollView}>
+              {[1, 2, 3, 4].map((item, index) => (
+                <View key={index} style={styles.featuredEventCard}>
+                  <Image
+                    source={require('../assets/FeatureEvent.png')}
+                    width={'100%'}
+                    height={'100%'}
+                    resizeMode="contain"
+                  />
+                </View>
+              ))}
+            </ScrollView>
+            
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.sectionTitle}>Upcoming Events</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                  justifyContent: 'center',
+                  backgroundColor: '#ECEFFF',
+                  borderRadius: 50,
+                  paddingHorizontal: 20,
+                  paddingVertical: 8,
+                }}>
+                <Text style={{color: '#6D5CFF', fontSize: 14}}>All</Text>
+                <DownArrowIcon />
+              </View>
+            </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.horizontalScrollView}>
-          {[1, 2, 3, 4].map((item, index) => (
-            <View key={index} style={styles.featuredEventCard}>
-              <Image
-                source={require('../assets/FeatureEvent.png')}
-                width={'100%'}
-                height={'100%'}
-                resizeMode="contain"
+            <View style={{gap: 15}}>
+              <FlatList
+                data={events}
+                renderItem={({item}) => <EventCard item={item} />}
+                keyExtractor={item => item.id.toString()}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
               />
             </View>
-          ))}
-        </ScrollView>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.sectionTitle}>Upcoming Events</Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 10,
-              justifyContent: 'center',
-              backgroundColor: '#ECEFFF',
-              borderRadius: 50,
-              paddingHorizontal: 20,
-              paddingVertical: 8,
-            }}>
-            <Text style={{color: '#6D5CFF', fontSize: 14}}>All</Text>
-            <DownArrowIcon />
-          </View>
+
+            <View style={styles.createEventCard}>
+              <Text style={styles.createText}>
+                Want To Create Your Own Event?
+              </Text>
+              <CreateEventLogo width={'100%'} />
+              <TouchableOpacity
+                onPress={() => navigation.navigate('CustomBackBtn')}
+                style={{
+                  backgroundColor: '#6D5CFF',
+                  width: '100%',
+                  paddingHorizontal: 10,
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                }}>
+                <Text
+                  style={{
+                    color: '#FFFFFF',
+                    textAlign: 'center',
+                    fontSize: 18,
+                    fontWeight: '600',
+                  }}>
+                  Create My First Event
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.ScrollView>
         </View>
-        <ScrollView style={{gap: 15}}>
-         <FlatList
-            data={events}
-            renderItem={({item}) => <EventCard item={item} />}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-          />
-        </ScrollView>
-        <View style={styles.createEventCard}>
-          <Text style={styles.createText}>Want To Create Your Own Event?</Text>
-          <CreateEventLogo width={'100%'} />
-          <TouchableOpacity
-            onPress={() => navigation.navigate('CustomBackBtn')}
-            style={{
-              backgroundColor: '#6D5CFF',
-              width: '100%',
-              paddingHorizontal: 10,
-              paddingVertical: 14,
-              borderRadius: 12,
-            }}>
-            <Text
-              style={{
-                color: '#FFFFFF',
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: '600',
-              }}>
-              Create My First Event
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.ScrollView>
-    </View>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 };
 
@@ -335,6 +343,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     zIndex: 100,
+    elevation: 10,
   },
   headerTopRow: {
     flexDirection: 'row',

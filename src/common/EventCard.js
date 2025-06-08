@@ -1,5 +1,5 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import {Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
 import SaveIcon from '../assets/svgs/SaveIcon.svg';
 import TimerIcon from '../assets/svgs/TimerIcon.svg';
@@ -7,8 +7,23 @@ import LocationIcon from '../assets/svgs/LocationIcon.svg';
 import CommentIcon from '../assets/svgs/CommentICon.svg';
 import VerifiedIcon from '../assets/svgs/Verified.svg';
 import DotsIcon from '../assets/svgs/3Dots.svg';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const EventCard = ({item}) => {
+
+const bottomSheetModalRef = useRef(null);
+  const snapPoints = useMemo(() => ['65%', '75%', '80%'], []);
+
+  const handlePresentModalPress = useCallback(() => {
+    console.log("Opening sheet...");
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleClosePress = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
+  }, []);
+
   const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-GB', {
@@ -31,105 +46,98 @@ const formatTime = (timeString) => {
 };
 
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.userHeader}>
-        <View style={styles.userInfo}>
-          <Image
-            source={require('../assets/PersonImage.png')}
-            style={styles.userAvatar}
-          />
-          <View>
-            <View style={styles.usernameContainer}>
-              <Text style={styles.username}>Jack_Drums</Text>
-              <VerifiedIcon width={16} height={16} />
-            </View>
-          </View>
-        </View>
-        <TouchableOpacity>
-          <Text style={styles.moreOptions}>⋮</Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{height: 1, backgroundColor: '#F1F0FF', marginVertical: 10}}
-      />
-      <View
-        style={{
-          paddingHorizontal: 10,
-          justifyContent: 'space-between',
-          gap: 10,
-        }}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={require('../assets/UpcomingEventImage.png')}
-            style={styles.eventImage}
-            resizeMode="cover"
-          />
-        </View>
-
-        <View style={styles.tagContainer}>
-          {item.tags &&
-            item.tags.map((tag, index) => (
-              <View key={index} style={styles.tag}>
-                <Text style={styles.tagText}>{tag}</Text>
+    <>
+      <View style={styles.cardContainer}>
+          <View style={styles.userHeader}>
+            <View style={styles.userInfo}>
+              <Image
+                source={require('../assets/PersonImage.png')}
+                style={styles.userAvatar}
+              />
+              <View>
+                <View style={styles.usernameContainer}>
+                  <Text style={styles.username}>Jack_Drums</Text>
+                  <VerifiedIcon width={16} height={16} />
+                </View>
               </View>
-            ))}
-        </View>
-
-        <Text style={styles.eventTitle}>{item.name}</Text>
-
-        <View style={styles.eventDetails}>
-          <View style={styles.detailItem}>
-            <TimerIcon width={16} height={16} color="#6A66FF" />
-            <Text style={styles.detailText}>
-              {formatDate(item.event_date) || '4 March, 2025'} | {formatTime(item.event_time) || '9 AM onwards'}
-            </Text>
+            </View>
+            <TouchableOpacity>
+              <Text style={styles.moreOptions}>⋮</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.detailItem}>
-            <LocationIcon width={16} height={16} color="#6A66FF" />
-            <Text style={styles.detailText}>
-              {item.location || 'Square Game Hub'}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.engagementContainer}>
+          <View
+            style={{height: 1, backgroundColor: '#F1F0FF', marginVertical: 10}}
+          />
           <View
             style={{
-              width: '50%',
-              flexDirection: 'row',
+              paddingHorizontal: 10,
               justifyContent: 'space-between',
+              gap: 10,
             }}>
-            <View style={styles.engagementItem}>
-              <FillHeartIcon
-                width={20}
-                height={20}
-                color="#6A66FF"
-                fill="#6A66FF"
+            <View style={styles.imageContainer}>
+              <Image
+                source={require('../assets/UpcomingEventImage.png')}
+                style={styles.eventImage}
+                resizeMode="cover"
               />
-              <Text style={styles.engagementText}>{'476k'}</Text>
             </View>
-            <View style={styles.engagementItem}>
-              <CommentIcon width={20} height={20} color="#6A66FF" />
-              <Text style={styles.engagementText}>{'14k'}</Text>
+
+            {/* <View style={styles.tagContainer}> */}
+              <ScrollView horizontal contentContainerStyle={styles.tagContainer}>
+
+              {item.tags &&
+                item.tags.map((tag, index) => (
+                  <View key={index} style={styles.tag}>
+                    <Text style={styles.tagText}>{tag}</Text>
+                  </View>
+                ))}
+                </ScrollView>
+            {/* </View> */}
+
+            <Text style={styles.eventTitle}>{item.event_name}</Text>
+
+            <View style={styles.eventDetails}>
+              <View style={styles.detailItem}>
+                <TimerIcon width={16} height={16} color="#6A66FF" />
+                <Text style={styles.detailText}>
+                  {formatDate(item.event_date) || '4 March, 2025'} | {formatTime(item.event_time) || '9 AM onwards'}
+                </Text>
+              </View>
+              <View style={styles.detailItem}>
+                <LocationIcon width={16} height={16} color="#6A66FF" />
+                <Text style={styles.detailText}>
+                  {item.location || 'Square Game Hub'}
+                </Text>
+              </View>
             </View>
-            <View style={styles.engagementItem}>
-              <SaveIcon width={20} height={20} color="#6A66FF" />
-            </View>
-          </View>
-          <View style={styles.attendeesContainer}>
-            {/* {performers && performers.length > 0 ? (
-              performers.map((performer, index) => (
-                <Image
-                  key={index}
-                  source={performer}
-                  style={[
-                    styles.attendeeAvatar,
-                    {marginLeft: index > 0 ? -10 : 0},
-                  ]}
-                />
-              ))
-            ) : ( */}
-              <>
+
+            <View style={styles.engagementContainer}>
+              <View
+                style={{
+                  width: '50%',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <View style={styles.engagementItem}>
+                  <FillHeartIcon
+                    width={20}
+                    height={20}
+                    color="#6A66FF"
+                    // fill="#6A66FF"
+                  />
+                  <Text style={styles.engagementText}>{'476k'}</Text>
+                </View>
+                <View style={styles.engagementItem}>
+                  <CommentIcon width={20} height={20} color="#6A66FF" />
+                  <Text style={styles.engagementText}>{'14k'}</Text>
+                </View>
+                <View style={styles.engagementItem}>
+                  <TouchableOpacity onPress={handlePresentModalPress}>
+                    <SaveIcon width={20} height={20} color="#6A66FF" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.attendeesContainer}>
                 <Image
                   source={require('../assets/PersonImage.png')}
                   style={styles.attendeeAvatar}
@@ -142,14 +150,26 @@ const formatTime = (timeString) => {
                   source={require('../assets/PersonImage.png')}
                   style={[styles.attendeeAvatar, {marginLeft: -10}]}
                 />
-              </>
-            {/* )} */}
-            <Text style={styles.attendeeCount}>+40k</Text>
+                <Text style={styles.attendeeCount}>+40k</Text>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
-    </View>
-  );
+
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          index={1}
+          snapPoints={snapPoints}
+          backgroundStyle={styles.bottomSheetBackground}
+          handleIndicatorStyle={styles.bottomSheetIndicator}
+        >
+          <BottomSheetView style={styles.bottomSheetContent}>
+            <Text style={styles.bottomSheetText}>Hello from Bottom Sheet 👋</Text>
+            <Button title="Close" onPress={handleClosePress} />
+          </BottomSheetView>
+        </BottomSheetModal>
+      </>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -157,9 +177,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: '100%',
     borderRadius: 20,
+    borderWidth:1,
+    borderColor:"#F1F0FF",
     paddingVertical: 10,
     overflow: 'hidden',
-    elevation: 1,
+    // elevation: 1,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
@@ -274,6 +296,38 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'BricolageGrotesque_24pt-Regular',
+  },
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  bottomSheetContent: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  bottomSheetText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  bottomSheetBackground: {
+    backgroundColor: '#e8f4ff',
+    borderRadius: 25,
+  },
+  bottomSheetIndicator: {
+    backgroundColor: '#3498db',
+    width: 40,
+    height: 5,
   },
 });
 
