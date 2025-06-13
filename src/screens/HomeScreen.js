@@ -255,7 +255,7 @@ const HomeScreen = ({navigation}) => {
             <View style={{gap: 15}}>
               <FlatList
                 data={events}
-                renderItem={({item}) => <EventCard item={item} />}
+                renderItem={({item}) => <EventCard item={item} navigation={navigation} />}
                 keyExtractor={item => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}

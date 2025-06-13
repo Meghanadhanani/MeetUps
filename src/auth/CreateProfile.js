@@ -76,7 +76,7 @@ const CreateProfile = ({navigation}) => {
         setTimeout(() => {
           navigation.reset({
             index: 0,
-            routes: [{name: 'HomeScreen'}],
+            routes: [{name: 'BottomTabs'}],
           });
         }, 100);
       }

@@ -1,13 +1,29 @@
 import {Animated, StyleSheet, Text, View, Image} from 'react-native';
 import React, {useEffect, useRef} from 'react';
+import {StorageUtils} from '../utils/StorageUtils';
 
 const SplashScreen = ({navigation}) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('SignupScreen');
-    }, 800);
-
-    return () => clearTimeout(timer);
+    const checkUserData = async () => {
+      try {
+        const userData = await StorageUtils.getItem('userData');
+        console.log("userdataaaaaaa",userData);
+        
+        if (userData) {
+          setTimeout(() => {
+            navigation.replace('BottomTabs');
+          },800);
+        } else {
+          setTimeout(() => {
+            navigation.replace('SignupScreen');
+          }, 10000);
+        }
+      } catch (error) {
+        console.error('Error reading user data', e);
+        navigation.replace('SignupScreen');
+      }
+    };
+    checkUserData();
   }, []);
 
   return (

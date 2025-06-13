@@ -2,8 +2,10 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import BackBtnIcon from '../assets/svgs/BackBtn.svg';
 import ShareBtnIcon from '../assets/svgs/ShareBtn.svg';
+import {useNavigation} from '@react-navigation/native';
 
-const CustomBackBtn = ({navigation, iconName = []}) => {
+const CustomBackBtn = ({iconName = [], title}) => {
+  const navigation = useNavigation();
   return (
     <View
       style={{
@@ -13,10 +15,10 @@ const CustomBackBtn = ({navigation, iconName = []}) => {
         paddingHorizontal: 16,
         justifyContent: 'space-between',
         flexDirection: 'row',
-        alignItems:"center"
+        alignItems: 'center',
       }}>
       <TouchableOpacity
-        onPress={navigation}
+onPress={()=> navigation.goBack()}
         style={{
           width: 45,
           height: '100%',
@@ -24,9 +26,16 @@ const CustomBackBtn = ({navigation, iconName = []}) => {
           justifyContent: 'center',
         }}>
         <BackBtnIcon />
-    
       </TouchableOpacity>
-          <Text style={{textAlign:"center", fontSize:16, fontFamily:"BricolageGrotesque_24pt", fontWeight:500}}>Musica Show 1.0</Text>
+      <Text
+        style={{
+          textAlign: 'center',
+          fontSize: 16,
+          fontFamily: 'BricolageGrotesque_24pt',
+          fontWeight: 600,
+        }}>
+        {title}
+      </Text>
       <TouchableOpacity
         style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
         {
@@ -49,7 +58,6 @@ const CustomBackBtn = ({navigation, iconName = []}) => {
 export default CustomBackBtn;
 
 const styles = StyleSheet.create({});
-
 
 //   <CustomBackBtn
 //         navigation={() => console.log('reeeeeeee')}

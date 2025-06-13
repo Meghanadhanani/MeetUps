@@ -114,7 +114,7 @@ const LoginScreen = ({navigation}) => {
           
           navigation.reset({
             index: 0,
-            routes: [{name: "HomeScreen"}],
+            routes: [{name: "BottomTabs"}],
           });
         }, 100);
       }
@@ -178,7 +178,7 @@ const LoginScreen = ({navigation}) => {
           
           navigation.reset({
             index: 0,
-            routes: [{name: "HomeScreen"}],
+            routes: [{name: "BottomTabs"}],
           });
         }, 100);}
       console.log('Response:', response.data);

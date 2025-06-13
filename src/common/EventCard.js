@@ -9,12 +9,13 @@ import VerifiedIcon from '../assets/svgs/Verified.svg';
 import DotsIcon from '../assets/svgs/3Dots.svg';
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
-const EventCard = ({item}) => {
+const EventCard = ({item, navigation}) => {
 
 const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['65%', '75%', '80%'], []);
-
+// const navigation =useNavigation()
   const handlePresentModalPress = useCallback(() => {
     console.log("Opening sheet...");
     bottomSheetModalRef.current?.present();
@@ -44,9 +45,11 @@ const formatTime = (timeString) => {
     hour12: true,
   }) + ' onwards';
 };
-
+const handlePress = () => {
+  navigation.navigate('EventDetailScreen', {event: item});
+};
   return (
-    <>
+    <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
       <View style={styles.cardContainer}>
           <View style={styles.userHeader}>
             <View style={styles.userInfo}>
@@ -83,7 +86,7 @@ const formatTime = (timeString) => {
             </View>
 
             {/* <View style={styles.tagContainer}> */}
-              <ScrollView horizontal contentContainerStyle={styles.tagContainer}>
+              <ScrollView horizontal contentContainerStyle={styles.tagContainer} showsHorizontalScrollIndicator={false}  >
 
               {item.tags &&
                 item.tags.map((tag, index) => (
@@ -132,7 +135,8 @@ const formatTime = (timeString) => {
                   <Text style={styles.engagementText}>{'14k'}</Text>
                 </View>
                 <View style={styles.engagementItem}>
-                  <TouchableOpacity onPress={handlePresentModalPress}>
+                  <TouchableOpacity onPress={handlePresentModalPress}   hitSlop={20}
+                  >
                     <SaveIcon width={20} height={20} color="#6A66FF" />
                   </TouchableOpacity>
                 </View>
@@ -168,7 +172,7 @@ const formatTime = (timeString) => {
             <Button title="Close" onPress={handleClosePress} />
           </BottomSheetView>
         </BottomSheetModal>
-      </>
+    </TouchableOpacity>
     );
 };
 
