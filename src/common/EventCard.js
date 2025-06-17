@@ -10,6 +10,7 @@ import DotsIcon from '../assets/svgs/3Dots.svg';
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import { formatDate, formatTime } from '../utils/UtilFunctions';
 
 const EventCard = ({item, navigation}) => {
 
@@ -25,28 +26,28 @@ const bottomSheetModalRef = useRef(null);
     bottomSheetModalRef.current?.dismiss();
   }, []);
 
-  const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-};
+//   const formatDate = (dateString) => {
+//   const date = new Date(dateString);
+//   return date.toLocaleDateString('en-GB', {
+//     day: 'numeric',
+//     month: 'long',
+//     year: 'numeric',
+//   });
+// };
 
-const formatTime = (timeString) => {
-  const [hours, minutes] = timeString.split(':');
-  const date = new Date();
-  date.setHours(hours);
-  date.setMinutes(minutes);
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  }) + ' onwards';
-};
+// const formatTime = (timeString) => {
+//   const [hours, minutes] = timeString.split(':');
+//   const date = new Date();
+//   date.setHours(hours);
+//   date.setMinutes(minutes);
+//   return date.toLocaleTimeString('en-US', {
+//     hour: 'numeric',
+//     minute: '2-digit',
+//     hour12: true,
+//   }) + ' onwards';
+// };
 const handlePress = () => {
-  navigation.navigate('EventDetailScreen', {event: item});
+  navigation.navigate('EventDetailScreen', {event: item.id});
 };
   return (
     <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
@@ -59,7 +60,7 @@ const handlePress = () => {
               />
               <View>
                 <View style={styles.usernameContainer}>
-                  <Text style={styles.username}>Jack_Drums</Text>
+                  <Text style={styles.username}>{item.host_names}</Text>
                   <VerifiedIcon width={16} height={16} />
                 </View>
               </View>
@@ -263,8 +264,8 @@ const styles = StyleSheet.create({
   },
   detailText: {
     color: '#4A4A4A',
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: 500,
     fontFamily: 'BricolageGrotesque_24pt-Regular',
   },
   engagementContainer: {

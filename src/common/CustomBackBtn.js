@@ -10,7 +10,7 @@ const CustomBackBtn = ({iconName = [], title}) => {
     <View
       style={{
         backgroundColor: '#FFFFFF',
-        height: 60,
+        height: 55,
         width: '100%',
         paddingHorizontal: 16,
         justifyContent: 'space-between',
@@ -18,9 +18,10 @@ const CustomBackBtn = ({iconName = [], title}) => {
         alignItems: 'center',
       }}>
       <TouchableOpacity
-onPress={()=> navigation.goBack()}
+        onPress={() => navigation.goBack()}
         style={{
-          width: 45,
+          width: "33.3%",
+
           height: '100%',
           alignItems: 'flex-start',
           justifyContent: 'center',
@@ -29,15 +30,22 @@ onPress={()=> navigation.goBack()}
       </TouchableOpacity>
       <Text
         style={{
+          width: "33.3%",
+          fontFamily:"BricolageGrotesque_24pt-Regular",
+          fontSize:16,
+          fontWeight:600,
           textAlign: 'center',
-          fontSize: 16,
-          fontFamily: 'BricolageGrotesque_24pt',
-          fontWeight: 600,
         }}>
         {title}
       </Text>
       <TouchableOpacity
-        style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
+        style={{
+                    width: "33.3%",
+          height: '100%',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+         
+        }}>
         {
           // Array.isArray(iconName) &&
           iconName.map((item, index) => (

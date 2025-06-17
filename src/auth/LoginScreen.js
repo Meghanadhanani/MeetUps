@@ -1,8 +1,6 @@
-import {
-  GoogleSignin
-} from '@react-native-google-signin/google-signin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -17,11 +15,12 @@ import EmailIcon from '../assets/svgs/Email.svg';
 import FrameIcon from '../assets/svgs/Frame1.svg';
 import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
 import InstaIcon from '../assets/svgs/SocialIcons.svg';
-import { LOGIN_API, SIGNWITHGOOGLE_API } from '../utils/ApiHelper';
-import { StorageUtils } from '../utils/StorageUtils';
-import { showToastMSGError } from '../utils/ToastMessages';
-import { emailValidater } from '../utils/validations/emailValidater';
-import { passwordValidater } from '../utils/validations/passwordValidater';
+import {LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
+import {StorageUtils} from '../utils/StorageUtils';
+import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
+import {emailValidater} from '../utils/validations/emailValidater';
+import {passwordValidater} from '../utils/validations/passwordValidater';
+import Loader from '../utils/Loader';
 const LoginScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
@@ -58,7 +57,7 @@ const LoginScreen = ({navigation}) => {
       setEmail({...email, error: errorMessage});
       showToastMSGError(errorMessage);
       return false;
-    } 
+    }
     if (!isEmailValid) {
       const errorMessage = 'Please enter a valid email address';
       setEmailError(true);
@@ -73,15 +72,16 @@ const LoginScreen = ({navigation}) => {
       setEmail({...email, error: errorMessage});
       showToastMSGError(errorMessage);
       return false;
-    } 
+    }
     if (!isPasswordValid) {
-      const errorMessagePass = 'Password must be at least 2 characters with numbers and letters';
+      const errorMessagePass =
+        'Password must be at least 2 characters with numbers and letters';
       setPasswordError(true);
       setPassword({
         ...password,
-        error: errorMessagePass
+        error: errorMessagePass,
       });
-      showToastMSGError(errorMessagePass)
+      showToastMSGError(errorMessagePass);
       return false;
     }
 
@@ -93,6 +93,7 @@ const LoginScreen = ({navigation}) => {
     if (checkValidation() === false) {
       return;
     }
+        setLoading(true);
     try {
       const data = {
         email: email.value,
@@ -104,19 +105,19 @@ const LoginScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Login Data:', data); 
+      console.log('Login Data:', data);
       console.log('Login API URL:', LOGIN_API);
 
       const response = await axios.post(LOGIN_API, data, config);
       if (response.status === 200) {
         await StorageUtils.setItem('userData', response.data);
+        showToastMSGNormal(response.data.message);
         setTimeout(() => {
-          
           navigation.reset({
             index: 0,
-            routes: [{name: "BottomTabs"}],
+            routes: [{name: 'BottomTabs'}],
           });
-        }, 100);
+        }, 2000);
       }
       console.log('Response:', response);
     } catch (error) {
@@ -175,12 +176,12 @@ const LoginScreen = ({navigation}) => {
       if (response.status === 200) {
         await StorageUtils.setItem('userData', response.data);
         setTimeout(() => {
-          
           navigation.reset({
             index: 0,
-            routes: [{name: "BottomTabs"}],
+            routes: [{name: 'BottomTabs'}],
           });
-        }, 100);}
+        }, 100);
+      }
       console.log('Response:', response.data);
     } catch (error) {
       console.error('SSO Login Error:', error.response?.data || error.message);
@@ -216,9 +217,7 @@ const LoginScreen = ({navigation}) => {
               <EmailIcon width={22} height={22} />
             </View>
           </View>
-          <View style={styles.errorCpontainer}>
-         
-</View>
+          <View style={styles.errorCpontainer}></View>
           <View style={styles.inputContainer}>
             <TextInput
               ref={passwordInputRef}
@@ -237,7 +236,7 @@ const LoginScreen = ({navigation}) => {
               <FrameIcon width={22} height={22} />
             </TouchableOpacity>
           </View>
-         
+
           <TouchableOpacity style={styles.forgotPasswordContainer}>
             <Text style={styles.forgotPassword}>Forgot password?</Text>
           </TouchableOpacity>
@@ -248,7 +247,8 @@ const LoginScreen = ({navigation}) => {
 
           <View style={styles.noAccountContainer}>
             <Text style={styles.noAccountText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SignupScreen')}>
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
@@ -272,6 +272,7 @@ const LoginScreen = ({navigation}) => {
             <Text style={styles.instagramButtonText}>Sign in with Google</Text>
           </TouchableOpacity>
         </View>
+          {loading && <Loader />}
       </ScrollView>
     </SafeAreaView>
   );
@@ -300,13 +301,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   errorText: {
-    color: "#FF0000",
+    color: '#FF0000',
     fontSize: 12,
   },
-  errorCpontainer:{
+  errorCpontainer: {
     width: '100%',
     flexDirection: 'row',
-justifyContent:'flex-start'
+    justifyContent: 'flex-start',
   },
   inputContainer: {
     width: '100%',

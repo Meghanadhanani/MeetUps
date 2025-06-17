@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     fontWeight: '600',
-    fontFamily: 'BricolageGrotesque_24pt',
+    fontFamily: 'BricolageGrotesque_24pt-Regular',
   },
   image1: {
     height: '100%',
