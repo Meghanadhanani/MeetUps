@@ -1,4 +1,11 @@
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useCallback, useState} from 'react';
 import CustomBackBtn from '../common/CustomBackBtn';
 import ShareBtn from '../assets/svgs/ShareBtn.svg';
@@ -76,7 +83,7 @@ const EventDetailScreen = ({route}) => {
       />
       <ScrollView
         style={{paddingHorizontal: 16}}
-        contentContainerStyle={{gap: 16, paddingVertical: 16}}
+        contentContainerStyle={{gap: 16, paddingTop: 16, paddingBottom: 80}}
         onScroll={handleScroll}
         scrollEventThrottle={16}>
         <View
@@ -388,19 +395,17 @@ const EventDetailScreen = ({route}) => {
             Hosts
           </Text>
           <View style={styles.divider} />
-      <View style={{ gap: 10 }}>
-  {events?.host_names?.map((hostName, index) => (
-    <View key={index} style={styles.hostRow}>
-      <Image
-        source={require('../assets/PersonImage.png')} // Fallback image
-        style={styles.hostImage}
-      />
-      <Text style={styles.hostName}>{hostName}</Text>
-    </View>
-  ))}
-</View>
-
-
+          <View style={{gap: 10}}>
+            {events?.host_names?.map((hostName, index) => (
+              <View key={index} style={styles.hostRow}>
+                <Image
+                  source={require('../assets/PersonImage.png')} // Fallback image
+                  style={styles.hostImage}
+                />
+                <Text style={styles.hostName}>{hostName}</Text>
+              </View>
+            ))}
+          </View>
         </View>
         <View
           style={{
@@ -418,6 +423,38 @@ const EventDetailScreen = ({route}) => {
           </Text>
         </View>
       </ScrollView>
+      <View
+        style={{
+          position: 'absolute',
+          backgroundColor: '#FFFFFF',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingVertical: 10,
+          bottom: 0,
+          width: '100%',
+          elevation: 10,
+        }}>
+        <View style={{width: '40%'}}>
+          <Text style={{color: '#4A4A4A', fontSize: 14, fontWeight: 400}}>
+            Ticket Price
+          </Text>
+          <Text style={{color: '#2A2A2A', fontSize: 20, fontWeight: 500}}>
+            ₹ {events.ticket_price}
+          </Text>
+        </View>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          style={{
+            backgroundColor: '#6D5CFF',
+            paddingVertical: 12,
+            paddingHorizontal: 30,
+            borderRadius: 8,
+          }}>
+          <Text style={{color: '#FFFFFF', fontSize: 16}}>Book Tickets</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -435,25 +472,26 @@ const styles = StyleSheet.create({
     color: '#6A6A6A',
     fontWeight: 500,
     fontFamily: 'Savate-Black',
-  },hostRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 10, // or use marginRight if 'gap' not supported
-},
+  },
+  hostRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10, // or use marginRight if 'gap' not supported
+  },
 
-hostImage: {
-  width: 40,
-  height: 40,
-  borderRadius: 20,
-  borderWidth: 2,
-  borderColor: '#fff',
-},
+  hostImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
 
-hostName: {
-  fontSize: 14,
-  color: '#4A4A4A',
-  fontFamily: 'BricolageGrotesque_24pt-Regular', // Or any other working font
-},
+  hostName: {
+    fontSize: 14,
+    color: '#4A4A4A',
+    fontFamily: 'BricolageGrotesque_24pt-Regular', // Or any other working font
+  },
 
   divider: {borderColor: '#F1F0FF', borderWidth: 0.5},
   detailsSectionCon: {width: '48%'},
