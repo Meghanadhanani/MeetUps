@@ -50,7 +50,7 @@ const handlePress = () => {
   navigation.navigate('EventDetailScreen', {event: item.id});
 };
   return (
-    <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
+    <TouchableOpacity activeOpacity={0.9} onPress={handlePress} style={{marginBottom:15}}>
       <View style={styles.cardContainer}>
           <View style={styles.userHeader}>
             <View style={styles.userInfo}>

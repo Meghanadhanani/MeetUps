@@ -107,11 +107,12 @@ const CustomBackBtn = ({iconName = [], title}) => {
       </TouchableOpacity>
        <Text
         style={{
-          width: "33.3%",
+          // width: "33.3%",
           fontFamily:"BricolageGrotesque_24pt-Regular",
           fontSize:16,
           fontWeight:600,
           textAlign: 'center',
+          // backgroundColor:"red"
         }}>
         {title}
       </Text>

@@ -10,3 +10,4 @@ export const SECURE_PASSWORD_API = BASEURL + 'secure-password';
 export const CREATE_PROFILE_API = BASEURL + 'create-profile';
 export const GET_EVENTLIST_API = BASEURL + 'getEvent';
 export const GET_EVENTLIST_BYID_API = BASEURL + 'getEvent';
+export const CREATE_EVENT_API = BASEURL + 'createEvent';
