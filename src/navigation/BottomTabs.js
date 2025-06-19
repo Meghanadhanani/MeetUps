@@ -225,6 +225,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const {width} = Dimensions.get('window');
 const TAB_WIDTH = (width - 50) / 2; // 25 margin on both sides
@@ -340,7 +341,7 @@ const BottomTabNavigator = () => {
         },
       })}>
       <Tab.Screen name="Upcoming Events" component={HomeScreen} />
-      <Tab.Screen name="Past Events" component={OnboardingScreen1} />
+      <Tab.Screen name="ProfileScreen" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

@@ -1,5 +1,13 @@
-import {Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, { useCallback, useMemo, useRef } from 'react';
+import {
+  Button,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useCallback, useMemo, useRef} from 'react';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
 import SaveIcon from '../assets/svgs/SaveIcon.svg';
 import TimerIcon from '../assets/svgs/TimerIcon.svg';
@@ -7,18 +15,21 @@ import LocationIcon from '../assets/svgs/LocationIcon.svg';
 import CommentIcon from '../assets/svgs/CommentICon.svg';
 import VerifiedIcon from '../assets/svgs/Verified.svg';
 import DotsIcon from '../assets/svgs/3Dots.svg';
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
-import { formatDate, formatTime } from '../utils/UtilFunctions';
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
+import {formatDate, formatTime} from '../utils/UtilFunctions';
 
 const EventCard = ({item, navigation}) => {
-
-const bottomSheetModalRef = useRef(null);
+  const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['65%', '75%', '80%'], []);
-// const navigation =useNavigation()
+  // const navigation =useNavigation()
   const handlePresentModalPress = useCallback(() => {
-    console.log("Opening sheet...");
+    console.log('Opening sheet...');
     bottomSheetModalRef.current?.present();
   }, []);
 
@@ -26,155 +37,164 @@ const bottomSheetModalRef = useRef(null);
     bottomSheetModalRef.current?.dismiss();
   }, []);
 
-//   const formatDate = (dateString) => {
-//   const date = new Date(dateString);
-//   return date.toLocaleDateString('en-GB', {
-//     day: 'numeric',
-//     month: 'long',
-//     year: 'numeric',
-//   });
-// };
+  //   const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('en-GB', {
+  //     day: 'numeric',
+  //     month: 'long',
+  //     year: 'numeric',
+  //   });
+  // };
 
-// const formatTime = (timeString) => {
-//   const [hours, minutes] = timeString.split(':');
-//   const date = new Date();
-//   date.setHours(hours);
-//   date.setMinutes(minutes);
-//   return date.toLocaleTimeString('en-US', {
-//     hour: 'numeric',
-//     minute: '2-digit',
-//     hour12: true,
-//   }) + ' onwards';
-// };
-const handlePress = () => {
-  navigation.navigate('EventDetailScreen', {event: item.id});
-};
+  // const formatTime = (timeString) => {
+  //   const [hours, minutes] = timeString.split(':');
+  //   const date = new Date();
+  //   date.setHours(hours);
+  //   date.setMinutes(minutes);
+  //   return date.toLocaleTimeString('en-US', {
+  //     hour: 'numeric',
+  //     minute: '2-digit',
+  //     hour12: true,
+  //   }) + ' onwards';
+  // };
+  const handlePress = () => {
+    navigation.navigate('EventDetailScreen', {event: item.id});
+  };
   return (
-    <TouchableOpacity activeOpacity={0.9} onPress={handlePress} style={{marginBottom:15}}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={handlePress}
+      style={{marginBottom: 15}}>
       <View style={styles.cardContainer}>
-          <View style={styles.userHeader}>
-            <View style={styles.userInfo}>
+        <View style={styles.userHeader}>
+          <View style={styles.userInfo}>
+            <Image
+              source={require('../assets/PersonImage.png')}
+              style={styles.userAvatar}
+            />
+            <View>
+              <View style={styles.usernameContainer}>
+                <Text style={styles.username}>{item.host_names}</Text>
+                <VerifiedIcon width={16} height={16} />
+              </View>
+            </View>
+          </View>
+          <TouchableOpacity>
+            <Text style={styles.moreOptions}>⋮</Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{height: 1, backgroundColor: '#F1F0FF', marginVertical: 10}}
+        />
+        <View
+          style={{
+            paddingHorizontal: 10,
+            justifyContent: 'space-between',
+            gap: 10,
+          }}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={require('../assets/UpcomingEventImage.png')}
+              style={styles.eventImage}
+              resizeMode="cover"
+            />
+          </View>
+
+          {/* <View style={styles.tagContainer}> */}
+          <ScrollView
+            horizontal
+            contentContainerStyle={styles.tagContainer}
+            showsHorizontalScrollIndicator={false}>
+            {item.tags &&
+              item.tags.map((tag, index) => (
+                <View key={index} style={styles.tag}>
+                  <Text style={styles.tagText}>{tag}</Text>
+                </View>
+              ))}
+          </ScrollView>
+          {/* </View> */}
+
+          <Text style={styles.eventTitle}>{item.event_name}</Text>
+
+          <View style={styles.eventDetails}>
+            <View style={styles.detailItem}>
+              <TimerIcon width={16} height={16} color="#6A66FF" />
+              <Text style={styles.detailText}>
+                {formatDate(item.event_date) || '4 March, 2025'} |{' '}
+                {formatTime(item.event_time) || '9 AM onwards'}
+              </Text>
+            </View>
+            <View style={styles.detailItem}>
+              <LocationIcon width={16} height={16} color="#6A66FF" />
+              <Text style={styles.detailText}>
+                {item.location || 'Square Game Hub'}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.engagementContainer}>
+            <View
+              style={{
+                width: '50%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={styles.engagementItem}>
+                <FillHeartIcon
+                  width={20}
+                  height={20}
+                  color="#6A66FF"
+                  // fill="#6A66FF"
+                />
+                <Text style={styles.engagementText}>{'476k'}</Text>
+              </View>
+              <View style={styles.engagementItem}>
+                <CommentIcon width={20} height={20} color="#6A66FF" />
+                <Text style={styles.engagementText}>{'14k'}</Text>
+              </View>
+              <View style={styles.engagementItem}>
+                <TouchableOpacity
+                  onPress={handlePresentModalPress}
+                  hitSlop={20}>
+                  <SaveIcon width={20} height={20} color="#6A66FF" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.attendeesContainer}>
               <Image
                 source={require('../assets/PersonImage.png')}
-                style={styles.userAvatar}
+                style={styles.attendeeAvatar}
               />
-              <View>
-                <View style={styles.usernameContainer}>
-                  <Text style={styles.username}>{item.host_names}</Text>
-                  <VerifiedIcon width={16} height={16} />
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.moreOptions}>⋮</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{height: 1, backgroundColor: '#F1F0FF', marginVertical: 10}}
-          />
-          <View
-            style={{
-              paddingHorizontal: 10,
-              justifyContent: 'space-between',
-              gap: 10,
-            }}>
-            <View style={styles.imageContainer}>
               <Image
-                source={require('../assets/UpcomingEventImage.png')}
-                style={styles.eventImage}
-                resizeMode="cover"
+                source={require('../assets/PersonImage.png')}
+                style={[styles.attendeeAvatar, {marginLeft: -10}]}
               />
-            </View>
-
-            {/* <View style={styles.tagContainer}> */}
-              <ScrollView horizontal contentContainerStyle={styles.tagContainer} showsHorizontalScrollIndicator={false}  >
-
-              {item.tags &&
-                item.tags.map((tag, index) => (
-                  <View key={index} style={styles.tag}>
-                    <Text style={styles.tagText}>{tag}</Text>
-                  </View>
-                ))}
-                </ScrollView>
-            {/* </View> */}
-
-            <Text style={styles.eventTitle}>{item.event_name}</Text>
-
-            <View style={styles.eventDetails}>
-              <View style={styles.detailItem}>
-                <TimerIcon width={16} height={16} color="#6A66FF" />
-                <Text style={styles.detailText}>
-                  {formatDate(item.event_date) || '4 March, 2025'} | {formatTime(item.event_time) || '9 AM onwards'}
-                </Text>
-              </View>
-              <View style={styles.detailItem}>
-                <LocationIcon width={16} height={16} color="#6A66FF" />
-                <Text style={styles.detailText}>
-                  {item.location || 'Square Game Hub'}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.engagementContainer}>
-              <View
-                style={{
-                  width: '50%',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <View style={styles.engagementItem}>
-                  <FillHeartIcon
-                    width={20}
-                    height={20}
-                    color="#6A66FF"
-                    // fill="#6A66FF"
-                  />
-                  <Text style={styles.engagementText}>{'476k'}</Text>
-                </View>
-                <View style={styles.engagementItem}>
-                  <CommentIcon width={20} height={20} color="#6A66FF" />
-                  <Text style={styles.engagementText}>{'14k'}</Text>
-                </View>
-                <View style={styles.engagementItem}>
-                  <TouchableOpacity onPress={handlePresentModalPress}   hitSlop={20}
-                  >
-                    <SaveIcon width={20} height={20} color="#6A66FF" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View style={styles.attendeesContainer}>
-                <Image
-                  source={require('../assets/PersonImage.png')}
-                  style={styles.attendeeAvatar}
-                />
-                <Image
-                  source={require('../assets/PersonImage.png')}
-                  style={[styles.attendeeAvatar, {marginLeft: -10}]}
-                />
-                <Image
-                  source={require('../assets/PersonImage.png')}
-                  style={[styles.attendeeAvatar, {marginLeft: -10}]}
-                />
-                <Text style={styles.attendeeCount}>+40k</Text>
-              </View>
+              <Image
+                source={require('../assets/PersonImage.png')}
+                style={[styles.attendeeAvatar, {marginLeft: -10}]}
+              />
+              <Text style={styles.attendeeCount}>+40k</Text>
             </View>
           </View>
         </View>
+      </View>
 
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={1}
-          snapPoints={snapPoints}
-          backgroundStyle={styles.bottomSheetBackground}
-          handleIndicatorStyle={styles.bottomSheetIndicator}
-        >
-          <BottomSheetView style={styles.bottomSheetContent}>
-            <Text style={styles.bottomSheetText}>Hello from Bottom Sheet 👋</Text>
-            <Button title="Close" onPress={handleClosePress} />
-          </BottomSheetView>
-        </BottomSheetModal>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={1}
+        snapPoints={snapPoints}
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.bottomSheetIndicator}>
+        <BottomSheetView style={styles.bottomSheetContent}>
+          <Text style={styles.bottomSheetText}>Bottom Sheet</Text>
+          {/* <TouchableOpacity onPress={handleClosePress} style={{backgroundColor:"#6D5CFF", width:"100%", borderRadius:10, paddingVertical:10}}>
+              <Text style={{fontSize:20, color:"#fff",textAlign:"center"}}>Close</Text>
+            </TouchableOpacity> */}
+          {/* <Button title="Close" onPress={handleClosePress} color={"#6D5CFF"}/> */}
+        </BottomSheetView>
+      </BottomSheetModal>
     </TouchableOpacity>
-    );
+  );
 };
 
 const styles = StyleSheet.create({
@@ -182,8 +202,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: '100%',
     borderRadius: 20,
-    borderWidth:1,
-    borderColor:"#F1F0FF",
+    borderWidth: 1,
+    borderColor: '#F1F0FF',
     paddingVertical: 10,
     overflow: 'hidden',
     // elevation: 1,
@@ -320,17 +340,18 @@ const styles = StyleSheet.create({
   bottomSheetContent: {
     padding: 20,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   bottomSheetText: {
     fontSize: 18,
     marginBottom: 20,
   },
   bottomSheetBackground: {
-    backgroundColor: '#e8f4ff',
+    backgroundColor: '#ccc',
     borderRadius: 25,
   },
   bottomSheetIndicator: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#6D5CFF',
     width: 40,
     height: 5,
   },

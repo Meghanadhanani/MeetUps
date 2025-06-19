@@ -15,6 +15,7 @@ import BottomTabs from './BottomTabs';
 import CreateEventScreen from '../screens/CreateEventScreen';
 import CustomBackBtn from '../common/CustomBackBtn';
 import EventDetailScreen from '../screens/EventDetailScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -58,6 +59,7 @@ export default function AppNavigator() {
           />
           <Stack.Screen name="CreateProfile" component={CreateProfile} />
           <Stack.Screen name="CustomBackBtn" component={CustomBackBtn} />
+          <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
           {/* Add more screens here */}
         </Stack.Navigator>
       </NavigationContainer>
