@@ -37,7 +37,8 @@ export default function AppNavigator() {
           />
           <Stack.Screen
             name="EventDetailScreen"
-            component={EventDetailScreen} />
+            component={EventDetailScreen}
+          />
           <Stack.Screen
             name="OnboardingScreen2"
             component={OnboardingScreen2}
@@ -59,8 +60,7 @@ export default function AppNavigator() {
           />
           <Stack.Screen name="CreateProfile" component={CreateProfile} />
           <Stack.Screen name="CustomBackBtn" component={CustomBackBtn} />
-          <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
-          {/* Add more screens here */}
+          <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />

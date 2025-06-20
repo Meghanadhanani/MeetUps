@@ -24,6 +24,7 @@ import {GET_EVENTLIST_API} from '../utils/ApiHelper';
 import {useFocusEffect} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import { getUserToken } from '../utils/UtilFunctions';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -32,16 +33,22 @@ const HomeScreen = ({navigation}) => {
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
-  
+
   const handleSearch = () => {
     setQuery(input);
   };
 
   const GetEventList = async () => {
     try {
-      const resposne = await axios.get(GET_EVENTLIST_API);
+      const token = await getUserToken();
+      const resposne = await axios.get(GET_EVENTLIST_API, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`, // if needed
+        },
+      });
       console.log('resposne', resposne.data);
-      setEvents(resposne.data);
+      setEvents(resposne.data.sort((a, b) => b.id - a.id));
     } catch (error) {
       console.error('Error fetching event list:', error);
     }
@@ -95,7 +102,7 @@ const HomeScreen = ({navigation}) => {
     outputRange: ['#9ca2ff', '#F6F6F6'],
     extrapolate: 'clamp',
   });
-  
+
   const seatchIconBgColor = scrollY.interpolate({
     inputRange: [0, 80],
     outputRange: ['#9ca2ff', '#7975FF'],
@@ -233,8 +240,9 @@ const HomeScreen = ({navigation}) => {
                 </View>
               ))}
             </ScrollView>
-            
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={styles.sectionTitle}>Upcoming Events</Text>
               <View
                 style={{
@@ -255,7 +263,9 @@ const HomeScreen = ({navigation}) => {
             <View style={{gap: 15}}>
               <FlatList
                 data={events}
-                renderItem={({item}) => <EventCard item={item} navigation={navigation} />}
+                renderItem={({item}) => (
+                  <EventCard item={item} navigation={navigation} />
+                )}
                 keyExtractor={item => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}

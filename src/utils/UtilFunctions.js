@@ -1,5 +1,7 @@
 // utils/formatHelpers.js
 
+import { StorageUtils } from "./StorageUtils";
+
 export const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-GB', {
@@ -32,3 +34,13 @@ export const formatDescription = (description, expanded, limit = 150) => {
 
 
 
+
+export const getUserToken = async () => {
+  try {
+    const userData = await StorageUtils.getItem('userData');
+    return userData?.token || null;
+  } catch (error) {
+    console.error('Error getting user token:', error);
+    return null;
+  }
+};

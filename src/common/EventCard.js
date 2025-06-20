@@ -74,7 +74,7 @@ const EventCard = ({item, navigation}) => {
             />
             <View>
               <View style={styles.usernameContainer}>
-                <Text style={styles.username}>{item.host_names}</Text>
+                {/* <Text style={styles.username}>{item.host_names}</Text> */}
                 <VerifiedIcon width={16} height={16} />
               </View>
             </View>
