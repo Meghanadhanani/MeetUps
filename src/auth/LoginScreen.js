@@ -121,6 +121,7 @@ const LoginScreen = ({navigation}) => {
       }
       console.log('Response:', response);
     } catch (error) {
+      setLoading(false);
       showToastMSGError(error.response.data.error);
       console.log('Login Error:', error.response.data.error);
     }

@@ -18,7 +18,6 @@ import ClockIcon from '../assets/svgs/ClockBlueIcon.svg';
 import LanguageIcon from '../assets/svgs/Language.svg';
 import PetAllowanceIcon from '../assets/svgs/PetAllowanceIcon.svg';
 import BlueLogo from '../assets/svgs/LogoInBlue.svg';
-
 import LayoutIcon from '../assets/svgs/layoutIcon.svg';
 
 import AgeIcon from '../assets/svgs/AgeIcon.svg';
@@ -100,7 +99,6 @@ const EventDetailScreen = ({route}) => {
           <View
             style={{
               height: 360,
-              backgroundColor: 'red',
               borderRadius: 10,
               overflow: 'hidden',
             }}>
@@ -123,25 +121,22 @@ const EventDetailScreen = ({route}) => {
             style={{borderColor: '#F1F0FF', borderWidth: 0.5, width: '100%'}}
           />
           <View style={styles.attendeesContainer}>
-           <View style={{flexDirection:"row"}}>
-
-
-            <Image
-              source={require('../assets/PersonImage.png')}
-              style={styles.attendeeAvatar}
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                source={require('../assets/PersonImage.png')}
+                style={styles.attendeeAvatar}
               />
-            <Image
-              source={require('../assets/PersonImage.png')}
-              style={[styles.attendeeAvatar, {marginLeft: -10}]}
+              <Image
+                source={require('../assets/PersonImage.png')}
+                style={[styles.attendeeAvatar, {marginLeft: -10}]}
               />
-            
-              </View>
-{/* <View style={{justifyContent: 'center',width:"85%", backgroundColor:"pink"}}> */}
+            </View>
+            {/* <View style={{justifyContent: 'center',width:"85%", backgroundColor:"pink"}}> */}
 
             <Text style={styles.attendeeCount}>
               Hosted by {formatHostNames(events.host_names)}
             </Text>
-{/* </View> */}
+            {/* </View> */}
           </View>
         </View>
         <View style={styles.sectionCon}>
@@ -235,7 +230,7 @@ const EventDetailScreen = ({route}) => {
             Additional Details
           </Text>
           <View style={styles.divider} />
-          <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: 10}}>
+          <View style={{gap: 10}}>
             <View style={styles.detailsSectionCon}>
               <View
                 style={{
@@ -251,7 +246,7 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <LanguageIcon />
                 </View>
-                 <View style={styles.detailTextCon}>
+                <View style={styles.detailTextCon}>
                   <Text>Language</Text>
                   <Text>{events.language}</Text>
                 </View>
@@ -272,7 +267,7 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <ClockIcon />
                 </View>
-               <View style={styles.detailTextCon}>
+                <View style={styles.detailTextCon}>
                   <Text>Duration</Text>
                   <Text>{events.duration}</Text>
                 </View>
@@ -293,7 +288,7 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <SeatIcon />
                 </View>
-          <View style={styles.detailTextCon}>
+                <View style={styles.detailTextCon}>
                   <Text>Seating</Text>
                   <Text>{events.seating}</Text>
                 </View>
@@ -314,7 +309,7 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <LayoutIcon />
                 </View>
-                 <View style={styles.detailTextCon}>
+                <View style={styles.detailTextCon}>
                   <Text>Layout</Text>
                   <Text>{events.layout}</Text>
                 </View>
@@ -335,7 +330,7 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <PetAllowanceIcon />
                 </View>
-           <View style={styles.detailTextCon}>
+                <View style={styles.detailTextCon}>
                   <Text>Pet Allowance</Text>
                   <Text>{events.pet_allowance}</Text>
                 </View>
@@ -356,7 +351,7 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <AgeIcon />
                 </View>
-   <View style={styles.detailTextCon}>
+                <View style={styles.detailTextCon}>
                   <Text>Min. Age</Text>
                   <Text>{events.age_limit}</Text>
                 </View>
@@ -501,7 +496,7 @@ const styles = StyleSheet.create({
   },
 
   divider: {borderColor: '#F1F0FF', borderWidth: 0.5},
-  detailsSectionCon: {width: '48%' },
+  detailsSectionCon: {width: '100%'},
   detailsSectionCon1: {
     width: '48%',
     height: 180,
@@ -524,17 +519,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 500,
     fontFamily: 'BricolageGrotesque_24pt-Regular',
-    width:"80%"
-
+    width: '80%',
   },
-  detailTextCon:{justifyContent: 'space-between', width:"65%"},
+  detailTextCon: {justifyContent: 'space-between', width: '100%'},
   attendeesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     // backgroundColor:"red",
     //  flexWrap: 'wrap'
     // justifyContent:"space-between"
-    gap:10
+    gap: 10,
   },
   attendeeAvatar: {
     width: 28,
@@ -549,7 +543,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 500,
     fontFamily: 'BricolageGrotesque_24pt-Regular',
-    width:"81%",
+    width: '81%',
     // textAlign:"center",
     // backgroundColor:"pink"
   },

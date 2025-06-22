@@ -1,59 +1,5 @@
-// import React from 'react';
-// import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { useNavigation } from '@react-navigation/native';
-
-// const CreateEventScreen = () => {
-//   const navigation = useNavigation();
-
-//   const handleLogout = async () => {
-//     try {
-//       await AsyncStorage.removeItem('userData'); // remove saved user data
-//       navigation.replace('LoginScreen'); // navigate to login screen
-//     } catch (e) {
-//       console.error('Logout failed', e);
-//       Alert.alert('Error', 'Something went wrong while logging out.');
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>CreateEventScreen</Text>
-
-//       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-//         <Text style={styles.logoutText}>Logout</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// export default CreateEventScreen;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#FFFFFF',
-//     padding: 20,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   title: {
-//     fontSize: 18,
-//     marginBottom: 30,
-//   },
-//   logoutButton: {
-//     paddingVertical: 12,
-//     paddingHorizontal: 25,
-//     backgroundColor: '#6D5CFF',
-//     borderRadius: 8,
-//   },
-//   logoutText: {
-//     color: '#fff',
-//     fontSize: 16,
-//     fontWeight: '600',
-//   },
-// });
-
+import axios from 'axios';
+import React, {useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -64,116 +10,142 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
-import CustomBackBtn from '../common/CustomBackBtn';
-import ShareBtn from '../assets/svgs/ShareBtn.svg';
-import {CREATE_EVENT_API, GET_EVENTLIST_BYID_API} from '../utils/ApiHelper';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import axios from 'axios';
-import CalenderIcon from '../assets/svgs/Calender.svg';
-import LocationIcon from '../assets/svgs/LocationBlueIcon.svg';
-import ClockIcon from '../assets/svgs/ClockBlueIcon.svg';
-import LanguageIcon from '../assets/svgs/Language.svg';
-import PetAllowanceIcon from '../assets/svgs/PetAllowanceIcon.svg';
-import BlueLogo from '../assets/svgs/LogoInBlue.svg';
-import TagIcon from '../assets/svgs/TagIcon.svg';
-import PlusIcon from '../assets/svgs/PlusIcon.svg';
-import LayoutIcon from '../assets/svgs/layoutIcon.svg';
-import SeatIcon from '../assets/svgs/SeatIcon.svg';
-import LinkedInIcon from '../assets/svgs/LinkedIn.svg';
-import TwitterIcon from '../assets/svgs/TwitterIcon.svg';
-import UserNameIcon from '../assets/svgs/UserNameIcon.svg';
-import InstaIcon from '../assets/svgs/InstaIcon.svg';
-import PersonIcon from '../assets/svgs/UploadPersonIcon.svg';
+import {launchImageLibrary} from 'react-native-image-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import AgeIcon from '../assets/svgs/AgeIcon.svg';
-import RetryIcon from '../assets/svgs/RetryIcon.svg';
+import CalenderIcon from '../assets/svgs/Calender.svg';
 import CameraUploadIcon from '../assets/svgs/CameraUploadIcon.svg';
+import ClockIcon from '../assets/svgs/ClockBlueIcon.svg';
+import DeleteIcon from '../assets/svgs/DeleteIcon.svg';
+import InstaIcon from '../assets/svgs/InstaIcon.svg';
+import LanguageIcon from '../assets/svgs/Language.svg';
+import LayoutIcon from '../assets/svgs/layoutIcon.svg';
+import LinkedInIcon from '../assets/svgs/LinkedIn.svg';
+import LocationIcon from '../assets/svgs/LocationBlueIcon.svg';
+import LinkIcon from '../assets/svgs/Link.svg';
+import BlueLogo from '../assets/svgs/LogoInBlue.svg';
+import PetAllowanceIcon from '../assets/svgs/PetAllowanceIcon.svg';
+import PlusIcon from '../assets/svgs/PlusIcon.svg';
+import QRCodeIcon from '../assets/svgs/QRCodeIcon.svg';
+import RetryIcon from '../assets/svgs/RetryIcon.svg';
 import ReUploadCameraIcon from '../assets/svgs/ReUploadCameraIcon.svg';
 import RupeeIcon from '../assets/svgs/RupeeIcon.svg';
-import QRCodeIcon from '../assets/svgs/QRCodeIcon.svg';
-import DeleteIcon from '../assets/svgs/DeleteIcon.svg';
-import {
-  formatDate,
-  formatDescription,
-  formatTime,
-  getUserToken,
-} from '../utils/UtilFunctions';
-import {
-  showToastMSGError,
-  showToastMSGInfo,
-  showToastMSGWarning,
-} from '../utils/ToastMessages';
-import {StorageUtils} from '../utils/StorageUtils';
+import SeatIcon from '../assets/svgs/SeatIcon.svg';
+import TagIcon from '../assets/svgs/TagIcon.svg';
+import TwitterIcon from '../assets/svgs/TwitterIcon.svg';
+import PersonIcon from '../assets/svgs/UploadPersonIcon.svg';
+import UserNameIcon from '../assets/svgs/UserNameIcon.svg';
+import CrossIcon from '../assets/svgs/CrossIcon.svg';
+import CustomBackBtn from '../common/CustomBackBtn';
+import {CREATE_EVENT_API} from '../utils/ApiHelper';
+import {showToastMSGError, showToastMSGWarning} from '../utils/ToastMessages';
+import {getUserToken} from '../utils/UtilFunctions';
+// import {s} from 'react-native-size-matters';
 
-import {launchImageLibrary} from 'react-native-image-picker';
+const CloseIcon = () => <Text style={styles.closeIcon}>×</Text>;
 
 const CreateEventScreen = ({navigation}) => {
   const [eventName, setEventName] = useState();
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [hosts, setHosts] = useState([{id: Date.now()}]);
-  const [userToken, setUserToken] = useState();
+  const [isOnline, setIsOnline] = useState(false);
+  const [isFree, setIsFree] = useState(false);
+  const [description, setDescription] = useState('');
+  const [hosts, setHosts] = useState([
+    {id: 1, name: '', instagram: '', linkedin: '', twitter: ''},
+  ]);
+  const [address, setAddress] = useState('');
+  const [pet_allowance, setPetAllowance] = useState('');
+  const [language, setLanguage] = useState('');
+  const [age, setAge] = useState('');
+  const [seating, setSeating] = useState('');
+  const [layout, setLayout] = useState('');
+  const [duration, setDuration] = useState('');
+
+  const [hostName, setHostName] = useState('');
   const [bannerImage, setBannerImage] = useState(null);
+  const [location, setLocation] = useState('');
+  const [ticket_price, setTicketPrice] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [formattedDate, setFormattedDate] = useState('');
+  const [eventTags, setEventTags] = useState('');
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [apiDate, setApiDate] = useState(''); // YYYY-MM-DD format for backend
+  const [formattedTime, setFormattedTime] = useState('');
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+  const showTimePicker = () => setTimePickerVisibility(true);
+  const hideTimePicker = () => setTimePickerVisibility(false);
 
-const handleImageUpload = () => {
-  launchImageLibrary(
-    { mediaType: 'photo', quality: 1 },
-    response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.error('ImagePicker Error: ', response.errorMessage);
-      } else {
-        const asset = response.assets[0];
-        setBannerImage(asset); // ✅ Save whole object now
-        console.log('Selected Image:', asset);
-      }
-    },
-  );
-};
+  const handleConfirm = date => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
 
-  const addHost = () => {
-    if (hosts.length === 3) {
-      showToastMSGWarning('Limit Notice, You can add only one more host.');
-    }
-    if (hosts.length === 4) {
-      setHosts(prev => [...prev, {id: Date.now()}]);
-    } else if (hosts.length < 4) {
-      setHosts(prev => [...prev, {id: Date.now()}]);
-    } else if (hosts.length >= 5) {
-    }
+    const backendDate = `${year}-${month}-${day}`; // for backend
+    const displayDate = `${day}-${month}-${year}`; // for UI
+
+    setFormattedDate(displayDate); // Show DD-MM-YYYY to user
+    setApiDate(backendDate); // Send YYYY-MM-DD to backend
+    hideDatePicker();
   };
 
-  const removeHost = id => {
-    setHosts(prev => prev.filter(host => host.id !== id));
-  };
+  const handleTimeConfirm = time => {
+    let hours = time.getHours();
+    const minutes = String(time.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
 
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    hours = hours % 12;
+    hours = hours === 0 ? 12 : hours; // convert 0 to 12
+
+    const formatted = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+    setFormattedTime(formatted);
+    hideTimePicker();
+  };
 
   const CreateEventApi = async () => {
-   const token = await getUserToken();
-   
-    console.log('userrrrrrrr tokennnnnn', token); // ✅ now this will be correct
-    
+    const token = await getUserToken();
+    console.log('is enable ', isFree.toString());
+    console.log('is online ', isOnline.toString());
     const formData = new FormData();
-     formData.append("event_name", eventName)
-    formData.append('host_names', 'Meghana Dhanani');
-    formData.append('pet_allowance', 'No');
-    formData.append('description', 'This is a test event');
-    formData.append('event_date', '2025-06-18');
-    formData.append('event_time', '18:00');
-    formData.append('location', 'Ahmedabad');
-    formData.append('is_virtual', true);
-    formData.append('is_free', true);
-//    if (bannerImage) {
-//   formData.append('event_images', {
-//     uri: bannerImage.uri,
-//     type: bannerImage.type,
-//     name: bannerImage.fileName || 'banner.jpg',
-//   });
-// }
-
-    console.log("fffffffffffffiiiiiiiiiiiiiiiiiiiiiii",bannerImage);
+    formData.append('event_name', eventName);
+    hosts.forEach(host => {
+      formData.append('host_names', host.name);
+    });
+formData.append("duration", duration);
+    formData.append('age', age);
+    formData.append('language', language);
+    formData.append('seating', seating);
+    formData.append('layout', layout);
+    formData.append('address', address);
+    formData.append('event_tags', tags);
+    console.log('tags', tags);
     
+    formData.append('pet_allowance', pet_allowance);
+    formData.append('description', description);
+    formData.append('event_date', apiDate);
+    formData.append('event_time', formattedTime);
+
+    // formData.append('location ', 'https://meet.google.com/xyz-123'); // Or Zoom link etc.
+
+    formData.append('is_virtual', isOnline.toString());
+    formData.append('is_free', isFree.toString());
+    formData.append('ticket_price', isFree ? '0' : ticket_price); // Example price
+
+    if (isOnline) {
+      // For virtual event
+      formData.append('location', 'https://zoom.us/j/xyz123');
+    } else {
+      // For offline event – must be a JSON string
+      formData.append('location', address);
+    }
+
+    if (bannerImage) {
+      formData.append('eventImages', {
+        uri: bannerImage.uri,
+        type: bannerImage.type,
+        name: bannerImage.fileName || 'banner.jpg',
+      });
+    }
+
     try {
       const response = await axios.post(CREATE_EVENT_API, formData, {
         headers: {
@@ -183,18 +155,81 @@ const handleImageUpload = () => {
       });
       console.log('respones of create event api', response.data);
       if (response.status == 201) {
+        showToastMSGWarning('Event Created Successfully');
         navigation.navigate('BottomTabs');
       }
     } catch (error) {
       console.log('errrrrrrrrrrr', error.response.data);
-      showToastMSGError(error.response.data);
+      showToastMSGError(error.response.data.error);
     }
   };
-  // useEffect(() => {
-  //   CreateEventApi()
 
-  // }, [])
+  const handleImageUpload = () => {
+    launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.error('ImagePicker Error: ', response.errorMessage);
+      } else {
+        const asset = response.assets[0];
+        setBannerImage(asset);
+        console.log('Selected Image:', asset);
+      }
+    });
+  };
 
+  const addHost = () => {
+    if (hosts.length >= 5) {
+      showToastMSGWarning('You can add a maximum of 5 hosts.');
+      return;
+    }
+
+    if (hosts.length === 4) {
+      showToastMSGWarning('Limit Notice, you can add only one more host.');
+    }
+
+    setHosts(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        name: '',
+        instagram: '',
+        linkedin: '',
+        twitter: '',
+      },
+    ]);
+  };
+
+  const removeHost = id => {
+    setHosts(prev => prev.filter(host => host.id !== id));
+  };
+
+  const toggleSwitch = () => setIsOnline(previousState => !previousState);
+  const toggleSwitchFree = () => setIsFree(previousState => !previousState);
+
+  const [tags, setTags] = useState([]);
+  const [inputText, setInputText] = useState('');
+  const [isInputVisible, setIsInputVisible] = useState(false);
+
+  const removeTag = indexToRemove => {
+    setTags(tags.filter((_, index) => index !== indexToRemove));
+  };
+
+  const addTag = () => {
+    if (inputText.trim() && !tags.includes(inputText.trim().toLowerCase())) {
+      setTags([...tags, inputText.trim().toLowerCase()]);
+      setInputText('');
+      setIsInputVisible(false);
+    }
+  };
+
+  const handleInputSubmit = () => {
+    addTag();
+  };
+
+  const showInput = () => {
+    setIsInputVisible(true);
+  };
   return (
     <View style={styles.container}>
       <CustomBackBtn
@@ -202,7 +237,7 @@ const handleImageUpload = () => {
           {icon: <RetryIcon />, onPress: () => console.log('Share')},
           {icon: <DeleteIcon />, onPress: () => console.log('Settings')},
         ]}
-        // title={showTitle ? events.event_name : undefined}
+        onPress={() => navigation.goBack()}
       />
       <ScrollView
         style={{paddingHorizontal: 16}}
@@ -231,7 +266,7 @@ const handleImageUpload = () => {
                 <View
                   style={{
                     height: 360,
-           
+
                     borderRadius: 10,
                     overflow: 'hidden',
                     width: '100%',
@@ -242,15 +277,24 @@ const handleImageUpload = () => {
                     elevation: 10,
                   }}>
                   <Image
-                    source={{uri: bannerImage}}
+                    source={{uri: bannerImage.uri}}
                     style={{width: '100%', height: '100%'}}
                     // resizeMode="cover"
                   />
-                  <View style={{backgroundColor:"#FFFFFF",borderRadius:99, padding:10, zIndex:999, position: "absolute",bottom:5,right: 5, elevation: 1,borderColor: '#F1F0FF',
-                    borderWidth: 1,}}>
-
-
-                  <ReUploadCameraIcon />
+                  <View
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: 99,
+                      padding: 10,
+                      zIndex: 999,
+                      position: 'absolute',
+                      bottom: 5,
+                      right: 5,
+                      elevation: 1,
+                      borderColor: '#F1F0FF',
+                      borderWidth: 1,
+                    }}>
+                    <ReUploadCameraIcon />
                   </View>
                 </View>
               ) : (
@@ -313,7 +357,7 @@ const handleImageUpload = () => {
               Event Details
             </Text>
             <View style={styles.container1}>
-              <Text style={[styles.label, !isEnabled && styles.activeText]}>
+              <Text style={[styles.label, !isOnline && styles.activeText]}>
                 Offline
               </Text>
 
@@ -322,10 +366,10 @@ const handleImageUpload = () => {
                 thumbColor="#6D5CFF"
                 ios_backgroundColor="#ccc"
                 onValueChange={toggleSwitch}
-                value={isEnabled}
+                value={isOnline}
               />
 
-              <Text style={[styles.label, isEnabled && styles.activeText]}>
+              <Text style={[styles.label, isOnline && styles.activeText]}>
                 Online
               </Text>
             </View>
@@ -340,10 +384,22 @@ const handleImageUpload = () => {
               }}>
               <CalenderIcon />
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="DD-MM-YYYY"
-              placeholderTextColor="#A3A3A3"
+            <TouchableOpacity onPress={showDatePicker}>
+              <TextInput
+                style={styles.input}
+                placeholder="DD-MM-YYYY"
+                placeholderTextColor="#A3A3A3"
+                value={formattedDate} // This should now show the selected date
+                editable={false}
+              />
+            </TouchableOpacity>
+
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+              minimumDate={new Date()}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -355,10 +411,20 @@ const handleImageUpload = () => {
               }}>
               <ClockIcon />
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="HH:MM"
-              placeholderTextColor="#A3A3A3"
+            <TouchableOpacity onPress={showTimePicker} style={{flex: 1}}>
+              <TextInput
+                style={styles.input}
+                placeholder="HH:MM"
+                placeholderTextColor="#A3A3A3"
+                value={formattedTime}
+                editable={false}
+              />
+            </TouchableOpacity>
+            <DateTimePickerModal
+              isVisible={isTimePickerVisible}
+              mode="time"
+              onConfirm={handleTimeConfirm}
+              onCancel={hideTimePicker}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -368,28 +434,87 @@ const handleImageUpload = () => {
                 borderRadius: 12,
                 padding: 10,
               }}>
-              <LocationIcon />
+              {isOnline ? <LinkIcon /> : <LocationIcon />}
+              {/* <LocationIcon /> */}
             </View>
             <TextInput
               style={styles.input}
-              placeholder="Add Location"
+              placeholder={
+                isOnline
+                  ? 'Enter Online Event Link (https)'
+                  : 'Enter Event Location'
+              }
               placeholderTextColor="#A3A3A3"
+              value={address}
+              onChangeText={setAddress}
+              keyboardType={isOnline ? 'url' : 'default'}
+              autoCapitalize={isOnline ? 'none' : 'words'}
             />
           </View>
           <View style={styles.inputContainer}>
-            <View
-              style={{
-                backgroundColor: '#F5F6FF',
+            <View style={{ backgroundColor: '#F5F6FF',
                 borderRadius: 12,
-                padding: 10,
-              }}>
+                padding: 10,}}>
               <TagIcon />
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Event Tags"
-              placeholderTextColor="#A3A3A3"
-            />
+
+            <View style={styles.tagsContainer}>
+              {tags.length === 0 ? (
+                <TextInput
+                  style={styles.input}
+                  value={inputText}
+                  onChangeText={setInputText}
+                  onSubmitEditing={handleInputSubmit}
+                  placeholder="Event Tags"
+                  placeholderTextColor="#A3A3A3"
+                  returnKeyType="done"
+                />
+              ) : (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.tagsScrollContainer}>
+                  {tags.map((tag, index) => (
+                    <View key={index} style={styles.tag}>
+                      <Text style={styles.tagText}>#{tag}</Text>
+                      <TouchableOpacity
+                        style={styles.removeButton}
+                        onPress={() => removeTag(index)}>
+                        <CrossIcon />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+
+                  {isInputVisible ? (
+                    <TextInput
+                      style={styles.tagInput}
+                      value={inputText}
+                      onChangeText={setInputText}
+                      onSubmitEditing={handleInputSubmit}
+                      onBlur={() => {
+                        if (inputText.trim()) {
+                          addTag();
+                        } else {
+                          setIsInputVisible(false);
+                        }
+                      }}
+                      placeholder="tag name"
+                      placeholderTextColor="#A3A3A3"
+                      autoFocus
+                      returnKeyType="done"
+                    />
+                  ) : (
+                    tags.length >= 1 && (
+                      <TouchableOpacity
+                        style={styles.tag}
+                        onPress={showInput}>
+                        <PlusIcon />
+                      </TouchableOpacity>
+                    )
+                  )}
+                </ScrollView>
+              )}
+            </View>
           </View>
         </View>
         <View style={styles.sectionCon}>
@@ -409,7 +534,7 @@ const handleImageUpload = () => {
               Event Pricing
             </Text>
             <View style={styles.container1}>
-              <Text style={[styles.label, !isEnabled && styles.activeText]}>
+              <Text style={[styles.label, !isFree && styles.activeText]}>
                 Free
               </Text>
 
@@ -417,31 +542,37 @@ const handleImageUpload = () => {
                 trackColor={{false: '#E4E0FF', true: '#E4E0FF'}}
                 thumbColor="#6D5CFF"
                 ios_backgroundColor="#ccc"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={toggleSwitchFree}
+                value={isFree}
               />
 
-              <Text style={[styles.label, isEnabled && styles.activeText]}>
+              <Text style={[styles.label, isFree && styles.activeText]}>
                 Paid
               </Text>
             </View>
           </View>
           <View style={styles.divider} />
-          <View style={styles.inputContainer}>
-            <View
-              style={{
-                backgroundColor: '#F5F6FF',
-                borderRadius: 12,
-                padding: 10,
-              }}>
-              <RupeeIcon />
+          {isFree && (
+            <View style={styles.inputContainer}>
+              <View
+                style={{
+                  backgroundColor: '#F5F6FF',
+                  borderRadius: 12,
+                  padding: 10,
+                }}>
+                <RupeeIcon />
+              </View>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Ticket Price"
+                placeholderTextColor="#A3A3A3"
+                value={ticket_price}
+                onChangeText={setTicketPrice}
+                keyboardType="numeric"
+              />
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Ticket Price"
-              placeholderTextColor="#A3A3A3"
-            />
-          </View>
+          )}
           <View style={styles.inputContainer}>
             <View
               style={{
@@ -478,7 +609,9 @@ const handleImageUpload = () => {
             placeholderTextColor="#A3A3A3"
             multiline={true}
             numberOfLines={4} // optional, defines initial height
-            textAlignVertical="top" // aligns text at the top
+            textAlignVertical="top"
+            value={description}
+            onChangeText={setDescription}
           />
         </View>
         <View style={styles.sectionCon}>
@@ -506,6 +639,8 @@ const handleImageUpload = () => {
               style={styles.input}
               placeholder="Language"
               placeholderTextColor="#A3A3A3"
+              value={language}
+              onChangeText={setLanguage}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -521,6 +656,9 @@ const handleImageUpload = () => {
               style={styles.input}
               placeholder="Duration"
               placeholderTextColor="#A3A3A3"
+              value={duration}
+              onChangeText={setDuration}
+              keyboardType="numeric"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -536,6 +674,8 @@ const handleImageUpload = () => {
               style={styles.input}
               placeholder="Seating"
               placeholderTextColor="#A3A3A3"
+              value={seating}
+              onChangeText={setSeating}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -551,6 +691,8 @@ const handleImageUpload = () => {
               style={styles.input}
               placeholder="Layout"
               placeholderTextColor="#A3A3A3"
+              value={layout}
+              onChangeText={setLayout}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -566,6 +708,8 @@ const handleImageUpload = () => {
               style={styles.input}
               placeholder="Pet Allowance"
               placeholderTextColor="#A3A3A3"
+              value={pet_allowance}
+              onChangeText={setPetAllowance}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -581,6 +725,9 @@ const handleImageUpload = () => {
               style={styles.input}
               placeholder="Min. Age"
               placeholderTextColor="#A3A3A3"
+              value={age}
+              onChangeText={setAge}
+              keyboardType="numeric"
             />
           </View>
         </View>
@@ -701,8 +848,15 @@ const handleImageUpload = () => {
                 </View>
                 <TextInput
                   style={styles.input}
+                  autoCapitalize="words"
                   placeholder="Full Name"
                   placeholderTextColor="#A3A3A3"
+                  value={host.name}
+                  onChangeText={text => {
+                    const updatedHosts = [...hosts];
+                    updatedHosts[index].name = text;
+                    setHosts(updatedHosts);
+                  }}
                 />
               </View>
               <View style={styles.inputContainer}>
@@ -845,5 +999,77 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#4A4A4A',
+  },
+  iconContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
+    marginRight: 12,
+  },
+  tagIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tagIconText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#7C3AED',
+  },
+  tagsContainer: {
+    flex: 1,
+    // gap:10
+  },
+  tagsScrollContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // paddingRight: 10,
+    gap:10,
+    // backgroundColor:"red"
+  },
+  tag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#7975FF',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    gap:10
+  },
+  tagText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+    marginRight: 5,
+  },
+  removeButton: {
+    // marginLeft: 4,
+    // padding: 2,
+  },
+  closeIcon: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  addButton: {
+    backgroundColor: '#7975FF',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  plusIcon: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  tagInput: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    fontSize: 14,
+    minWidth: 80,
+    maxWidth: 120,
   },
 });

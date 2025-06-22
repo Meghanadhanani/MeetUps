@@ -74,7 +74,7 @@ const EventCard = ({item, navigation}) => {
             />
             <View>
               <View style={styles.usernameContainer}>
-                {/* <Text style={styles.username}>{item.host_names}</Text> */}
+                <Text style={styles.username}>{item.created_by.username}</Text>
                 <VerifiedIcon width={16} height={16} />
               </View>
             </View>
@@ -92,12 +92,19 @@ const EventCard = ({item, navigation}) => {
             justifyContent: 'space-between',
             gap: 10,
           }}>
-          <View style={styles.imageContainer}>
-            <Image
+         
+           <View style={styles.imageContainer}>
+            {item.event_images.length > 0 ? (
+  <Image
+    source={{ uri: item.event_images[0].url }}
+    resizeMode="cover"
+    style={styles.eventImage}
+  />
+):(  <Image
               source={require('../assets/UpcomingEventImage.png')}
               style={styles.eventImage}
               resizeMode="cover"
-            />
+            />)}
           </View>
 
           {/* <View style={styles.tagContainer}> */}
