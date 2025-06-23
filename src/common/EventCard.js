@@ -58,7 +58,7 @@ const EventCard = ({item, navigation}) => {
   //   }) + ' onwards';
   // };
   const handlePress = () => {
-    navigation.navigate('EventDetailScreen', {event: item.id});
+    navigation.navigate('EventDetailScreen', {events: item});
   };
   return (
     <TouchableOpacity

@@ -40,18 +40,15 @@ import CustomBackBtn from '../common/CustomBackBtn';
 import {CREATE_EVENT_API} from '../utils/ApiHelper';
 import {showToastMSGError, showToastMSGWarning} from '../utils/ToastMessages';
 import {getUserToken} from '../utils/UtilFunctions';
-// import {s} from 'react-native-size-matters';
-
-const CloseIcon = () => <Text style={styles.closeIcon}>×</Text>;
 
 const CreateEventScreen = ({navigation}) => {
-  const [eventName, setEventName] = useState();
-  const [isOnline, setIsOnline] = useState(false);
-  const [isFree, setIsFree] = useState(false);
-  const [description, setDescription] = useState('');
   const [hosts, setHosts] = useState([
     {id: 1, name: '', instagram: '', linkedin: '', twitter: ''},
   ]);
+  const [eventName, setEventName] = useState('');
+  const [isOnline, setIsOnline] = useState(false);
+  const [isFree, setIsFree] = useState(false);
+  const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
   const [pet_allowance, setPetAllowance] = useState('');
   const [language, setLanguage] = useState('');
@@ -59,16 +56,15 @@ const CreateEventScreen = ({navigation}) => {
   const [seating, setSeating] = useState('');
   const [layout, setLayout] = useState('');
   const [duration, setDuration] = useState('');
-
   const [hostName, setHostName] = useState('');
   const [bannerImage, setBannerImage] = useState(null);
   const [location, setLocation] = useState('');
-  const [ticket_price, setTicketPrice] = useState('');
+  const [ticket_price, setTicketPrice] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
   const [eventTags, setEventTags] = useState('');
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [apiDate, setApiDate] = useState(''); // YYYY-MM-DD format for backend
+  const [apiDate, setApiDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
@@ -80,11 +76,11 @@ const CreateEventScreen = ({navigation}) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
-    const backendDate = `${year}-${month}-${day}`; // for backend
-    const displayDate = `${day}-${month}-${year}`; // for UI
+    const backendDate = `${year}-${month}-${day}`;
+    const displayDate = `${day}-${month}-${year}`;
 
-    setFormattedDate(displayDate); // Show DD-MM-YYYY to user
-    setApiDate(backendDate); // Send YYYY-MM-DD to backend
+    setFormattedDate(displayDate);
+    setApiDate(backendDate);
     hideDatePicker();
   };
 
@@ -94,7 +90,7 @@ const CreateEventScreen = ({navigation}) => {
     const ampm = hours >= 12 ? 'PM' : 'AM';
 
     hours = hours % 12;
-    hours = hours === 0 ? 12 : hours; // convert 0 to 12
+    hours = hours === 0 ? 12 : hours;
 
     const formatted = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
     setFormattedTime(formatted);
@@ -103,6 +99,8 @@ const CreateEventScreen = ({navigation}) => {
 
   const CreateEventApi = async () => {
     const token = await getUserToken();
+    console.log("tpken",token);
+    
     console.log('is enable ', isFree.toString());
     console.log('is online ', isOnline.toString());
     const formData = new FormData();
@@ -110,31 +108,25 @@ const CreateEventScreen = ({navigation}) => {
     hosts.forEach(host => {
       formData.append('host_names', host.name);
     });
-formData.append("duration", duration);
+    formData.append('duration', duration);
     formData.append('age', age);
     formData.append('language', language);
     formData.append('seating', seating);
     formData.append('layout', layout);
-    formData.append('address', address);
-    formData.append('event_tags', tags);
+    const tagsString = tags.join(',');
+    formData.append('event_tags', tagsString);
     console.log('tags', tags);
-    
+
     formData.append('pet_allowance', pet_allowance);
     formData.append('description', description);
     formData.append('event_date', apiDate);
     formData.append('event_time', formattedTime);
-
-    // formData.append('location ', 'https://meet.google.com/xyz-123'); // Or Zoom link etc.
-
     formData.append('is_virtual', isOnline.toString());
-    formData.append('is_free', isFree.toString());
-    formData.append('ticket_price', isFree ? '0' : ticket_price); // Example price
-
+formData.append('is_free', (!isFree).toString());
+formData.append('ticket_price', isFree ? '0' : ticket_price);
     if (isOnline) {
-      // For virtual event
-      formData.append('location', 'https://zoom.us/j/xyz123');
+      formData.append('location', address);
     } else {
-      // For offline event – must be a JSON string
       formData.append('location', address);
     }
 
@@ -150,7 +142,7 @@ formData.append("duration", duration);
       const response = await axios.post(CREATE_EVENT_API, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`, // if needed
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log('respones of create event api', response.data);
@@ -159,8 +151,8 @@ formData.append("duration", duration);
         navigation.navigate('BottomTabs');
       }
     } catch (error) {
-      console.log('errrrrrrrrrrr', error.response.data);
-      showToastMSGError(error.response.data.error);
+      console.log('errrrrrrrrrrr', error.response.data.errors);
+      showToastMSGError(error.response.data.errors);
     }
   };
 
@@ -205,7 +197,7 @@ formData.append("duration", duration);
   };
 
   const toggleSwitch = () => setIsOnline(previousState => !previousState);
-  const toggleSwitchFree = () => setIsFree(previousState => !previousState);
+const toggleSwitchFree = () => setIsFree(previousState => !previousState);
 
   const [tags, setTags] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -279,7 +271,7 @@ formData.append("duration", duration);
                   <Image
                     source={{uri: bannerImage.uri}}
                     style={{width: '100%', height: '100%'}}
-                    // resizeMode="cover"
+                    resizeMode="cover"
                   />
                   <View
                     style={{
@@ -330,7 +322,6 @@ formData.append("duration", duration);
               fontSize: 18,
               fontFamily: 'BricolageGrotesque_24pt-Regular',
               fontWeight: 500,
-              // backgroundColor:"red"
               color: '#4A4A4A',
             }}
             numberOfLines={2}
@@ -389,7 +380,7 @@ formData.append("duration", duration);
                 style={styles.input}
                 placeholder="DD-MM-YYYY"
                 placeholderTextColor="#A3A3A3"
-                value={formattedDate} // This should now show the selected date
+                value={formattedDate}
                 editable={false}
               />
             </TouchableOpacity>
@@ -435,7 +426,6 @@ formData.append("duration", duration);
                 padding: 10,
               }}>
               {isOnline ? <LinkIcon /> : <LocationIcon />}
-              {/* <LocationIcon /> */}
             </View>
             <TextInput
               style={styles.input}
@@ -452,9 +442,12 @@ formData.append("duration", duration);
             />
           </View>
           <View style={styles.inputContainer}>
-            <View style={{ backgroundColor: '#F5F6FF',
+            <View
+              style={{
+                backgroundColor: '#F5F6FF',
                 borderRadius: 12,
-                padding: 10,}}>
+                padding: 10,
+              }}>
               <TagIcon />
             </View>
 
@@ -505,9 +498,7 @@ formData.append("duration", duration);
                     />
                   ) : (
                     tags.length >= 1 && (
-                      <TouchableOpacity
-                        style={styles.tag}
-                        onPress={showInput}>
+                      <TouchableOpacity style={styles.tag} onPress={showInput}>
                         <PlusIcon />
                       </TouchableOpacity>
                     )
@@ -533,46 +524,46 @@ formData.append("duration", duration);
               }}>
               Event Pricing
             </Text>
-            <View style={styles.container1}>
-              <Text style={[styles.label, !isFree && styles.activeText]}>
-                Free
-              </Text>
+           <View style={styles.container1}>
+  <Text style={[styles.label, isFree && styles.activeText]}>
+    Free
+  </Text>
 
-              <Switch
-                trackColor={{false: '#E4E0FF', true: '#E4E0FF'}}
-                thumbColor="#6D5CFF"
-                ios_backgroundColor="#ccc"
-                onValueChange={toggleSwitchFree}
-                value={isFree}
-              />
+  <Switch
+    trackColor={{false: '#E4E0FF', true: '#E4E0FF'}}
+    thumbColor="#6D5CFF"
+    ios_backgroundColor="#ccc"
+    onValueChange={toggleSwitchFree}
+    value={!isFree} // Flip the value for the switch
+  />
 
-              <Text style={[styles.label, isFree && styles.activeText]}>
-                Paid
-              </Text>
-            </View>
+  <Text style={[styles.label, !isFree && styles.activeText]}>
+    Paid
+  </Text>
+</View>
           </View>
           <View style={styles.divider} />
-          {isFree && (
-            <View style={styles.inputContainer}>
-              <View
-                style={{
-                  backgroundColor: '#F5F6FF',
-                  borderRadius: 12,
-                  padding: 10,
-                }}>
-                <RupeeIcon />
-              </View>
+         {!isFree && ( // Show when NOT free (i.e., paid)
+  <View style={styles.inputContainer}>
+    <View
+      style={{
+        backgroundColor: '#F5F6FF',
+        borderRadius: 12,
+        padding: 10,
+      }}>
+      <RupeeIcon />
+    </View>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Ticket Price"
-                placeholderTextColor="#A3A3A3"
-                value={ticket_price}
-                onChangeText={setTicketPrice}
-                keyboardType="numeric"
-              />
-            </View>
-          )}
+    <TextInput
+      style={styles.input}
+      placeholder="Ticket Price"
+      placeholderTextColor="#A3A3A3"
+      value={ticket_price}
+      onChangeText={setTicketPrice}
+      keyboardType="numeric"
+    />
+  </View>
+)}
           <View style={styles.inputContainer}>
             <View
               style={{
@@ -608,7 +599,7 @@ formData.append("duration", duration);
             placeholder="The event is going to be the finest...."
             placeholderTextColor="#A3A3A3"
             multiline={true}
-            numberOfLines={4} // optional, defines initial height
+            numberOfLines={4}
             textAlignVertical="top"
             value={description}
             onChangeText={setDescription}
@@ -751,7 +742,6 @@ formData.append("duration", duration);
               overflow: 'hidden',
               alignItems: 'center',
               justifyContent: 'center',
-              // gap:10
             }}>
             <TouchableOpacity
               activeOpacity={0.5}
@@ -1017,14 +1007,11 @@ const styles = StyleSheet.create({
   },
   tagsContainer: {
     flex: 1,
-    // gap:10
   },
   tagsScrollContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // paddingRight: 10,
-    gap:10,
-    // backgroundColor:"red"
+    gap: 10,
   },
   tag: {
     flexDirection: 'row',
@@ -1033,17 +1020,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    gap:10
+    gap: 10,
   },
   tagText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '500',
     marginRight: 5,
-  },
-  removeButton: {
-    // marginLeft: 4,
-    // padding: 2,
   },
   closeIcon: {
     color: '#FFFFFF',

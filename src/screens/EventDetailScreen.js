@@ -30,8 +30,8 @@ import {
   formatTime,
 } from '../utils/UtilFunctions';
 const EventDetailScreen = ({route}) => {
-  const {event} = route.params;
-  const [events, setEvents] = useState([]);
+  const {events} = route.params;
+  // const [events, setEvents] = useState([]);
   const [showTitle, setShowTitle] = useState(false);
   const isFocused = useIsFocused();
   // console.log('eventtttttttttttttttt', event);
@@ -39,7 +39,7 @@ const EventDetailScreen = ({route}) => {
     try {
       const resposne = await axios.get(`${GET_EVENTLIST_BYID_API}/${event}`);
       console.log('resposne of idddd', resposne.data);
-      setEvents(resposne.data);
+      // setEvents(resposne.data);
     } catch (error) {
       console.error('Error fetching event list:', error);
     }
@@ -50,7 +50,7 @@ const EventDetailScreen = ({route}) => {
 
   useFocusEffect(
     useCallback(() => {
-      GetEventList();
+      // GetEventList();
       return () => {};
     }, [isFocused]),
   );
@@ -134,7 +134,7 @@ const EventDetailScreen = ({route}) => {
             {/* <View style={{justifyContent: 'center',width:"85%", backgroundColor:"pink"}}> */}
 
             <Text style={styles.attendeeCount}>
-              Hosted by {formatHostNames(events.host_names)}
+              Hosted by {formatHostNames(events.host_social.host_names)}
             </Text>
             {/* </View> */}
           </View>
@@ -398,7 +398,7 @@ const EventDetailScreen = ({route}) => {
           </Text>
           <View style={styles.divider} />
           <View style={{gap: 10}}>
-            {events?.host_names?.map((hostName, index) => (
+            {events?.host_social?.host_names?.map((hostName, index) => (
               <View key={index} style={styles.hostRow}>
                 <Image
                   source={require('../assets/PersonImage.png')} // Fallback image
