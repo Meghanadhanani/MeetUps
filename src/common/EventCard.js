@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import React, {useCallback, useMemo, useRef} from 'react';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
+import UnLikeHeartIcon from "../assets/svgs/UnLikeICon.svg"
 import SaveIcon from '../assets/svgs/SaveIcon.svg';
 import TimerIcon from '../assets/svgs/TimerIcon.svg';
 import LocationIcon from '../assets/svgs/LocationIcon.svg';
@@ -158,13 +159,20 @@ const EventCard = ({item, navigation}) => {
                 justifyContent: 'space-between',
               }}>
               <View style={styles.engagementItem}>
-                <FillHeartIcon
+                {item.is_liked ? (
+                
+                  <FillHeartIcon
+                    width={20}
+                    height={20}
+                    />
+                   
+                )
+                : (
+                <UnLikeHeartIcon
                   width={20}
                   height={20}
-                  color="#6A66FF"
-                  // fill="#6A66FF"
-                />
-                <Text style={styles.engagementText}>{'476k'}</Text>
+                />)}
+                <Text style={styles.engagementText}>{item.total_likes}</Text>
               </View>
               <View style={styles.engagementItem}>
                 <CommentIcon width={20} height={20} color="#6A66FF" />
