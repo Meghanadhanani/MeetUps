@@ -306,8 +306,8 @@ const HomeScreen = ({navigation}) => {
                 </Text>
               </TouchableOpacity>
             </View>
-            {console.log('length', events.length === 0)}
-            {/* {loading && events.length === 0 && <Loader />} */}
+            {/* {console.log('length', events.length === 0)} */}
+            {loading && events.length === 0 && <Loader />}
           </Animated.ScrollView>
         </View>
       </BottomSheetModalProvider>
