@@ -92,7 +92,7 @@ const SecureAccountScreen = ({navigation}) => {
         setTimeout(() => {
           navigation.reset({
             index: 0,
-            routes: [{name: 'CreateProfile'}],
+            routes: [{name: 'OnboardingScreen1'}],
           });
         }, 100);
       }

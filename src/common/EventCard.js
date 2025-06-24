@@ -60,6 +60,8 @@ const EventCard = ({item, navigation}) => {
   const handlePress = () => {
     navigation.navigate('EventDetailScreen', {events: item});
   };
+  console.log('PHOTO URL:', item.created_by?.photo?.slice(0, 50));
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -68,10 +70,18 @@ const EventCard = ({item, navigation}) => {
       <View style={styles.cardContainer}>
         <View style={styles.userHeader}>
           <View style={styles.userInfo}>
-            <Image
-              source={require('../assets/PersonImage.png')}
-              style={styles.userAvatar}
-            />
+            {item.created_by.photo ? (
+              <Image
+                source={{uri: item.created_by.photo}}
+                style={styles.userAvatar}
+              />
+            ) : (
+              <Image
+                source={require('../assets/PersonImage.png')}
+                style={styles.userAvatar}
+              />
+            )}
+
             <View>
               <View style={styles.usernameContainer}>
                 <Text style={styles.username}>{item.created_by.username}</Text>
@@ -92,19 +102,20 @@ const EventCard = ({item, navigation}) => {
             justifyContent: 'space-between',
             gap: 10,
           }}>
-         
-           <View style={styles.imageContainer}>
+          <View style={styles.imageContainer}>
             {item.event_images.length > 0 ? (
-  <Image
-    source={{ uri: item.event_images[0].url }}
-    resizeMode="cover"
-    style={styles.eventImage}
-  />
-):(  <Image
-              source={require('../assets/UpcomingEventImage.png')}
-              style={styles.eventImage}
-              resizeMode="cover"
-            />)}
+              <Image
+                source={{uri: item.event_images[0].url}}
+                resizeMode="cover"
+                style={styles.eventImage}
+              />
+            ) : (
+              <Image
+                source={require('../assets/UpcomingEventImage.png')}
+                style={styles.eventImage}
+                resizeMode="cover"
+              />
+            )}
           </View>
 
           {/* <View style={styles.tagContainer}> */}

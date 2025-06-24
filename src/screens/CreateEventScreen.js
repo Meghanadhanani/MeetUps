@@ -38,13 +38,16 @@ import UserNameIcon from '../assets/svgs/UserNameIcon.svg';
 import CrossIcon from '../assets/svgs/CrossIcon.svg';
 import CustomBackBtn from '../common/CustomBackBtn';
 import {CREATE_EVENT_API} from '../utils/ApiHelper';
-import {showToastMSGError, showToastMSGWarning} from '../utils/ToastMessages';
+import {showToastMSGError, showToastMSGNormal, showToastMSGWarning} from '../utils/ToastMessages';
 import {getUserToken} from '../utils/UtilFunctions';
+import Loader from '../utils/Loader';
 
 const CreateEventScreen = ({navigation}) => {
   const [hosts, setHosts] = useState([
     {id: 1, name: '', instagram: '', linkedin: '', twitter: ''},
   ]);
+   const [loading, setLoading] = useState();
+ 
   const [eventName, setEventName] = useState('');
   const [isOnline, setIsOnline] = useState(false);
   const [isFree, setIsFree] = useState(false);
@@ -99,17 +102,19 @@ const CreateEventScreen = ({navigation}) => {
 
   const CreateEventApi = async () => {
     const token = await getUserToken();
-    console.log("tpken",token);
-    
-    console.log('is enable ', isFree.toString());
+    console.log('tpken', token);
+
+    console.log('is Free ', isFree.toString());
     console.log('is online ', isOnline.toString());
+    console.log('ticket privce:', ticket_price);
+
     const formData = new FormData();
     formData.append('event_name', eventName);
     hosts.forEach(host => {
       formData.append('host_names', host.name);
     });
     formData.append('duration', duration);
-    formData.append('age', age);
+    formData.append('age_limit', age);
     formData.append('language', language);
     formData.append('seating', seating);
     formData.append('layout', layout);
@@ -122,8 +127,8 @@ const CreateEventScreen = ({navigation}) => {
     formData.append('event_date', apiDate);
     formData.append('event_time', formattedTime);
     formData.append('is_virtual', isOnline.toString());
-formData.append('is_free', (!isFree).toString());
-formData.append('ticket_price', isFree ? '0' : ticket_price);
+    formData.append('is_free', isFree.toString());
+    formData.append('ticket_price', isFree ? '0' : ticket_price);
     if (isOnline) {
       formData.append('location', address);
     } else {
@@ -139,6 +144,7 @@ formData.append('ticket_price', isFree ? '0' : ticket_price);
     }
 
     try {
+      setLoading(true)
       const response = await axios.post(CREATE_EVENT_API, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -147,12 +153,15 @@ formData.append('ticket_price', isFree ? '0' : ticket_price);
       });
       console.log('respones of create event api', response.data);
       if (response.status == 201) {
-        showToastMSGWarning('Event Created Successfully');
+        showToastMSGNormal('Event Created Successfully');
         navigation.navigate('BottomTabs');
       }
     } catch (error) {
-      console.log('errrrrrrrrrrr', error.response.data.errors);
+      console.log('errrrrrrrrrrr', error.response.data);
       showToastMSGError(error.response.data.errors);
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -197,7 +206,7 @@ formData.append('ticket_price', isFree ? '0' : ticket_price);
   };
 
   const toggleSwitch = () => setIsOnline(previousState => !previousState);
-const toggleSwitchFree = () => setIsFree(previousState => !previousState);
+  const toggleSwitchFree = () => setIsFree(previousState => !previousState);
 
   const [tags, setTags] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -524,46 +533,46 @@ const toggleSwitchFree = () => setIsFree(previousState => !previousState);
               }}>
               Event Pricing
             </Text>
-           <View style={styles.container1}>
-  <Text style={[styles.label, isFree && styles.activeText]}>
-    Free
-  </Text>
+            <View style={styles.container1}>
+              <Text style={[styles.label, isFree && styles.activeText]}>
+                Free
+              </Text>
 
-  <Switch
-    trackColor={{false: '#E4E0FF', true: '#E4E0FF'}}
-    thumbColor="#6D5CFF"
-    ios_backgroundColor="#ccc"
-    onValueChange={toggleSwitchFree}
-    value={!isFree} // Flip the value for the switch
-  />
+              <Switch
+                trackColor={{false: '#E4E0FF', true: '#E4E0FF'}}
+                thumbColor="#6D5CFF"
+                ios_backgroundColor="#ccc"
+                onValueChange={toggleSwitchFree}
+                value={!isFree} // Flip the value for the switch
+              />
 
-  <Text style={[styles.label, !isFree && styles.activeText]}>
-    Paid
-  </Text>
-</View>
+              <Text style={[styles.label, !isFree && styles.activeText]}>
+                Paid
+              </Text>
+            </View>
           </View>
           <View style={styles.divider} />
-         {!isFree && ( // Show when NOT free (i.e., paid)
-  <View style={styles.inputContainer}>
-    <View
-      style={{
-        backgroundColor: '#F5F6FF',
-        borderRadius: 12,
-        padding: 10,
-      }}>
-      <RupeeIcon />
-    </View>
+          {!isFree && ( // Show when NOT free (i.e., paid)
+            <View style={styles.inputContainer}>
+              <View
+                style={{
+                  backgroundColor: '#F5F6FF',
+                  borderRadius: 12,
+                  padding: 10,
+                }}>
+                <RupeeIcon />
+              </View>
 
-    <TextInput
-      style={styles.input}
-      placeholder="Ticket Price"
-      placeholderTextColor="#A3A3A3"
-      value={ticket_price}
-      onChangeText={setTicketPrice}
-      keyboardType="numeric"
-    />
-  </View>
-)}
+              <TextInput
+                style={styles.input}
+                placeholder="Ticket Price"
+                placeholderTextColor="#A3A3A3"
+                value={ticket_price}
+                onChangeText={setTicketPrice}
+                keyboardType="numeric"
+              />
+            </View>
+          )}
           <View style={styles.inputContainer}>
             <View
               style={{
@@ -932,6 +941,7 @@ const toggleSwitchFree = () => setIsFree(previousState => !previousState);
           </Text>
         </View>
       </ScrollView>
+      {loading && <Loader />}
     </View>
   );
 };

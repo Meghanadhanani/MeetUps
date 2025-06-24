@@ -24,7 +24,8 @@ import {GET_EVENTLIST_API} from '../utils/ApiHelper';
 import {useFocusEffect} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import { getUserToken } from '../utils/UtilFunctions';
+import {getUserToken} from '../utils/UtilFunctions';
+import Loader from '../utils/Loader';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -33,24 +34,32 @@ const HomeScreen = ({navigation}) => {
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
-
+  const [loading, setLoading] = useState();
   const handleSearch = () => {
     setQuery(input);
   };
 
   const GetEventList = async () => {
     try {
+      console.log('fetching data started');
+
+      setLoading(true);
       const token = await getUserToken();
       const resposne = await axios.get(GET_EVENTLIST_API, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`, // if needed
+          Accept: 'application/json',
+          'Content-Type': 'application/json', // Fixed: was multipart/form-data
+          Authorization: `Bearer ${token}`,
         },
       });
+      console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
+
       console.log('resposne', resposne.data);
       setEvents(resposne.data.sort((a, b) => b.id - a.id));
     } catch (error) {
       console.error('Error fetching event list:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -297,6 +306,8 @@ const HomeScreen = ({navigation}) => {
                 </Text>
               </TouchableOpacity>
             </View>
+            {console.log('length', events.length === 0)}
+            {/* {loading && events.length === 0 && <Loader />} */}
           </Animated.ScrollView>
         </View>
       </BottomSheetModalProvider>

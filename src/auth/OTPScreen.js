@@ -90,8 +90,14 @@ const OTPScreen = ({navigation, route}) => {
         setTimeout(() => {
           navigation.reset({
             index: 0,
-            routes: [{name: 'SecureAccountScreen'}],
+            routes: [
+              {
+                name: 'CreateProfile',
+                params: { email: email.value }, // 👈 pass email here
+              },
+            ],
           });
+          
         }, 2000);
       } else {
         showToastMSGError('Failed to resend OTP');

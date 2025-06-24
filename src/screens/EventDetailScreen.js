@@ -34,7 +34,7 @@ const EventDetailScreen = ({route}) => {
   // const [events, setEvents] = useState([]);
   const [showTitle, setShowTitle] = useState(false);
   const isFocused = useIsFocused();
-  // console.log('eventtttttttttttttttt', event);
+  console.log('eventtttttttttttttttt', events);
   const GetEventList = async () => {
     try {
       const resposne = await axios.get(`${GET_EVENTLIST_BYID_API}/${event}`);
@@ -102,11 +102,18 @@ const EventDetailScreen = ({route}) => {
               borderRadius: 10,
               overflow: 'hidden',
             }}>
-            <Image
-              source={require('../assets/EventDumyImage.png')}
-              style={{width: '100%', height: '100%'}}
-              resizeMode="cover"
-            />
+                          {events.event_images.length > 0 ? (
+                <Image
+                  source={{ uri: events.event_images[0].url }}
+                  resizeMode="cover"
+                  style={{width: '100%', height: '100%'}}
+                />
+              ):(   <Image
+                source={require('../assets/EventDumyImage.png')}
+                style={{width: '100%', height: '100%'}}
+                resizeMode="cover"
+              />)}
+           
           </View>
           <Text
             style={{
@@ -336,6 +343,7 @@ const EventDetailScreen = ({route}) => {
                 </View>
               </View>
             </View>
+            {events.age_limit && 
             <View style={styles.detailsSectionCon}>
               <View
                 style={{
@@ -351,12 +359,14 @@ const EventDetailScreen = ({route}) => {
                   }}>
                   <AgeIcon />
                 </View>
+               
                 <View style={styles.detailTextCon}>
                   <Text>Min. Age</Text>
                   <Text>{events.age_limit}</Text>
                 </View>
               </View>
             </View>
+                }
           </View>
         </View>
         <View style={styles.sectionCon}>

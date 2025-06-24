@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -14,20 +14,24 @@ import FemaleIcon from '../assets/svgs/FemaleIcon.svg';
 import PasswordIcon from '../assets/svgs/Frame1.svg';
 import MaleIcon from '../assets/svgs/MaleIcon.svg';
 import ConfirmIcon from '../assets/svgs/Password.svg';
-import PersionIcon from "../assets/svgs/Person.svg";
-import { LOGIN_API } from '../utils/ApiHelper';
-import { StorageUtils } from '../utils/StorageUtils';
-import { showToastMSGError } from '../utils/ToastMessages';
-import { emailValidater } from '../utils/validations/emailValidater';
-const CreateProfile = ({navigation}) => {
+import PersionIcon from '../assets/svgs/Person.svg';
+import {CREATE_PROFILE_API, LOGIN_API} from '../utils/ApiHelper';
+import {StorageUtils} from '../utils/StorageUtils';
+import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
+import {emailValidater} from '../utils/validations/emailValidater';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {getUserToken} from '../utils/UtilFunctions';
+const CreateProfile = ({navigation, route}) => {
+  const {email} = route.params;
   const [loading, setLoading] = useState(false);
   const googleAuthData = useRef(null);
-  const [email, setEmail] = useState({value: '', error: ''});
-  const [password, setPassword] = useState({value: '', error: ''});
+  const [name, setName] = useState({value: '', error: ''});
+  const [city, setCity] = useState({value: '', error: ''});
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedGender, setSelectedGender] = useState('Male');
+  const [bannerImage, setBannerImage] = useState(null);
 
   const passwordInputRef = useRef(null);
 
@@ -35,58 +39,64 @@ const CreateProfile = ({navigation}) => {
     passwordInputRef.current?.focus();
   };
 
-  const checkValidation = () => {
-    const isEmailValid = emailValidater(email.value);
-
-    setEmailError(false);
-
-    if (!isEmailValid) {
-      const errorMessage = 'Please enter a valid email address';
-      setEmailError(true);
-      setEmail({...email, error: errorMessage});
-      showToastMSGError(errorMessage);
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleLogin = async () => {
-    console.log('rrreddddddddddddddd');
-    if (checkValidation() === false) {
-      return;
-    }
-    try {
-      const data = {
-        email: email.value,
-        password: password.value,
-      };
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      };
-      console.log('Login Data:', data); 
-      console.log('Login API URL:', LOGIN_API); 
-
-      const response = await axios.post(LOGIN_API, data, config);
-      if (response.status === 200) {
-        await StorageUtils.setItem('userData', response.data);
-        setTimeout(() => {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'BottomTabs'}],
-          });
-        }, 100);
+  const handleImageUpload = () => {
+    launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.error('ImagePicker Error: ', response.errorMessage);
+      } else {
+        const asset = response.assets[0];
+        setBannerImage(asset);
+        
+        console.log('Selected Image:', asset);
       }
-      console.log('Response:', response); 
+    });
+  };
+  const handleProfileCreate = async () => {
+    try {
+      console.log("email", email);
+      
+      const formData = new FormData();
+
+      formData.append("email", email);
+      formData.append("username", name.value);
+      formData.append("gender", selectedGender.toLowerCase());
+      formData.append("city", city.value);
+  
+      if (bannerImage && bannerImage.uri) {
+        formData.append("photo", {
+          uri: bannerImage.uri,
+          name: "profile.jpg",
+          type: bannerImage.type || "image/jpeg",
+        });
+      }
+      
+     
+      const response = await axios.post(CREATE_PROFILE_API, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },});
+      if (response.data) {
+              console.log('PRofile resposne', response.data);
+              showToastMSGNormal(response.data.message);
+              setTimeout(() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'SecureAccountScreen',
+                    },
+                  ],
+                });
+                
+              }, 2000);
+            } 
+      console.log('res---------------', response.data);
     } catch (error) {
-      showToastMSGError(error.response.data.error);
-      console.log('Login Error:', error.response.data.error);
+      console.log('errr', error);
     }
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -98,18 +108,39 @@ const CreateProfile = ({navigation}) => {
           />
 
           <Text style={styles.title}>Let’s Set Up Your Profile</Text>
-          <View style={styles.photoContainer}>
-           <View style={{width:"30%", backgroundColor:"#E2DEFF", height: "100%",borderRadius:10}}>
-           <PersionIcon width={"100%"} height={"100%"} />
-           </View>
-            <View style={styles.iconContainer}>
-             <Text style={{color:"#C2C7FF", fontWeight:"500", fontSize:14}}>Upload Your Photo</Text>
+          <TouchableOpacity
+            style={styles.photoContainer}
+            onPress={handleImageUpload}>
+            <View
+              style={{
+                width: '30%',
+                backgroundColor: '#E2DEFF',
+                height: '100%',
+                borderRadius: 10,
+                overflow: 'hidden',
+                borderColor: '#E2DEFF',
+                elevation: 2,
+              }}>
+              {bannerImage ? (
+                <Image
+                  source={{uri: bannerImage.uri}}
+                  style={{width: '100%', height: '100%'}}
+                  resizeMode="cover"
+                />
+              ) : (
+                <PersionIcon width={'100%'} height={'100%'} />
+              )}
             </View>
-          </View>
+            <View style={styles.iconContainer}>
+              <Text style={{color: '#C2C7FF', fontWeight: '500', fontSize: 14}}>
+                Upload Your Photo
+              </Text>
+            </View>
+          </TouchableOpacity>
           <View style={styles.inputContainer}>
             <TextInput
-              value={email.value}
-              onChangeText={text => setEmail({value: text, error: ''})}
+              value={name.value}
+              onChangeText={text => setName({value: text, error: ''})}
               placeholder="Enter Your Name"
               placeholderTextColor="#C2C7FF"
               style={styles.input}
@@ -125,8 +156,8 @@ const CreateProfile = ({navigation}) => {
 
           <View style={styles.inputContainer}>
             <TextInput
-              value={email.value}
-              onChangeText={text => setEmail({value: text, error: ''})}
+              value={city.value}
+              onChangeText={text => setCity({value: text, error: ''})}
               placeholder="Enter Your City"
               placeholderTextColor="#C2C7FF"
               style={styles.input}
@@ -146,7 +177,7 @@ const CreateProfile = ({navigation}) => {
                 selectedGender === 'Male' && styles.genderButtonSelected,
               ]}
               onPress={() => setSelectedGender('Male')}>
-                <MaleIcon />
+              <MaleIcon />
               <Text
                 style={[
                   styles.genderText,
@@ -162,7 +193,7 @@ const CreateProfile = ({navigation}) => {
                 selectedGender === 'Female' && styles.genderButtonSelected,
               ]}
               onPress={() => setSelectedGender('Female')}>
-                <FemaleIcon />
+              <FemaleIcon />
               <Text
                 style={[
                   styles.genderText,
@@ -174,9 +205,7 @@ const CreateProfile = ({navigation}) => {
           </View>
           <TouchableOpacity
             style={styles.loginButton}
-            onPress={() => {
-              navigation.navigate('OnboardingScreen1');
-            }}>
+            onPress={handleProfileCreate}>
             <Text style={styles.loginButtonText}>Finalize It!!</Text>
           </TouchableOpacity>
         </View>
@@ -211,7 +240,7 @@ const styles = StyleSheet.create({
     width: '50%',
     height: '100%',
     flexDirection: 'row',
-    gap:10,
+    gap: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -251,8 +280,8 @@ const styles = StyleSheet.create({
     height: 56,
     backgroundColor: '#FFFFFF',
   },
-  photoContainer:{ 
-     width: '100%',
+  photoContainer: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
@@ -261,8 +290,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     height: 76,
     backgroundColor: '#FFFFFF',
-  padding:5
-},
+    padding: 5,
+  },
   genderContainer: {
     width: '100%',
     flexDirection: 'row',
