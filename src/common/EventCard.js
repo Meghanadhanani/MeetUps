@@ -433,11 +433,9 @@ const handleLikeToggle = async () => {
     return;
   }
 
-  // Store current state for potential rollback
   const previousIsLiked = isLiked;
   const previousLikeCount = likeCount;
   
-  // Update UI immediately (optimistic update)
   const newIsLiked = !isLiked;
   setIsLiked(newIsLiked);
   setLikeCount(prev => newIsLiked ? prev + 1 : Math.max(0, prev - 1));
@@ -446,7 +444,6 @@ const handleLikeToggle = async () => {
   
   try {
     if (previousIsLiked) {
-      // Unlike the event
       console.log('Unliking event:', item.id);
       const response = await axios.post(
         `${REMOVE_FAVOURITE_API}/${item.id}`,
@@ -460,7 +457,6 @@ const handleLikeToggle = async () => {
       console.log('Unlike response:', response.data);
       
     } else {
-      // Like the event
       console.log('Liking event:', item.id);
       const response = await axios.post(
         `${ADD_FAVOURITE_API}/${item.id}`,
@@ -476,18 +472,13 @@ const handleLikeToggle = async () => {
     
   } catch (error) {
     console.log('Error toggling like:', error.response?.data || error.message);
-    
-    // Rollback UI changes on error
-    setIsLiked(previousIsLiked);
+        setIsLiked(previousIsLiked);
     setLikeCount(previousLikeCount);
     
-    // Handle specific error cases
     if (error.response?.data?.error === 'You have already liked this event') {
-      // Server says already liked, sync with server state
       setIsLiked(true);
       setLikeCount(prev => previousIsLiked ? prev : prev + 1);
     } else if (error.response?.data?.error === "You haven't liked this event yet") {
-      // Server says not liked, sync with server state
       setIsLiked(false);
       setLikeCount(prev => previousIsLiked ? Math.max(0, prev - 1) : prev);
     }
@@ -610,6 +601,7 @@ const handleLikeToggle = async () => {
                   isLoading && styles.disabledButton // Optional: add disabled styling
                 ]}
                 onPress={handleLikeToggle}
+                 hitSlop={30}
                 disabled={isLoading}
                 activeOpacity={0.7}>
                 {isLiked ? (

@@ -1,4 +1,4 @@
-const BASEURL = "https://t7czzmbt-5000.inc1.devtunnels.ms/"; //Meghana(office)
+const BASEURL = "https://v9p3jhpp-5000.inc1.devtunnels.ms/"; //Meghana(office)
 // const BASEURL = 'https://meetup-backend-js29.onrender.com/'; //Meghana(home)
 // const BASEURL = 'http://192.168.10.124:5000/'; //Meghana(office)
 
@@ -14,3 +14,5 @@ export const CREATE_EVENT_API = BASEURL + 'createEvent';
 export const ADD_FAVOURITE_API = BASEURL + 'likeEvent';
 export const GET_FAVOURITE_API = BASEURL + 'likeEvent';
 export const REMOVE_FAVOURITE_API = BASEURL + 'unlikeEvent';
+export const FORGOT_PASSWORD_API =BASEURL + "forgot-password"
+export const RESET_PASSWORD_API =BASEURL + "reset-password"

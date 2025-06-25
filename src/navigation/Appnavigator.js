@@ -16,6 +16,8 @@ import CreateEventScreen from '../screens/CreateEventScreen';
 import CustomBackBtn from '../common/CustomBackBtn';
 import EventDetailScreen from '../screens/EventDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import RecoverAccountScreen from '../auth/RecoverAccountScreen';
+import CreateNewPasswordScreen from '../auth/CreateNewPasswordScreen';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -31,6 +33,7 @@ export default function AppNavigator() {
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="SignupScreen" component={SignupScreen} />
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen name='CreateNewPasswordScreen' component={CreateNewPasswordScreen} />
           <Stack.Screen
             name="OnboardingScreen1"
             component={OnboardingScreen1}
@@ -58,6 +61,7 @@ export default function AppNavigator() {
             name="CreateEventScreen"
             component={CreateEventScreen}
           />
+          <Stack.Screen name='RecoverAccountScreen' component={RecoverAccountScreen} />
           <Stack.Screen name="CreateProfile" component={CreateProfile} />
           <Stack.Screen name="CustomBackBtn" component={CustomBackBtn} />
           <Stack.Screen name="ProfileScreen" component={ProfileScreen} />

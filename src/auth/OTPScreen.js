@@ -11,13 +11,16 @@ import {
   View,
 } from 'react-native';
 import {
+  FORGOT_PASSWORD_API,
   OTP_VERIFICATION_API,
   SIGNUP_API
 } from '../utils/ApiHelper';
 import { showToastMSGError, showToastMSGNormal } from '../utils/ToastMessages';
 
 const OTPScreen = ({navigation, route}) => {
-  const {email} = route.params;
+  const {email, flow} = route.params;
+  console.log("flow", flow);
+  
   const [otp, setOtp] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(59);
   const [loading, setLoading] = useState(false);
@@ -88,15 +91,28 @@ const OTPScreen = ({navigation, route}) => {
         console.log('OTP resposne', response.data);
         showToastMSGNormal(response.data.message);
         setTimeout(() => {
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: 'CreateProfile',
-                params: { email: email.value }, // 👈 pass email here
-              },
-            ],
-          });
+          if (flow === 'ForgotPassword') {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'CreateNewPasswordScreen',
+                  params: { email: email.value }, // 👈 pass email here
+                },
+              ],
+            });
+          } else if (flow === 'Signup') {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'CreateProfile',
+                  params: { email: email.value }, // 👈 pass email here
+                },
+              ],
+            });
+          }
+         
           
         }, 2000);
       } else {
@@ -128,7 +144,7 @@ const OTPScreen = ({navigation, route}) => {
       console.log('Sending OTP to:', email);
 
       const response = await axios.post(
-        SIGNUP_API,
+        FORGOT_PASSWORD_API,
         {
           email: email.value,
         },

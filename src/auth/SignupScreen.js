@@ -82,7 +82,7 @@ const SignupScreen = ({navigation}) => {
         } else {
           showToastMSGNormal(response.data.message);
           setTimeout(() => {
-            navigation.navigate('OTPScreen', {email});
+            navigation.navigate('OTPScreen', {email, flow:"Signup"});
           }, 2000);
         }
       } else {

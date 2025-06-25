@@ -38,16 +38,20 @@ import UserNameIcon from '../assets/svgs/UserNameIcon.svg';
 import CrossIcon from '../assets/svgs/CrossIcon.svg';
 import CustomBackBtn from '../common/CustomBackBtn';
 import {CREATE_EVENT_API} from '../utils/ApiHelper';
-import {showToastMSGError, showToastMSGNormal, showToastMSGWarning} from '../utils/ToastMessages';
+import {
+  showToastMSGError,
+  showToastMSGNormal,
+  showToastMSGWarning,
+} from '../utils/ToastMessages';
 import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
 
 const CreateEventScreen = ({navigation}) => {
   const [hosts, setHosts] = useState([
-    {id: 1, name: '', instagram: '', linkedin: '', twitter: ''},
+    {id: 1, name: '', instagram: '', linkedin: '', twitter: '', hostImage:null},
   ]);
-   const [loading, setLoading] = useState();
- 
+  const [loading, setLoading] = useState();
+
   const [eventName, setEventName] = useState('');
   const [isOnline, setIsOnline] = useState(false);
   const [isFree, setIsFree] = useState(false);
@@ -61,6 +65,7 @@ const CreateEventScreen = ({navigation}) => {
   const [duration, setDuration] = useState('');
   const [hostName, setHostName] = useState('');
   const [bannerImage, setBannerImage] = useState(null);
+  // const [hostImage, setHostImage] = useState(null);
   const [location, setLocation] = useState('');
   const [ticket_price, setTicketPrice] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -142,9 +147,19 @@ const CreateEventScreen = ({navigation}) => {
         name: bannerImage.fileName || 'banner.jpg',
       });
     }
+    hosts.forEach((host, index) => {
+      if (host.hostImage) {
+        formData.append('hostPhotos', {
+          uri: host.hostImage.uri,
+          type: host.hostImage.type,
+          name: host.hostImage.fileName || `host_${index + 1}.jpg`,
+        });
+      }
+    });
+    
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await axios.post(CREATE_EVENT_API, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -158,10 +173,9 @@ const CreateEventScreen = ({navigation}) => {
       }
     } catch (error) {
       console.log('errrrrrrrrrrr', error.response.data);
-      showToastMSGError(error.response.data.errors);
-    }
-    finally{
-      setLoading(false)
+      showToastMSGError(error.response.data.error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -178,7 +192,23 @@ const CreateEventScreen = ({navigation}) => {
       }
     });
   };
-
+  const handleHostImageUpload = (index) => {
+    launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.error('ImagePicker Error: ', response.errorMessage);
+      } else {
+        const asset = response.assets[0];
+        setHosts((prevHosts) => {
+          const updatedHosts = [...prevHosts];
+          updatedHosts[index].hostImage = asset; // Save image per host
+          return updatedHosts;
+        });
+                console.log('Selected Image:', asset);
+      }
+    });
+  };
   const addHost = () => {
     if (hosts.length >= 5) {
       showToastMSGWarning('You can add a maximum of 5 hosts.');
@@ -822,19 +852,39 @@ const CreateEventScreen = ({navigation}) => {
                 )}
               </View>
               <View style={styles.inputContainer}>
-                <View
-                  style={{
-                    backgroundColor: '#F5F6FF',
-                    borderRadius: 12,
-                    padding: 10,
-                  }}>
-                  <PersonIcon />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Upload Photo"
-                  placeholderTextColor="#A3A3A3"
-                />
+                <TouchableOpacity
+  onPress={() => handleHostImageUpload(index)}
+                    activeOpacity={0.8}
+                  style={styles.inputContainer}>
+                  <View
+                    style={{
+                      backgroundColor: '#F5F6FF',
+                      borderRadius: 12,
+                      padding: 10,
+                      width: 40,
+                      height: 40,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    {host.hostImage ? (
+                      <Image
+                        source={{uri: host.hostImage.uri}}
+                        style={{width: 40, height: 40, borderRadius: 10}}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <PersonIcon/>
+                    )}
+                  </View>
+                  <Text
+                  style={[styles.input, {color: '#A3A3A3'}]}
+                  // placeholder="Upload Photo"
+                >
+                  Upload Photo
+                </Text>
+                </TouchableOpacity>
+
+                
               </View>
               <View style={styles.inputContainer}>
                 <View

@@ -17,6 +17,7 @@ import HameBurgerIcon from '../assets/svgs/HamBurger.svg';
 import BlueLogo from '../assets/svgs/LogoInBlue.svg';
 import Logo from '../assets/svgs/LogoSvg.svg';
 import NotificationIcon from '../assets/svgs/notification.svg';
+import PlusIcon from '../assets/svgs/PlusIcon.svg';
 import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
 import axios from 'axios';
@@ -112,12 +113,11 @@ const HomeScreen = ({navigation}) => {
     extrapolate: 'clamp',
   });
 
-  const seatchIconBgColor = scrollY.interpolate({
+  const searchIconBgColor = scrollY.interpolate({
     inputRange: [0, 80],
     outputRange: ['#9ca2ff', '#7975FF'],
     extrapolate: 'clamp',
   });
-
   const searchTextColor = scrollY.interpolate({
     inputRange: [0, 80],
     outputRange: ['#FFFFFF', '#000000'],
@@ -175,12 +175,17 @@ const HomeScreen = ({navigation}) => {
                 </View>
               </View>
               <View style={styles.iconsRow}>
-                <View style={styles.iconContainer}>
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => navigation.navigate('CreateEventScreen')}>
+                  <PlusIcon />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconContainer}>
                   <NotificationIcon />
-                </View>
-                <View style={styles.iconContainer}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconContainer}>
                   <HameBurgerIcon />
-                </View>
+                </TouchableOpacity>
               </View>
             </Animated.View>
             <Animated.View
@@ -215,14 +220,15 @@ const HomeScreen = ({navigation}) => {
                 />
               </Animated.View>
 
-              <TouchableOpacity
-                onPress={handleSearch}
+              <Animated.View
                 style={[
-                  styles.searchButton,
-                  {backgroundColor: seatchIconBgColor},
+                  styles.iconContainer,
+                  {backgroundColor: searchIconBgColor},
                 ]}>
-                <SearchIcon />
-              </TouchableOpacity>
+                <TouchableOpacity onPress={handleSearch} hitSlop={20}>
+                  <SearchIcon />
+                </TouchableOpacity>
+              </Animated.View>
             </Animated.View>
           </Animated.View>
 
@@ -307,7 +313,7 @@ const HomeScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             {/* {console.log('length', events.length === 0)} */}
-            {loading && events.length === 0 && <Loader />}
+            {/* {loading && events.length === 0 && <Loader />} */}
           </Animated.ScrollView>
         </View>
       </BottomSheetModalProvider>

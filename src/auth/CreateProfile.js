@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     paddingHorizontal: 15,
   },
+  
   inputIcon: {
     width: 22,
     height: 22,

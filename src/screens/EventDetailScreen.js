@@ -19,6 +19,9 @@ import LanguageIcon from '../assets/svgs/Language.svg';
 import PetAllowanceIcon from '../assets/svgs/PetAllowanceIcon.svg';
 import BlueLogo from '../assets/svgs/LogoInBlue.svg';
 import LayoutIcon from '../assets/svgs/layoutIcon.svg';
+import InstaColouredIcon from '../assets/svgs/InstaColouredIcon.svg';
+import LinkedinColourIcon from '../assets/svgs/LinkedinColourIcon.svg';
+import TwitterBlackIcon from '../assets/svgs/TwitterBlackIcon.svg';
 
 import AgeIcon from '../assets/svgs/AgeIcon.svg';
 
@@ -102,18 +105,19 @@ const EventDetailScreen = ({route}) => {
               borderRadius: 10,
               overflow: 'hidden',
             }}>
-                          {events.event_images.length > 0 ? (
-                <Image
-                  source={{ uri: events.event_images[0].url }}
-                  resizeMode="cover"
-                  style={{width: '100%', height: '100%'}}
-                />
-              ):(   <Image
+            {events.event_images.length > 0 ? (
+              <Image
+                source={{uri: events.event_images[0].url}}
+                resizeMode="cover"
+                style={{width: '100%', height: '100%'}}
+              />
+            ) : (
+              <Image
                 source={require('../assets/EventDumyImage.png')}
                 style={{width: '100%', height: '100%'}}
                 resizeMode="cover"
-              />)}
-           
+              />
+            )}
           </View>
           <Text
             style={{
@@ -343,30 +347,30 @@ const EventDetailScreen = ({route}) => {
                 </View>
               </View>
             </View>
-            {events.age_limit && 
-            <View style={styles.detailsSectionCon}>
-              <View
-                style={{
-                  gap: 10,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
+            {events.age_limit && (
+              <View style={styles.detailsSectionCon}>
                 <View
                   style={{
-                    backgroundColor: '#F5F6FF',
-                    borderRadius: 12,
-                    padding: 10,
+                    gap: 10,
+                    flexDirection: 'row',
+                    alignItems: 'center',
                   }}>
-                  <AgeIcon />
-                </View>
-               
-                <View style={styles.detailTextCon}>
-                  <Text>Min. Age</Text>
-                  <Text>{events.age_limit}</Text>
+                  <View
+                    style={{
+                      backgroundColor: '#F5F6FF',
+                      borderRadius: 12,
+                      padding: 10,
+                    }}>
+                    <AgeIcon />
+                  </View>
+
+                  <View style={styles.detailTextCon}>
+                    <Text>Min. Age</Text>
+                    <Text>{events.age_limit}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-                }
+            )}
           </View>
         </View>
         <View style={styles.sectionCon}>
@@ -407,16 +411,46 @@ const EventDetailScreen = ({route}) => {
             Hosts
           </Text>
           <View style={styles.divider} />
-          <View style={{gap: 10}}>
-            {events?.host_social?.host_names?.map((hostName, index) => (
-              <View key={index} style={styles.hostRow}>
-                <Image
-                  source={require('../assets/PersonImage.png')} // Fallback image
-                  style={styles.hostImage}
-                />
-                <Text style={styles.hostName}>{hostName}</Text>
-              </View>
-            ))}
+          <View style={{gap: 10,width:"100%"}}>
+            {events?.host_social?.host_names?.map((hostName, index) => {
+              const hostPhoto = events?.host_social?.photos?.[index];
+
+              return (
+                <View key={index} style={styles.hostRow}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 10,
+                       width:"40%",
+                    }}>
+                    <Image
+                      source={
+                        hostPhoto?.url
+                          ? {uri: hostPhoto.url} // Show actual image from base64 or URL
+                          : require('../assets/PersonImage.png') // Fallback
+                      }
+                      style={styles.hostImage}
+                    />
+                    <Text style={styles.hostName}>{hostName}</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      height: '100%',
+                      width:"40%",
+                      justifyContent:"space-between",
+                      alignItems:"center",
+                      // gap:16
+                    }}>
+                      <InstaColouredIcon  />
+                      <TwitterBlackIcon />
+                      <LinkedinColourIcon />
+                    </View>
+                </View>
+              );
+            })}
           </View>
         </View>
         <View
@@ -488,7 +522,9 @@ const styles = StyleSheet.create({
   hostRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10, // or use marginRight if 'gap' not supported
+    gap: 10,
+    justifyContent: 'space-between',
+    width: "100%",
   },
 
   hostImage: {
@@ -500,8 +536,8 @@ const styles = StyleSheet.create({
   },
 
   hostName: {
-    fontSize: 14,
-    color: '#4A4A4A',
+    fontSize: 18,
+    color: '#6A6A6A',
     fontFamily: 'BricolageGrotesque_24pt-Regular', // Or any other working font
   },
 
