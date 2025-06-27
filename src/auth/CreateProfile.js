@@ -73,7 +73,7 @@ const CreateProfile = ({navigation, route}) => {
       }
       
      
-      const response = await axios.post(CREATE_PROFILE_API, formData, {
+      const response = await axios.put(CREATE_PROFILE_API, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },});
