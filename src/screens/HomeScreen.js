@@ -36,6 +36,20 @@ const HomeScreen = ({navigation}) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState();
+
+
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Show/hide tab bar based on bottom sheet state
+      navigation.getParent()?.setOptions({
+        tabBarStyle: isBottomSheetOpen ? { display: 'none' } : undefined
+      });
+    }, [isBottomSheetOpen, navigation])
+  );
+
+
   const handleSearch = () => {
     setQuery(input);
   };
@@ -64,12 +78,13 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      GetEventList();
-      return () => {};
-    }, []),
-  );
+useFocusEffect(
+  useCallback(() => {
+    GetEventList(); // This runs only when screen comes into focus
+  }, [])
+);
+  const [addCommentText, setAddCommentText] = useState('');
+
 
   const headerItemOpacity = scrollY.interpolate({
     inputRange: [0, 30],
@@ -255,7 +270,19 @@ const HomeScreen = ({navigation}) => {
                 </View>
               ))}
             </ScrollView>
-
+           <TextInput
+  placeholder="Add Your Comment"
+  value={addCommentText}
+  onChangeText={text => setAddCommentText(text)}
+  placeholderTextColor={'#4A4A4A'}
+  multiline={true}
+  style={{
+    flex: 1,
+    fontSize: 16,
+    color: '#4A4A4A',
+    textAlignVertical: 'top', // Important on Android to prevent layout jumps
+  }}
+/>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={styles.sectionTitle}>Upcoming Events</Text>
@@ -279,7 +306,7 @@ const HomeScreen = ({navigation}) => {
               <FlatList
                 data={events}
                 renderItem={({item}) => (
-                  <EventCard item={item} navigation={navigation} />
+                  <EventCard item={item} navigation={navigation} setIsBottomSheetOpen={setIsBottomSheetOpen}/>
                 )}
                 keyExtractor={item => item.id.toString()}
                 showsVerticalScrollIndicator={false}
@@ -313,7 +340,7 @@ const HomeScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             {/* {console.log('length', events.length === 0)} */}
-            {/* {loading && events.length === 0 && <Loader />} */}
+            {loading && events.length === 0 && <Loader />}
           </Animated.ScrollView>
         </View>
       </BottomSheetModalProvider>

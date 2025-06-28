@@ -115,17 +115,16 @@ const CreateEventScreen = ({navigation}) => {
 
     const formData = new FormData();
     formData.append('event_name', eventName);
-    hosts.forEach(host => {
-      formData.append('host_names', host.name);
-    });
+   const hostNames = hosts.map(host => host.name); // ["Meghana", "Someone else"]
+formData.append('host_names', JSON.stringify(hostNames));
+
     formData.append('duration', duration);
     formData.append('age_limit', age);
     formData.append('language', language);
     formData.append('seating', seating);
     formData.append('layout', layout);
-    const tagsString = tags.join(',');
-    formData.append('event_tags', tagsString);
-    console.log('tags', tags);
+   formData.append('event_tags', JSON.stringify(tags)); // Correct ✅
+
 
     formData.append('pet_allowance', pet_allowance);
     formData.append('description', description);
