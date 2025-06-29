@@ -16,7 +16,7 @@ import FrameIcon from '../assets/svgs/Frame1.svg';
 import GoogleIcon from '../assets/svgs/GoogleIcon.svg';
 import InstaIcon from '../assets/svgs/SocialIcons.svg';
 import {LOGIN_API, SIGNWITHGOOGLE_API} from '../utils/ApiHelper';
-import {StorageUtils} from '../utils/StorageUtils';
+import {isDebug, StorageUtils} from '../utils/StorageUtils';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
 import {emailValidater} from '../utils/validations/emailValidater';
 import {passwordValidater} from '../utils/validations/passwordValidater';
@@ -89,7 +89,7 @@ const LoginScreen = ({navigation}) => {
   };
 
   const handleLogin = async () => {
-    console.log('rrreddddddddddddddd');
+    isDebug && console.log('rrreddddddddddddddd');
     if (checkValidation() === false) {
       return;
     }
@@ -105,8 +105,8 @@ const LoginScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Login Data:', data);
-      console.log('Login API URL:', LOGIN_API);
+      isDebug && console.log('Login Data:', data);
+      isDebug && console.log('Login API URL:', LOGIN_API);
 
       const response = await axios.post(LOGIN_API, data, config);
       if (response.status === 200) {
@@ -119,11 +119,11 @@ const LoginScreen = ({navigation}) => {
           });
         }, 2000);
       }
-      console.log('Response:', response);
+      isDebug && console.log('Response:', response);
     } catch (error) {
       setLoading(false);
       showToastMSGError(error.response.data.error);
-      console.log('Login Error:', error.response.data.error);
+      isDebug && console.log('Login Error:', error.response.data.error);
     }
   };
 
@@ -134,21 +134,21 @@ const LoginScreen = ({navigation}) => {
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-      console.log('Google Sign-In Response:', userInfo);
+      isDebug && console.log('Google Sign-In Response:', userInfo);
       const {idToken, user} = userInfo.data;
 
       if (!idToken) {
-        console.log('No ID Token received.');
+        isDebug && console.log('No ID Token received.');
         return;
       } else {
-        console.log('ID Token received:', idToken);
+        isDebug && console.log('ID Token received:', idToken);
       }
 
       googleAuthData.current = {idToken, user};
 
       await performSSOLogin();
     } catch (error) {
-      console.log('Google Sign-In Error:', error);
+      isDebug && console.log('Google Sign-In Error:', error);
 
       if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
       } else {
@@ -159,10 +159,10 @@ const LoginScreen = ({navigation}) => {
   };
 
   const performSSOLogin = async () => {
-    console.log('Performing SSO login');
+    isDebug && console.log('Performing SSO login');
 
     if (!googleAuthData.current?.idToken) {
-      console.log('No ID token available');
+      isDebug && console.log('No ID token available');
       return;
     }
 
@@ -183,7 +183,7 @@ const LoginScreen = ({navigation}) => {
           });
         }, 100);
       }
-      console.log('Response:', response.data);
+      isDebug && console.log('Response:', response.data);
     } catch (error) {
       console.error('SSO Login Error:', error.response?.data || error.message);
     }

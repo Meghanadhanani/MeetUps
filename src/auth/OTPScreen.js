@@ -16,10 +16,11 @@ import {
   SIGNUP_API
 } from '../utils/ApiHelper';
 import { showToastMSGError, showToastMSGNormal } from '../utils/ToastMessages';
+import { isDebug } from '../utils/StorageUtils';
 
 const OTPScreen = ({navigation, route}) => {
   const {email, flow} = route.params;
-  console.log("flow", flow);
+  isDebug && console.log("flow", flow);
   
   const [otp, setOtp] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(59);
@@ -88,7 +89,7 @@ const OTPScreen = ({navigation, route}) => {
       });
 
       if (response.data.success) {
-        console.log('OTP resposne', response.data);
+        isDebug && console.log('OTP resposne', response.data);
         showToastMSGNormal(response.data.message);
         setTimeout(() => {
           if (flow === 'ForgotPassword') {
@@ -117,10 +118,10 @@ const OTPScreen = ({navigation, route}) => {
         }, 2000);
       } else {
         showToastMSGError('Failed to resend OTP');
-        console.log(response.data.message || 'Verification failed');
+        isDebug && console.log(response.data.message || 'Verification failed');
       }
     } catch (error) {
-      console.log('errrr', error.response.data);
+      isDebug && console.log('errrr', error.response.data);
       showToastMSGError(error.response.data.message);
       setOtp(['', '', '', '']);
       inputRefs[0].current?.focus();
@@ -141,7 +142,7 @@ const OTPScreen = ({navigation, route}) => {
           Accept: 'application/json',
         },
       };
-      console.log('Sending OTP to:', email);
+      isDebug && console.log('Sending OTP to:', email);
 
       const response = await axios.post(
         FORGOT_PASSWORD_API,
@@ -155,7 +156,7 @@ const OTPScreen = ({navigation, route}) => {
         setTimer(59);
       }
     } catch (error) {
-      console.log('errrrrrrrr', error.response.data);
+      isDebug && console.log('errrrrrrrr', error.response.data);
 
       showToastMSGError('Failed to resend OTP');
     } finally {

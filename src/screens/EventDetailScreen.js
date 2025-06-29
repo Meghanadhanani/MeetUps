@@ -32,16 +32,19 @@ import {
   formatDescription,
   formatTime,
 } from '../utils/UtilFunctions';
+import { isDebug } from '../utils/StorageUtils';
 const EventDetailScreen = ({route}) => {
+  
   const {events} = route.params;
+  isDebug && console.log("event from feature", events);
   // const [events, setEvents] = useState([]);
   const [showTitle, setShowTitle] = useState(false);
   const isFocused = useIsFocused();
-  console.log('eventtttttttttttttttt', events);
+  isDebug && console.log('eventtttttttttttttttt', events?.host_names);
   const GetEventList = async () => {
     try {
       const resposne = await axios.get(`${GET_EVENTLIST_BYID_API}/${event}`);
-      console.log('resposne of idddd', resposne.data);
+      isDebug && console.log('resposne of idddd', resposne.data);
       // setEvents(resposne.data);
     } catch (error) {
       console.error('Error fetching event list:', error);
@@ -80,7 +83,7 @@ const EventDetailScreen = ({route}) => {
   return (
     <View style={styles.container}>
       <CustomBackBtn
-        iconName={[{icon: <ShareBtn />, onPress: () => console.log('Share')}]}
+        iconName={[{icon: <ShareBtn />, onPress: () => isDebug && console.log('Share')}]}
         title={showTitle ? events.event_name : undefined}
       />
       <ScrollView
@@ -145,7 +148,7 @@ const EventDetailScreen = ({route}) => {
             {/* <View style={{justifyContent: 'center',width:"85%", backgroundColor:"pink"}}> */}
 
             <Text style={styles.attendeeCount}>
-              Hosted by {formatHostNames(events.host_social.host_names)}
+              Hosted by {formatHostNames(events?.host_names)}
             </Text>
             {/* </View> */}
           </View>
@@ -412,7 +415,7 @@ const EventDetailScreen = ({route}) => {
           </Text>
           <View style={styles.divider} />
           <View style={{gap: 10,width:"100%"}}>
-            {events?.host_social?.host_names?.map((hostName, index) => {
+            {events?.host_names?.map((hostName, index) => {
               const hostPhoto = events?.host_social?.photos?.[index];
 
               return (

@@ -16,7 +16,7 @@ import MaleIcon from '../assets/svgs/MaleIcon.svg';
 import ConfirmIcon from '../assets/svgs/Password.svg';
 import PersionIcon from '../assets/svgs/Person.svg';
 import {CREATE_PROFILE_API, LOGIN_API} from '../utils/ApiHelper';
-import {StorageUtils} from '../utils/StorageUtils';
+import {isDebug, StorageUtils} from '../utils/StorageUtils';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
 import {emailValidater} from '../utils/validations/emailValidater';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -42,20 +42,20 @@ const CreateProfile = ({navigation, route}) => {
   const handleImageUpload = () => {
     launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
+        isDebug && console.log('User cancelled image picker');
       } else if (response.errorCode) {
         console.error('ImagePicker Error: ', response.errorMessage);
       } else {
         const asset = response.assets[0];
         setBannerImage(asset);
         
-        console.log('Selected Image:', asset);
+        isDebug && console.log('Selected Image:', asset);
       }
     });
   };
   const handleProfileCreate = async () => {
     try {
-      console.log("email", email);
+      isDebug && console.log("email", email);
       
       const formData = new FormData();
 
@@ -78,7 +78,7 @@ const CreateProfile = ({navigation, route}) => {
           'Content-Type': 'multipart/form-data',
         },});
       if (response.data) {
-              console.log('PRofile resposne', response.data);
+              isDebug && console.log('PRofile resposne', response.data);
               showToastMSGNormal(response.data.message);
               setTimeout(() => {
                 navigation.reset({
@@ -92,9 +92,9 @@ const CreateProfile = ({navigation, route}) => {
                 
               }, 2000);
             } 
-      console.log('res---------------', response.data);
+      isDebug && console.log('res---------------', response.data);
     } catch (error) {
-      console.log('errr', error);
+      isDebug && console.log('errr', error);
     }
   };
   return (

@@ -18,6 +18,7 @@ import EventDetailScreen from '../screens/EventDetailScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import RecoverAccountScreen from '../auth/RecoverAccountScreen';
 import CreateNewPasswordScreen from '../auth/CreateNewPasswordScreen';
+import AnimatedHeader from '../screens/AnimatedHeader';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -30,6 +31,7 @@ export default function AppNavigator() {
             headerShown: false,
             animation: 'slide_from_right',
           }}>
+            <Stack.Screen name="AnimatedHeader" component={AnimatedHeader} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="SignupScreen" component={SignupScreen} />
           <Stack.Screen name="SplashScreen" component={SplashScreen} />

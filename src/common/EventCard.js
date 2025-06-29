@@ -37,6 +37,7 @@ import {
   getUserToken,
 } from '../utils/UtilFunctions';
 import {useTabVisibility} from './TabVisibilityContext';
+import { isDebug } from '../utils/StorageUtils';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -54,11 +55,11 @@ const EventCard = ({item, navigation}) => {
   const handleLikeToggle = async () => {
     if (isLoading) return;
 
-    console.log('Like button pressed - Current state:', isLiked);
+    isDebug && console.log('Like button pressed - Current state:', isLiked);
 
     const token = await getUserToken();
     if (!token) {
-      console.log('No auth token found');
+      isDebug && console.log('No auth token found');
       return;
     }
 
@@ -73,7 +74,7 @@ const EventCard = ({item, navigation}) => {
 
     try {
       if (previousIsLiked) {
-        console.log('Unliking event:', item.id);
+        isDebug && console.log('Unliking event:', item.id);
         const response = await axios.post(
           `${REMOVE_FAVOURITE_API}/${item.id}`,
           {},
@@ -83,9 +84,9 @@ const EventCard = ({item, navigation}) => {
             },
           },
         );
-        console.log('Unlike response:', response.data);
+        isDebug && console.log('Unlike response:', response.data);
       } else {
-        console.log('Liking event:', item.id);
+        isDebug && console.log('Liking event:', item.id);
         const response = await axios.post(
           `${ADD_FAVOURITE_API}/${item.id}`,
           {},
@@ -95,10 +96,10 @@ const EventCard = ({item, navigation}) => {
             },
           },
         );
-        console.log('Like response:', response.data);
+        isDebug && console.log('Like response:', response.data);
       }
     } catch (error) {
-      console.log(
+      isDebug && console.log(
         'Error toggling like:',
         error.response?.data || error.message,
       );
@@ -148,7 +149,7 @@ const EventCard = ({item, navigation}) => {
     try {
       setIsLoading(true);
       const response = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
-      console.log('Comments response:', response.data);
+      isDebug && console.log('Comments response:', response.data);
       
       if (response.data && response.data.comments) {
         const allcomments = response.data.comments.map(comment => {
@@ -161,13 +162,13 @@ const EventCard = ({item, navigation}) => {
         });
         setTotalComments(response.data.total_comments);
         setComments(allcomments);
-        console.log('total comments:', response.data.total_comments);
+        isDebug && console.log('total comments:', response.data.total_comments);
       }
       
       showModal();
       
     } catch (error) {
-      console.log('Error handling comment press:', error);
+      isDebug && console.log('Error handling comment press:', error);
     } finally {
       setIsLoading(false);
     }
@@ -175,13 +176,13 @@ const EventCard = ({item, navigation}) => {
 
   const handleAddCommentPress = async () => {
     if (addCommentText.trim().length < 3) {
-      console.log('Comment must be at least 3 characters long');
+      isDebug && console.log('Comment must be at least 3 characters long');
       return;
     }
     
     const token = await getUserToken();
     if (!token) {
-      console.log('No auth token found');
+      isDebug && console.log('No auth token found');
       return;
     }
     
@@ -217,7 +218,7 @@ const EventCard = ({item, navigation}) => {
       }
       
     } catch (error) {
-      console.log('Error adding comment:', error);
+      isDebug && console.log('Error adding comment:', error);
     }
   };
 

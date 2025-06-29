@@ -3,7 +3,7 @@
 
 // const ProfileScreen = ({route}) => {
 //   const {item} = route.params;
-//   console.log('------------', item);
+//   isDebug && console.log('------------', item);
 
 //   return <View>
 //    <View style={{ borderRadius: 10, overflow: 'hidden' }}>

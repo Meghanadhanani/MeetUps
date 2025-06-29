@@ -1,4 +1,3 @@
-
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import HomeScreen from '../screens/HomeScreen';
@@ -22,7 +21,8 @@ import {
   Dimensions,
 } from 'react-native';
 import ProfileScreen from '../screens/ProfileScreen';
-import { useTabVisibility } from '../common/TabVisibilityContext';
+import {useTabVisibility} from '../common/TabVisibilityContext';
+import PastEventScreen from '../screens/PastEventScreen';
 
 const {width} = Dimensions.get('window');
 const TAB_WIDTH = (width - 50) / 2; // 25 margin on both sides
@@ -82,21 +82,18 @@ const CustomTabBarButton = ({state, descriptors, navigation}) => {
           //     {label}
           //   </Text>
           // </TouchableOpacity>
-                    <TouchableOpacity
-                    key={index}
-                    onPress={onPress}
-                    style={{
-                      flex: 1,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      margin: 5,
-                      borderRadius: 10,
-                     
-                    }}>
-                      <Text style={{ color: isFocused ? '#fff' : '#6D5CFF',}}>
-                    {label}
-                      </Text>
-                  </TouchableOpacity>
+          <TouchableOpacity
+            key={index}
+            onPress={onPress}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: 5,
+              borderRadius: 10,
+            }}>
+            <Text style={{color: isFocused ? '#fff' : '#6D5CFF'}}>{label}</Text>
+          </TouchableOpacity>
         );
       })}
     </View>
@@ -104,27 +101,29 @@ const CustomTabBarButton = ({state, descriptors, navigation}) => {
 };
 
 const BottomTabNavigator = () => {
-    const { isTabVisible } = useTabVisibility();
+  const {isTabVisible} = useTabVisibility();
 
   return (
     <Tab.Navigator
-    tabBar={props => isTabVisible ? <CustomTabBarButton {...props} /> : null}
+      tabBar={props =>
+        isTabVisible ? <CustomTabBarButton {...props} /> : null
+      }
       screenOptions={({route}) => ({
         headerShown: false,
         tabBarStyle: {
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    elevation: 0,
-                    backgroundColor: '#fff',
-                    borderTopWidth: 0,
-                    height: 60,
-                    marginHorizontal: 25,
-                    borderRadius: 10,
-                    marginBottom: 20,
-                    elevation: 6,
-                  },
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          elevation: 0,
+          backgroundColor: '#fff',
+          borderTopWidth: 0,
+          height: 60,
+          marginHorizontal: 25,
+          borderRadius: 10,
+          marginBottom: 20,
+          elevation: 6,
+        },
         tabBarShowIcon: false,
         tabBarActiveTintColor: '#fff',
         tabBarInactiveTintColor: '#6D5CFF',
@@ -140,7 +139,8 @@ const BottomTabNavigator = () => {
         },
       })}>
       <Tab.Screen name="Upcoming Events" component={HomeScreen} />
-      <Tab.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Tab.Screen name="Past Events" component={PastEventScreen} />
+      {/* <Tab.Screen name="ProfileScreen" component={ProfileScreen} /> */}
     </Tab.Navigator>
   );
 };

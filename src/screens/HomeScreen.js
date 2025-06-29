@@ -21,12 +21,14 @@ import PlusIcon from '../assets/svgs/PlusIcon.svg';
 import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
 import axios from 'axios';
-import {GET_EVENTLIST_API} from '../utils/ApiHelper';
+import {GET_EVENTLIST_API, GET_FEATURED_EVENTS_API} from '../utils/ApiHelper';
 import {useFocusEffect} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
+import { isDebug } from '../utils/StorageUtils';
+import AnimatedHeader from './AnimatedHeader';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -36,9 +38,30 @@ const HomeScreen = ({navigation}) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState();
-
+const [featuredEvent, setFeaturedEvent] = useState([])
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+
+  const GetFeaturedEvents = async()=>{
+    const token = await getUserToken()
+    try {
+    const resposne = await axios.get(GET_FEATURED_EVENTS_API, {
+      headers:{
+         Authorization: `Bearer ${token}`,
+      }
+    })
+  const allFeaturedEvents = resposne.data.featured_events;
+setFeaturedEvent(allFeaturedEvents)
+    isDebug && console.log("res for featured api", resposne.data.featured_events);
+    
+  } catch (error) {
+    isDebug && console.log("errrrr", error);
+    
+  }
+}
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -56,7 +79,7 @@ const HomeScreen = ({navigation}) => {
 
   const GetEventList = async () => {
     try {
-      console.log('fetching data started');
+      isDebug && console.log('fetching data started');
 
       setLoading(true);
       const token = await getUserToken();
@@ -67,9 +90,9 @@ const HomeScreen = ({navigation}) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
+      isDebug && console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
 
-      console.log('resposne', resposne.data);
+      isDebug && console.log('resposne', resposne.data);
       setEvents(resposne.data.sort((a, b) => b.id - a.id));
     } catch (error) {
       console.error('Error fetching event list:', error);
@@ -77,10 +100,18 @@ const HomeScreen = ({navigation}) => {
       setLoading(false);
     }
   };
+ useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: isBottomSheetOpen ? { display: 'none' } : undefined
+      });
+    }, [isBottomSheetOpen, navigation])
+  );
 
 useFocusEffect(
   useCallback(() => {
-    GetEventList(); // This runs only when screen comes into focus
+    GetEventList(); 
+    GetFeaturedEvents()// This runs only when screen comes into focus
   }, [])
 );
   const [addCommentText, setAddCommentText] = useState('');
@@ -152,12 +183,14 @@ useFocusEffect(
       throttle: 16,
     },
   );
-
+  const handlePress = () => {
+    navigation.navigate('EventDetailScreen', {events: item});
+  };
   return (
     <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
         <View style={styles.container}>
-          <Animated.View
+          {/* <Animated.View
             style={[
               styles.header,
               {
@@ -245,8 +278,14 @@ useFocusEffect(
                 </TouchableOpacity>
               </Animated.View>
             </Animated.View>
-          </Animated.View>
-
+          </Animated.View> */}
+  <AnimatedHeader
+            navigation={navigation}
+            scrollY={scrollY}
+            input={input}
+            setInput={setInput}
+            onSearch={handleSearch}
+          />
           <Animated.ScrollView
             contentContainerStyle={styles.scrollContent}
             style={styles.scrollView}
@@ -259,15 +298,16 @@ useFocusEffect(
               horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.horizontalScrollView}>
-              {[1, 2, 3, 4].map((item, index) => (
-                <View key={index} style={styles.featuredEventCard}>
+              {featuredEvent.map((item, index) => (
+                <TouchableOpacity key={index} style={styles.featuredEventCard}  onPress={() => navigation.navigate("EventDetailScreen", { events: item })}>
                   <Image
-                    source={require('../assets/FeatureEvent.png')}
+                  source={{uri:item.event_images[0].url}}
+                    // source={require('../assets/FeatureEvent.png')}
                     width={'100%'}
                     height={'100%'}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           
@@ -327,7 +367,7 @@ useFocusEffect(
                 </Text>
               </TouchableOpacity>
             </View>
-            {/* {console.log('length', events.length === 0)} */}
+            {/* {isDebug && console.log('length', events.length === 0)} */}
             {loading && events.length === 0 && <Loader />}
           </Animated.ScrollView>
         </View>

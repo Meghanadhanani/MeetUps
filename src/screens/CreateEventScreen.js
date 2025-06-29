@@ -45,6 +45,7 @@ import {
 } from '../utils/ToastMessages';
 import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
+import { isDebug } from '../utils/StorageUtils';
 
 const CreateEventScreen = ({navigation}) => {
   const [hosts, setHosts] = useState([
@@ -107,11 +108,11 @@ const CreateEventScreen = ({navigation}) => {
 
   const CreateEventApi = async () => {
     const token = await getUserToken();
-    console.log('tpken', token);
+    isDebug && console.log('tpken', token);
 
-    console.log('is Free ', isFree.toString());
-    console.log('is online ', isOnline.toString());
-    console.log('ticket privce:', ticket_price);
+    isDebug && console.log('is Free ', isFree.toString());
+    isDebug && console.log('is online ', isOnline.toString());
+    isDebug && console.log('ticket privce:', ticket_price);
 
     const formData = new FormData();
     formData.append('event_name', eventName);
@@ -165,13 +166,13 @@ formData.append('host_names', JSON.stringify(hostNames));
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('respones of create event api', response.data);
+      isDebug && console.log('respones of create event api', response.data);
       if (response.status == 201) {
         showToastMSGNormal('Event Created Successfully');
         navigation.navigate('BottomTabs');
       }
     } catch (error) {
-      console.log('errrrrrrrrrrr', error.response.data);
+      isDebug && console.log('errrrrrrrrrrr', error.response.data);
       showToastMSGError(error.response.data.error);
     } finally {
       setLoading(false);
@@ -181,20 +182,20 @@ formData.append('host_names', JSON.stringify(hostNames));
   const handleImageUpload = () => {
     launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
+        isDebug && console.log('User cancelled image picker');
       } else if (response.errorCode) {
         console.error('ImagePicker Error: ', response.errorMessage);
       } else {
         const asset = response.assets[0];
         setBannerImage(asset);
-        console.log('Selected Image:', asset);
+        isDebug && console.log('Selected Image:', asset);
       }
     });
   };
   const handleHostImageUpload = (index) => {
     launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
+        isDebug && console.log('User cancelled image picker');
       } else if (response.errorCode) {
         console.error('ImagePicker Error: ', response.errorMessage);
       } else {
@@ -204,7 +205,7 @@ formData.append('host_names', JSON.stringify(hostNames));
           updatedHosts[index].hostImage = asset; // Save image per host
           return updatedHosts;
         });
-                console.log('Selected Image:', asset);
+                isDebug && console.log('Selected Image:', asset);
       }
     });
   };
@@ -264,8 +265,8 @@ formData.append('host_names', JSON.stringify(hostNames));
     <View style={styles.container}>
       <CustomBackBtn
         iconName={[
-          {icon: <RetryIcon />, onPress: () => console.log('Share')},
-          {icon: <DeleteIcon />, onPress: () => console.log('Settings')},
+          {icon: <RetryIcon />, onPress: () => isDebug && console.log('Share')},
+          {icon: <DeleteIcon />, onPress: () => isDebug && console.log('Settings')},
         ]}
         onPress={() => navigation.goBack()}
       />

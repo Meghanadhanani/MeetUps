@@ -18,3 +18,5 @@ export const FORGOT_PASSWORD_API = BASEURL + 'forgot-password';
 export const RESET_PASSWORD_API = BASEURL + 'reset-password';
 export const ADD_COMMENTS_API = BASEURL + 'addComment';
 export const GET_COMMENTS_API = BASEURL + 'getComments';
+export const GET_FEATURED_EVENTS_API = BASEURL + "featuredEvents"
+export const GET_PAST_EVENTS_API = BASEURL + "pastFeaturedEvents"

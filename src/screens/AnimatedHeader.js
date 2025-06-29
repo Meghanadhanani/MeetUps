@@ -1,0 +1,432 @@
+import React, { useState } from 'react';
+import {
+    Animated,
+    Image,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
+import ArrowIcon from '../assets/svgs/ArrowIcon.svg';
+import HameBurgerIcon from '../assets/svgs/HamBurger.svg';
+import BlueLogo from '../assets/svgs/LogoInBlue.svg';
+import Logo from '../assets/svgs/LogoSvg.svg';
+import NotificationIcon from '../assets/svgs/notification.svg';
+import PlusIcon from '../assets/svgs/PlusIcon.svg';
+import SearchIcon from '../assets/svgs/search.svg';
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
+const AnimatedHeader = ({ 
+  navigation, 
+  scrollY, 
+  input, 
+  setInput, 
+  onSearch 
+}) => {
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch(input);
+    }
+  };
+
+  // Animation interpolations
+  const headerItemOpacity = scrollY.interpolate({
+    inputRange: [0, 30],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [160, 85],
+    extrapolate: 'clamp',
+  });
+
+  const searchBarTranslateY = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [0, -70],
+    extrapolate: 'clamp',
+  });
+
+  const headerBackgroundColor = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: ['#6A66FF', '#FFFFFF'],
+    extrapolate: 'clamp',
+  });
+
+  const whiteLogoOpacity = scrollY.interpolate({
+    inputRange: [0, 40],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const blueLogoOpacity = scrollY.interpolate({
+    inputRange: [0, 40],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
+  const searchBgColor = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: ['#9ca2ff', '#F6F6F6'],
+    extrapolate: 'clamp',
+  });
+
+  const searchIconBgColor = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: ['#9ca2ff', '#7975FF'],
+    extrapolate: 'clamp',
+  });
+
+  const searchTextColor = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: ['#FFFFFF', '#000000'],
+    extrapolate: 'clamp',
+  });
+
+  const searchPlaceholderTextColor = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: ['rgba(255,255,255,0.8)', 'rgba(18,18,18,0.6)'],
+    extrapolate: 'clamp',
+  });
+
+  return (
+    <Animated.View
+      style={[
+        styles.header,
+        {
+          height: headerHeight,
+          backgroundColor: headerBackgroundColor,
+        },
+      ]}>
+      <Animated.View
+        style={[
+          styles.headerTopRow,
+          {
+            opacity: headerItemOpacity,
+          },
+        ]}>
+        <View style={styles.profileRow}>
+          <TouchableOpacity style={styles.profileContainer} onPress={()=> navigation.navigate("ProfileScreen")}>
+            <Image
+              source={require('../assets/PersonImage.png')}
+              style={styles.image1}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+
+          <View style={styles.userInfoContainer}>
+            <Text style={styles.userGreeting}>Hello Alex</Text>
+            <View style={styles.locationContainer}>
+              <Text style={styles.locationText}>Ahmedabad</Text>
+              <ArrowIcon />
+            </View>
+          </View>
+        </View>
+        <View style={styles.iconsRow}>
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => navigation.navigate('CreateEventScreen')}>
+            <PlusIcon />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconContainer}>
+            <NotificationIcon />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconContainer}>
+            <HameBurgerIcon />
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
+      <Animated.View
+        style={[
+          styles.searchBarContainer,
+          {
+            transform: [{ translateY: searchBarTranslateY }],
+          },
+        ]}>
+        <View style={styles.logoWrapper}>
+          <Animated.View
+            style={[styles.logoContainer, { opacity: whiteLogoOpacity }]}>
+            <Logo />
+          </Animated.View>
+          <Animated.View
+            style={[styles.logoContainer, { opacity: blueLogoOpacity }]}>
+            <BlueLogo />
+          </Animated.View>
+        </View>
+
+        <Animated.View
+          style={[
+            styles.searchInputContainer,
+            { backgroundColor: searchBgColor },
+          ]}>
+          <AnimatedTextInput
+            style={[styles.searchInput, { color: searchTextColor }]}
+            placeholder="Search Anything..."
+            placeholderTextColor={searchPlaceholderTextColor}
+            value={input}
+            onChangeText={setInput}
+          />
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: searchIconBgColor },
+          ]}>
+          <TouchableOpacity onPress={handleSearch} hitSlop={20}>
+            <SearchIcon />
+          </TouchableOpacity>
+        </Animated.View>
+      </Animated.View>
+    </Animated.View>
+  );
+};
+
+export default AnimatedHeader;
+
+const styles = StyleSheet.create({
+  image1: {
+    height: '100%',
+    width: '100%',
+  },
+  profileContainer: {
+    aspectRatio: 1,
+    width: 40,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  iconContainer: {
+    backgroundColor: '#9ca2ff',
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    aspectRatio: 1,
+  },
+  header: {
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 25,
+    width: '100%',
+    justifyContent: 'space-between',
+    zIndex: 100,
+    elevation: 10,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  profileRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  userInfoContainer: {
+    justifyContent: 'center',
+  },
+  userGreeting: {
+    fontWeight: '600',
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  locationText: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: '#EEEEEE',
+  },
+  iconsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  searchBarContainer: {
+    marginTop: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  logoWrapper: {
+    width: '10%',
+    height: 50,
+    justifyContent: 'center',
+  },
+  logoContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchInputContainer: {
+    borderRadius: 10,
+    width: '70%',
+    height: 50,
+  },
+  searchInput: {
+    flex: 1,
+    paddingLeft: 10,
+    fontSize: 16,
+  },
+   container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  createEventCard: {
+    width: '100%',
+    backgroundColor: '#DDE1FF',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    gap: 10,
+  },
+  createText: {
+    color: '#6D5CFF',
+    fontSize: 24,
+    textAlign: 'center',
+    fontWeight: '600',
+    fontFamily: 'BricolageGrotesque_24pt-Regular',
+  },
+  image1: {
+    height: '100%',
+    width: '100%',
+  },
+  profileContainer: {
+    aspectRatio: 1,
+    width: 40,
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  iconContainer: {
+    backgroundColor: '#9ca2ff',
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    aspectRatio: 1,
+  },
+  header: {
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 25,
+    width: '100%',
+    justifyContent: 'space-between',
+    zIndex: 100,
+    elevation: 10,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  profileRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  userInfoContainer: {
+    justifyContent: 'center',
+  },
+  userGreeting: {
+    fontWeight: '600',
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  locationText: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: '#EEEEEE',
+  },
+  iconsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  searchBarContainer: {
+    marginTop: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  logoWrapper: {
+    width: '10%',
+    height: 50,
+    justifyContent: 'center',
+  },
+  logoContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchInputContainer: {
+    borderRadius: 10,
+    width: '70%',
+    height: 50,
+  },
+  searchInput: {
+    flex: 1,
+    paddingLeft: 10,
+    fontSize: 16,
+  },
+  searchButton: {
+    height: 50,
+    borderRadius: 10,
+    padding: 10,
+    width: '15%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollView: {
+    paddingHorizontal: 16,
+  },
+  scrollContent: {
+    paddingBottom: 100,
+    gap: 20,
+    paddingTop: 10,
+  },
+  sectionTitle: {
+    fontFamily: 'BricolageGrotesque_24pt-Regular',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2A2A2A',
+  },
+  horizontalScrollView: {
+    flexGrow: 0,
+  },
+  featuredEventCard: {
+    backgroundColor: '#9ca2ff',
+    width: 160,
+    height: 180,
+    borderRadius: 20,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  featuredEventText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+});

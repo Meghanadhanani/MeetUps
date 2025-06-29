@@ -13,7 +13,7 @@ import {
 import PasswordIcon from '../assets/svgs/Frame1.svg';
 import ConfirmIcon from '../assets/svgs/Password.svg';
 import {RESET_PASSWORD_API, SECURE_PASSWORD_API} from '../utils/ApiHelper';
-import {StorageUtils} from '../utils/StorageUtils';
+import {isDebug, StorageUtils} from '../utils/StorageUtils';
 import {showToastMSGError, showToastMSGNormal} from '../utils/ToastMessages';
 import {passwordValidater} from '../utils/validations/passwordValidater';
 const CreateNewPasswordScreen = ({navigation}) => {
@@ -81,11 +81,11 @@ const CreateNewPasswordScreen = ({navigation}) => {
           Accept: 'application/json',
         },
       };
-      console.log('data', data);
+      isDebug && console.log('data', data);
 
       const response = await axios.post(RESET_PASSWORD_API, data, config);
       if (response.status === 200) {
-        console.log('Password resss', response.data.message);
+        isDebug && console.log('Password resss', response.data.message);
 
         await StorageUtils.setItem('userData', response.data);
         showToastMSGNormal(response.data.message);
@@ -96,10 +96,10 @@ const CreateNewPasswordScreen = ({navigation}) => {
           });
         }, 100);
       }
-      console.log('Response:', response);
+      isDebug && console.log('Response:', response);
     } catch (error) {
       showToastMSGError(error.response.data.message);
-      console.log('PAssword Error:', error.response.data.message);
+      isDebug && console.log('PAssword Error:', error.response.data.message);
     }
   };
 

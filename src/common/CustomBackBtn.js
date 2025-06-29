@@ -68,10 +68,10 @@
 // const styles = StyleSheet.create({});
 
 // //   <CustomBackBtn
-// //         navigation={() => console.log('reeeeeeee')}
+// //         navigation={() => isDebug && console.log('reeeeeeee')}
 // //         iconName={[
-// //           {icon: <ShareBtn />, onPress: () => console.log('Share')},
-// //           {icon: <NotificationIcon />, onPress: () => console.log('Settings')},
+// //           {icon: <ShareBtn />, onPress: () => isDebug && console.log('Share')},
+// //           {icon: <NotificationIcon />, onPress: () => isDebug && console.log('Settings')},
 // //         ]}
 // //       />
 
@@ -141,9 +141,9 @@ const styles = StyleSheet.create({});
 
 
 //   <CustomBackBtn
-//         navigation={() => console.log('reeeeeeee')}
+//         navigation={() => isDebug && console.log('reeeeeeee')}
 //         iconName={[
-//           {icon: <ShareBtn />, onPress: () => console.log('Share')},
-//           {icon: <NotificationIcon />, onPress: () => console.log('Settings')},
+//           {icon: <ShareBtn />, onPress: () => isDebug && console.log('Share')},
+//           {icon: <NotificationIcon />, onPress: () => isDebug && console.log('Settings')},
 //         ]}
 //       />

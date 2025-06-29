@@ -103,21 +103,21 @@ const SignupScreen = ({navigation}) => {
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-      console.log('Google Sign-In Response:', userInfo);
+      isDebug && console.log('Google Sign-In Response:', userInfo);
       const {idToken, user} = userInfo.data;
 
       if (!idToken) {
-        console.log('No ID Token received.');
+        isDebug && console.log('No ID Token received.');
         return;
       } else {
-        console.log('ID Token received:', idToken);
+        isDebug && console.log('ID Token received:', idToken);
       }
 
       googleAuthData.current = {idToken, user};
 
       await performSSOLogin();
     } catch (error) {
-      console.log('Google Sign-In Error:', error);
+      isDebug && console.log('Google Sign-In Error:', error);
 
       if (error.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
         showToastMSGError('Google Services not available');
@@ -130,10 +130,10 @@ const SignupScreen = ({navigation}) => {
   };
 
   const performSSOLogin = async () => {
-    console.log('Performing SSO login');
+    isDebug && console.log('Performing SSO login');
 
     if (!googleAuthData.current?.idToken) {
-      console.log('No ID token available');
+      isDebug && console.log('No ID token available');
       return;
     }
 
@@ -154,7 +154,7 @@ const SignupScreen = ({navigation}) => {
           });
         }, 100);
       }
-      console.log('Response:', response.data);
+      isDebug && console.log('Response:', response.data);
     } catch (error) {
       console.error('SSO Login Error:', error.response?.data || error.message);
     }

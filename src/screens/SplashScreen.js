@@ -1,13 +1,13 @@
 import {Animated, StyleSheet, Text, View, Image} from 'react-native';
 import React, {useEffect, useRef} from 'react';
-import {StorageUtils} from '../utils/StorageUtils';
+import {isDebug, StorageUtils} from '../utils/StorageUtils';
 
 const SplashScreen = ({navigation}) => {
   useEffect(() => {
     const checkUserData = async () => {
       try {
         const userData = await StorageUtils.getItem('userData');
-        console.log("userdataaaaaaa",userData);
+        isDebug && console.log("userdataaaaaaa",userData);
         
         if (userData) {
           setTimeout(() => {
