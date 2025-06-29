@@ -1,10 +1,5 @@
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
 import axios from 'axios';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -13,6 +8,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Modal,
+  Animated,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import CommentIcon from '../assets/svgs/CommentICon.svg';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
@@ -35,15 +37,20 @@ import {
   getUserToken,
 } from '../utils/UtilFunctions';
 import {useTabVisibility} from './TabVisibilityContext';
+
+const {height: SCREEN_HEIGHT} = Dimensions.get('window');
+
 const EventCard = ({item, navigation}) => {
-  const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['75%', '80%'], []);
   const [isLiked, setIsLiked] = useState(item.is_liked || false);
   const [likeCount, setLikeCount] = useState(item.total_likes || 0);
   const [isLoading, setIsLoading] = useState(false);
   const {setIsTabVisible} = useTabVisibility();
   const [addCommentText, setAddCommentText] = useState('');
   const [comments, setComments] = useState([]);
+  const [total_comments, setTotalComments] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+
   const handleLikeToggle = async () => {
     if (isLoading) return;
 
@@ -111,17 +118,38 @@ const EventCard = ({item, navigation}) => {
       setIsLoading(false);
     }
   };
-  const [total_comments, setTotalComments] = useState(0);
+
   const handlePress = () => {
     navigation.navigate('EventDetailScreen', {events: item});
   };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+    setIsTabVisible(false);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const hideModal = () => {
+    Animated.timing(slideAnim, {
+      toValue: SCREEN_HEIGHT,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      setIsModalVisible(false);
+      setIsTabVisible(true);
+    });
+  };
+
   const handleCommentPress = async () => {
-    setIsTabVisible(false); // Hide tab
-    bottomSheetModalRef.current?.present();
     try {
       setIsLoading(true);
       const response = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
       console.log('Comments response:', response.data);
+      
       if (response.data && response.data.comments) {
         const allcomments = response.data.comments.map(comment => {
           return {
@@ -135,7 +163,9 @@ const EventCard = ({item, navigation}) => {
         setComments(allcomments);
         console.log('total comments:', response.data.total_comments);
       }
-      bottomSheetModalRef.current?.present();
+      
+      showModal();
+      
     } catch (error) {
       console.log('Error handling comment press:', error);
     } finally {
@@ -143,25 +173,18 @@ const EventCard = ({item, navigation}) => {
     }
   };
 
-  const handleSheetChanges = useCallback(
-    index => {
-      if (index === -1) {
-        setIsTabVisible(true); // Show tab when sheet closes
-      }
-    },
-    [setIsTabVisible],
-  );
-
   const handleAddCommentPress = async () => {
     if (addCommentText.trim().length < 3) {
       console.log('Comment must be at least 3 characters long');
       return;
     }
+    
     const token = await getUserToken();
     if (!token) {
       console.log('No auth token found');
       return;
     }
+    
     try {
       const data = {
         comment_text: addCommentText,
@@ -175,13 +198,29 @@ const EventCard = ({item, navigation}) => {
           },
         },
       );
-setAddCommentText(''); // Clear input after adding comment
-      // console.log('Comment added successfully:', response.data);
-      handleCommentPress();
+      
+      setAddCommentText('');
+      
+      // Refresh comments after adding
+      const refreshResponse = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
+      if (refreshResponse.data && refreshResponse.data.comments) {
+        const allcomments = refreshResponse.data.comments.map(comment => {
+          return {
+            text: comment.comment_text,
+            commentedby: comment.user?.username || 'Unknown User',
+            createdAt: comment.created_at || new Date().toISOString(),
+            photo: comment.user?.photo || null,
+          };
+        });
+        setTotalComments(refreshResponse.data.total_comments);
+        setComments(allcomments);
+      }
+      
     } catch (error) {
       console.log('Error adding comment:', error);
     }
   };
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -280,11 +319,11 @@ setAddCommentText(''); // Clear input after adding comment
               <TouchableOpacity
                 style={[
                   styles.engagementItem,
-                  isLoading && styles.disabledButton, // Optional: add disabled styling
+                  
                 ]}
                 onPress={handleLikeToggle}
                 hitSlop={30}
-                disabled={isLoading}
+                // disabled={isLoading}
                 activeOpacity={0.7}>
                 {isLiked ? (
                   <FillHeartIcon width={20} height={20} />
@@ -296,7 +335,8 @@ setAddCommentText(''); // Clear input after adding comment
               <TouchableOpacity
                 style={styles.engagementItem}
                 hitSlop={20}
-                onPress={handleCommentPress}>
+                onPress={handleCommentPress}
+                disabled={isLoading}>
                 <CommentIcon width={20} height={20} color="#6A66FF" />
                 <Text style={styles.engagementText}>{item.total_comments || 0}</Text>
               </TouchableOpacity>
@@ -325,188 +365,119 @@ setAddCommentText(''); // Clear input after adding comment
         </View>
       </View>
 
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={1}
-        snapPoints={snapPoints}
-        backgroundStyle={styles.bottomSheetBackground}
-        handleIndicatorStyle={styles.bottomSheetIndicator}
-        onChange={handleSheetChanges}
-        backdropComponent={props => (
-          <BottomSheetBackdrop
-            {...props}
-            disappearsOnIndex={-1}
-            appearsOnIndex={0}
-            opacity={0.5} // Adjust to make it lighter/darker
+      {/* Comments Modal */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="none"
+        onRequestClose={hideModal}
+        statusBarTranslucent={true}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity 
+            style={styles.modalBackdrop} 
+            activeOpacity={1} 
+            onPress={hideModal}
           />
-        )}>
-        <BottomSheetView style={styles.bottomSheetContent}>
-          <TouchableOpacity
-            style={{
-              // marginBottom:60,
-              position: 'absolute',
-              bottom: 10,
-              width: '100%',
-              zIndex: 1,
-              elevation: 1,
-              backgroundColor: '#F7F7F7',
-              paddingVertical: 6,
-              paddingHorizontal: 10,
-              flexDirection: 'row',
-              borderRadius: 50,
-              alignItems: 'center',
-              gap: 10,
-              // justifyContent: 'space-between',
-            }}
-            // onPress={handleClosePress}
-          >
-            <Image
-              source={require('../assets/PersonImage.png')}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 50,
-              }}
-            />
-            <TextInput
-              placeholder="Add Your Comment"
-              value={addCommentText}
-              onChangeText={setAddCommentText}
-              placeholderTextColor={'#4A4A4A'}
-              style={{
-                width: '70%',
-                fontSize: 16,
-                color: '#4A4A4A',
-              }}
-            />
+          <Animated.View
+            style={[
+              styles.modalContent,
+              {
+                transform: [{translateY: slideAnim}],
+              },
+            ]}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <View style={styles.modalHandle} />
+              <Text style={styles.modalTitle}>
+                Comments ({total_comments})
+              </Text>
+            </View>
 
-            {addCommentText.length > 2 && (
-            <TouchableOpacity
-              style={{
-                paddingHorizontal: 10,
-                backgroundColor: '#6A66FF',
-                padding: 10,
-                borderRadius: 50,
-                alignItems: 'center',
-                justifyContent: 'center',
-                elevation: 1,
-              }}
-              onPress={handleAddCommentPress}>
-              <Text style={{color: 'white'}}>Add</Text>
-            </TouchableOpacity>
-            )} 
-          </TouchableOpacity>
-
-          <Text
-            style={
-              styles.bottomSheetText
-            }>{`Comments (${total_comments})`}</Text>
-          <ScrollView
-            style={{
-              flex: 1,
-              width: '100%',
-              height: '100%',
-            }}
-            contentContainerStyle={{
-              padding: 10,
-              width: '100%',
-              height: '100%',
-              gap: 20,
-              paddingBottom: 260,
-              // backgroundColor:"red"
-            }}>
-            {comments.length === 0 && (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100%',
-                  width: '100%',
-                  paddingVertical: 50,
-                  gap: 10,
-                }}>
-                <Text
-                  style={{textAlign: 'center', color: '#4A4A4A', fontSize: 16}}>
-                  No comments yet.
-                </Text>
-                <Text
-                  style={{textAlign: 'center', color: '#4A4A4A', fontSize: 16}}>
-                  Start the conversation
-                </Text>
-              </View>
-            )}
-            {comments.map((comment, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 5,
-                    height: '100%',
-                    gap: 10,
-                    width: '90%',
-                  }}>
-                  <Image
-                    source={
-                      comment.photo
-                        ? {uri: comment.photo}
-                        : require('../assets/PersonImage.png')
-                    }
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 50,
-                      elevation: 1,
-                    }}
-                  />
-                  <View style={{gap: 5, width: '85%'}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 10,
-                      }}>
-                      <Text style={{color: '#4A4A4A', fontSize: 13}}>
-                        {comment.commentedby}
-                      </Text>
-                      <Text style={{color: '#4A4A4A', fontSize: 13}}>
-                        {formatTimeAgo(comment.createdAt)}
-                      </Text>
-                    </View>
-
-                    <Text style={{color: '#2A2A2A', fontSize: 15}}>
-                      {comment.text}
-                    </Text>
+            {/* Comments List */}
+            <KeyboardAvoidingView 
+              style={styles.modalBody}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+            >
+              <ScrollView
+                style={styles.commentsScrollView}
+                contentContainerStyle={styles.commentsContainer}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                {comments.length === 0 ? (
+                  <View style={styles.noCommentsContainer}>
+                    <Text style={styles.noCommentsText}>No comments yet.</Text>
+                    <Text style={styles.noCommentsText}>Start the conversation</Text>
                   </View>
-                </View>
-                <TouchableOpacity style={{}}>
-                  <RedLikeIcon />
-                </TouchableOpacity>
+                ) : (
+                  comments.map((comment, index) => (
+                    <View key={index} style={styles.commentItem}>
+                      <View style={styles.commentContent}>
+                        <Image
+                          source={
+                            comment.photo
+                              ? {uri: comment.photo}
+                              : require('../assets/PersonImage.png')
+                          }
+                          style={styles.commentAvatar}
+                        />
+                        <View style={styles.commentTextContainer}>
+                          <View style={styles.commentHeader}>
+                            <Text style={styles.commentUsername}>
+                              {comment.commentedby}
+                            </Text>
+                            <Text style={styles.commentTime}>
+                              {formatTimeAgo(comment.createdAt)}
+                            </Text>
+                          </View>
+                          <Text style={styles.commentText}>{comment.text}</Text>
+                        </View>
+                      </View>
+                      <TouchableOpacity style={styles.commentLikeButton}>
+                        <RedLikeIcon />
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+
+              {/* Input Section */}
+              <View style={styles.inputContainer}>
+                <Image
+                  source={require('../assets/PersonImage.png')}
+                  style={styles.inputAvatar}
+                />
+                <TextInput
+                  value={addCommentText}
+                  onChangeText={setAddCommentText}
+                  placeholder="Add a comment"
+                  placeholderTextColor={"#A3A3A3"}
+                  style={styles.textInput}
+                  multiline={false}
+                  returnKeyType="send"
+                  onSubmitEditing={handleAddCommentPress}
+                  autoCorrect={false}
+                  autoCapitalize="sentences"
+                />
+                {addCommentText.length > 2 && (
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={handleAddCommentPress}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.addButtonText}>Add</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-            ))}
-          </ScrollView>
-          {/* {comments.map((comment, index) => (
-  <View key={index} style={styles.commentItem}>
-    <Text>{comment.commentedby}</Text>
-    <Text>{comment.text}</Text>
-    <Image
-      source={comment.photo ? {uri: comment.photo} : require('../assets/PersonImage.png')}
-      style={styles.userAvatar} 
-    />
-  </View>
-))} */}
-        </BottomSheetView>
-      </BottomSheetModal>
+            </KeyboardAvoidingView>
+          </Animated.View>
+        </View>
+      </Modal>
     </TouchableOpacity>
   );
 };
+
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: '#FFFFFF',
@@ -516,7 +487,6 @@ const styles = StyleSheet.create({
     borderColor: '#F1F0FF',
     paddingVertical: 10,
     overflow: 'hidden',
-    // elevation: 1,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
@@ -596,7 +566,7 @@ const styles = StyleSheet.create({
   detailText: {
     color: '#4A4A4A',
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: '500',
     fontFamily: 'BricolageGrotesque_24pt-Regular',
   },
   engagementContainer: {
@@ -633,43 +603,147 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'BricolageGrotesque_24pt-Regular',
   },
-  container: {
+  disabledButton: {
+    opacity: 0.6,
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalBackdrop: {
     flex: 1,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  bottomSheetContent: {
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  bottomSheetText: {
-    fontSize: 18,
-    // backgroundColor:"red",
-    // marginBottom: 20,
-    color: '#4A4A4A',
-    fontSize: 15,
-  },
-  bottomSheetBackground: {
+  modalContent: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 25,
-    // paddingHorizontal:10
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    maxHeight: SCREEN_HEIGHT * 0.8,
+    minHeight: SCREEN_HEIGHT * 0.6,
   },
-  bottomSheetIndicator: {
-    backgroundColor: '#777777',
+  modalHeader: {
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  modalHandle: {
     width: 50,
-    height: 3,
+    height: 4,
+    backgroundColor: '#C4C4C4',
+    borderRadius: 2,
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2A2A2A',
+  },
+  modalBody: {
+    flex: 1,
+  },
+  commentsScrollView: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  commentsContainer: {
+    paddingVertical: 15,
+  },
+  noCommentsContainer: {
+    alignItems: 'center',
+    paddingVertical: 50,
+  },
+  noCommentsText: {
+    color: '#4A4A4A',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  commentItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+  },
+  commentContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    flex: 1,
+  },
+  commentAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  commentTextContainer: {
+    flex: 1,
+    gap: 5,
+  },
+  commentHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  commentUsername: {
+    color: '#4A4A4A',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  commentTime: {
+    color: '#4A4A4A',
+    fontSize: 13,
+  },
+  commentText: {
+    color: '#2A2A2A',
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  commentLikeButton: {
+    padding: 5,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+    backgroundColor: '#F7F7F7',
+    borderRadius:50,
+    marginHorizontal:10,
+    marginBottom:15,
+    elevation: 1,
+    // width: "50%",
+  },
+  inputAvatar: {
+    width: 45,
+    height: 45,
+    borderRadius: 18,
+    marginRight: 10,
+  },
+  textInput: {
+    flex: 1,
+    // paddingHorizontal: 15,
+    paddingVertical: 10,
+    // backgroundColor: '#F5F5F5',
+    borderRadius: 20,
+    fontSize: 14,
+    color: '#2A2A2A',
+    maxHeight: 100,
+
+  },
+  addButton: {
+    marginLeft: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#6A66FF',
+    borderRadius: 20,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 
