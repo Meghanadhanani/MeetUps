@@ -637,6 +637,8 @@ formData.append('host_names', JSON.stringify(hostNames));
             placeholder="The event is going to be the finest...."
             placeholderTextColor="#A3A3A3"
             multiline={true}
+            returnKeyLabel='done'
+            
             numberOfLines={4}
             textAlignVertical="top"
             value={description}

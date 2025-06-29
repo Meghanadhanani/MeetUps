@@ -298,7 +298,7 @@ setAddCommentText(''); // Clear input after adding comment
                 hitSlop={20}
                 onPress={handleCommentPress}>
                 <CommentIcon width={20} height={20} color="#6A66FF" />
-                <Text style={styles.engagementText}>{total_comments}</Text>
+                <Text style={styles.engagementText}>{item.total_comments || 0}</Text>
               </TouchableOpacity>
               <View style={styles.engagementItem}>
                 <TouchableOpacity hitSlop={20}>
@@ -374,44 +374,13 @@ setAddCommentText(''); // Clear input after adding comment
               onChangeText={setAddCommentText}
               placeholderTextColor={'#4A4A4A'}
               style={{
-                flex:1,
-                // width: '70%',
-                // numberOfLines: 3,
-                // maxLength: 100,
-                // backgroundColor: "red",
-                // height: 50,
-                // paddingVertical: 6,
-                // paddingHorizontal: 10,
-                // borderRadius: 10,
-                // paddingHorizontal: 15,
+                width: '70%',
                 fontSize: 16,
                 color: '#4A4A4A',
-
-                // Add elevation for shadow effect
               }}
             />
-            {/* <TextInput
-              placeholder="Add Your Comment"
-              style={{
-                width: '70%',
-                // numberOfLines: 3,
-                // maxLength: 100,
-                // backgroundColor: "red",
-                // height: 50,
-                // paddingVertical: 6,
-                // paddingHorizontal: 10,
-                // borderRadius: 10,
-                // paddingHorizontal: 15,
-                fontSize: 16,
-                color: '#4A4A4A',
 
-                // Add elevation for shadow effect
-              }}
-              placeholderTextColor="#4A4A4A"
-              value={commentText}
-              onChangeText={setCommentText}
-            /> */}
-            {/* {commentText.length > 2 && ( */}
+            {addCommentText.length > 2 && (
             <TouchableOpacity
               style={{
                 paddingHorizontal: 10,
@@ -425,7 +394,7 @@ setAddCommentText(''); // Clear input after adding comment
               onPress={handleAddCommentPress}>
               <Text style={{color: 'white'}}>Add</Text>
             </TouchableOpacity>
-            {/* )} */}
+            )} 
           </TouchableOpacity>
 
           <Text
@@ -443,9 +412,9 @@ setAddCommentText(''); // Clear input after adding comment
               width: '100%',
               height: '100%',
               gap: 20,
-              paddingBottom: 60,
-            }}
-            showsVerticalScrollIndicator={false}>
+              paddingBottom: 260,
+              // backgroundColor:"red"
+            }}>
             {comments.length === 0 && (
               <View
                 style={{

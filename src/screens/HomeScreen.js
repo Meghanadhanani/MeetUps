@@ -270,19 +270,7 @@ useFocusEffect(
                 </View>
               ))}
             </ScrollView>
-           <TextInput
-  placeholder="Add Your Comment"
-  value={addCommentText}
-  onChangeText={text => setAddCommentText(text)}
-  placeholderTextColor={'#4A4A4A'}
-  multiline={true}
-  style={{
-    flex: 1,
-    fontSize: 16,
-    color: '#4A4A4A',
-    textAlignVertical: 'top', // Important on Android to prevent layout jumps
-  }}
-/>
+          
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={styles.sectionTitle}>Upcoming Events</Text>
