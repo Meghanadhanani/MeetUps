@@ -267,7 +267,7 @@ const EventCard = ({item, navigation}) => {
           <View style={styles.imageContainer}>
             {item.event_images?.length > 0 ? (
               <Image
-                source={{uri: item.event_images[0].url}}
+                source={{uri: item.event_images[0]?.url}}
                 resizeMode="cover"
                 style={styles.eventImage}
               />

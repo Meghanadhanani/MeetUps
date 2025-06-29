@@ -169,7 +169,10 @@ formData.append('host_names', JSON.stringify(hostNames));
       isDebug && console.log('respones of create event api', response.data);
       if (response.status == 201) {
         showToastMSGNormal('Event Created Successfully');
-        navigation.navigate('BottomTabs');
+        setTimeout(() => {
+         navigation.navigate('BottomTabs');
+        }, 2000);
+       
       }
     } catch (error) {
       isDebug && console.log('errrrrrrrrrrr', error.response.data);

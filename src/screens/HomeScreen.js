@@ -38,6 +38,8 @@ const HomeScreen = ({navigation}) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState();
+    const [allEvents, setAllEvents] = useState([]); // Store all events for filtering
+
 const [featuredEvent, setFeaturedEvent] = useState([])
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -73,8 +75,24 @@ setFeaturedEvent(allFeaturedEvents)
   );
 
 
-  const handleSearch = () => {
+ const handleSearch = () => {
     setQuery(input);
+    
+    if (!input.trim()) {
+      setEvents(allEvents);
+      return;
+    }
+
+    // Filter events based on event name and location
+    const filteredEvents = allEvents.filter(event => {
+      const eventName = event.event_name?.toLowerCase() || '';
+      const eventLocation = event.location?.toLowerCase() || '';
+      const searchTerm = input.toLowerCase().trim();
+      
+      return eventName.includes(searchTerm) || eventLocation.includes(searchTerm);
+    });
+
+    setEvents(filteredEvents);
   };
 
   const GetEventList = async () => {
@@ -93,7 +111,9 @@ setFeaturedEvent(allFeaturedEvents)
       isDebug && console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
 
       isDebug && console.log('resposne', resposne.data);
-      setEvents(resposne.data.sort((a, b) => b.id - a.id));
+      const sortedEvents = resposne.data.sort((a, b) => b.id - a.id);
+      setAllEvents(sortedEvents); // Store all events
+      setEvents(sortedEvents);
     } catch (error) {
       console.error('Error fetching event list:', error);
     } finally {
@@ -111,9 +131,14 @@ setFeaturedEvent(allFeaturedEvents)
 useFocusEffect(
   useCallback(() => {
     GetEventList(); 
-    GetFeaturedEvents()// This runs only when screen comes into focus
+    GetFeaturedEvents();
+
+    return () => {
+      setQuery(""); // Reset search query when leaving the screen
+    };
   }, [])
 );
+
   const [addCommentText, setAddCommentText] = useState('');
 
 
@@ -300,20 +325,31 @@ useFocusEffect(
               style={styles.horizontalScrollView}>
               {featuredEvent.map((item, index) => (
                 <TouchableOpacity key={index} style={styles.featuredEventCard}  onPress={() => navigation.navigate("EventDetailScreen", { events: item })}>
-                  <Image
+                   {item.event_images?.length > 0 ? (
+                                <Image
                   source={{uri:item.event_images[0].url}}
                     // source={require('../assets/FeatureEvent.png')}
                     width={'100%'}
                     height={'100%'}
                     resizeMode="cover"
                   />
+                              ) : (
+                                <Image
+                  // source={{uri:item.event_images[0].url}}
+                    source={require('../assets/FeatureEvent.png')}
+                    width={'100%'}
+                    height={'100%'}
+                    resizeMode="cover"
+                  />
+                              )}
+                 
                 </TouchableOpacity>
               ))}
             </ScrollView>
           
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.sectionTitle}>Upcoming Events</Text>
+              <Text style={styles.sectionTitle}>Upcoming Events {query && ` (${events.length} found)`}</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -329,7 +365,16 @@ useFocusEffect(
                 <DownArrowIcon />
               </View>
             </View>
-
+{query && events.length === 0 && !loading && (
+              <View style={styles.noResultsContainer}>
+                <Text style={styles.noResultsText}>
+                  No events found for "{query}"
+                </Text>
+                <Text style={styles.noResultsSubtext}>
+                  Try searching with different keywords or check the spelling
+                </Text>
+              </View>
+            )}
             <View style={{gap: 15}}>
               <FlatList
                 data={events}
@@ -379,6 +424,25 @@ useFocusEffect(
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+   noResultsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  noResultsText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2A2A2A',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  noResultsSubtext: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
