@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -27,7 +27,9 @@ import VerifiedIcon from '../assets/svgs/Verified.svg';
 import {
   ADD_COMMENTS_API,
   ADD_FAVOURITE_API,
+  ADD_SAVE_EVENTS_API,
   GET_COMMENTS_API,
+  GET_SAVED_EVENTS_LIST_API,
   REMOVE_FAVOURITE_API,
 } from '../utils/ApiHelper';
 import {
@@ -42,6 +44,8 @@ import { isDebug } from '../utils/StorageUtils';
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const EventCard = ({item, navigation}) => {
+  // console.log("itemmm",item);
+  
   const [isLiked, setIsLiked] = useState(item.is_liked || false);
   const [likeCount, setLikeCount] = useState(item.total_likes || 0);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,8 +54,10 @@ const EventCard = ({item, navigation}) => {
   const [comments, setComments] = useState([]);
   const [total_comments, setTotalComments] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+    const [isSavedModalVisible, setIsSavedModalVisible] = useState(false);
 
+  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
   const handleLikeToggle = async () => {
     if (isLoading) return;
 
@@ -134,6 +140,15 @@ const EventCard = ({item, navigation}) => {
     }).start();
   };
 
+  const showSavedModal = ()=>{
+    setIsSavedModalVisible(true);
+    setIsTabVisible(false);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }
   const hideModal = () => {
     Animated.timing(slideAnim, {
       toValue: SCREEN_HEIGHT,
@@ -144,13 +159,25 @@ const EventCard = ({item, navigation}) => {
       setIsTabVisible(true);
     });
   };
-
+ const hideSavedModel = ()=>{
+   Animated.timing(slideAnim, {
+      toValue: SCREEN_HEIGHT,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      setIsSavedModalVisible(false);
+      setIsTabVisible(true);
+    });
+ }
   const handleCommentPress = async () => {
+    console.log("presedddddddddddddddd");
+    
     try {
       setIsLoading(true);
+      console.log("URL being hit:", `${GET_COMMENTS_API}/${item.id}`);
       const response = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
       isDebug && console.log('Comments response:', response.data);
-      
+
       if (response.data && response.data.comments) {
         const allcomments = response.data.comments.map(comment => {
           return {
@@ -168,7 +195,8 @@ const EventCard = ({item, navigation}) => {
       showModal();
       
     } catch (error) {
-      isDebug && console.log('Error handling comment press:', error);
+      // showModal();
+      isDebug && console.log('Error handling comment press:', error.response.data);
     } finally {
       setIsLoading(false);
     }
@@ -221,6 +249,58 @@ const EventCard = ({item, navigation}) => {
       isDebug && console.log('Error adding comment:', error);
     }
   };
+
+
+
+const handleSaveEvents = async()=>{
+try {
+  const token = await getUserToken()
+  console.log("savedddd token", token);
+  
+  const resposne = await axios.post(`${ADD_SAVE_EVENTS_API}/${item.id}`,{}, {
+    headers:{
+      Authorization:`Bearer ${token}`
+    }
+  })
+  console.log("res from saved api", resposne.data);
+  console.log("ios saveddd ",item.is_saved);
+  
+  
+  if(resposne.data.success){
+    console.log("sucesss", resposne.data.success);
+    
+ setIsSaveEvents(!isSaveEvents)
+ showSavedModal()
+   getSavedEventsList()
+  }
+} catch (error) {
+  console.log("errrrrrrr", error.response.data);
+  
+}
+}
+
+
+const getSavedEventsList = async()=>{
+  try {
+    const token =await getUserToken()
+    console.log("token from saved", token);
+    
+    const response = await axios.get(GET_SAVED_EVENTS_LIST_API,{
+      headers:{
+      Authorization:`Bearer ${token}`
+    }
+    })
+    console.log("ressss from saved eevetns list api: ",response.data.saved_events );
+    
+  } catch (error) {
+    console.log("errrrr in getting saved evetns", error.response);
+    
+  }
+}
+useEffect(() => {
+  // getSavedEventsList()
+
+}, [])
 
   return (
     <TouchableOpacity
@@ -342,12 +422,15 @@ const EventCard = ({item, navigation}) => {
                 <Text style={styles.engagementText}>{item.total_comments || 0}</Text>
               </TouchableOpacity>
               <View style={styles.engagementItem}>
-                <TouchableOpacity hitSlop={20}>
-                  <SaveIcon width={20} height={20} color="#6A66FF" />
+                <TouchableOpacity hitSlop={20} onPress={handleSaveEvents}>
+                  {isSaveEvents ? ( <SaveIcon width={20} height={20} />) : (
+                    <UnLikeHeartIcon width={20} height={20} />
+                  )}
+                 
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.attendeesContainer}>
+            {/* <View style={styles.attendeesContainer}>
               <Image
                 source={require('../assets/PersonImage.png')}
                 style={styles.attendeeAvatar}
@@ -361,7 +444,7 @@ const EventCard = ({item, navigation}) => {
                 style={[styles.attendeeAvatar, {marginLeft: -10}]}
               />
               <Text style={styles.attendeeCount}>+40k</Text>
-            </View>
+            </View> */}
           </View>
         </View>
       </View>
@@ -471,6 +554,54 @@ const EventCard = ({item, navigation}) => {
                   </TouchableOpacity>
                 )}
               </View>
+            </KeyboardAvoidingView>
+          </Animated.View>
+        </View>
+      </Modal>
+
+
+
+       <Modal
+        visible={isSavedModalVisible}
+        transparent={true}
+        animationType="none"
+        onRequestClose={hideSavedModel}
+        statusBarTranslucent={true}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity 
+            style={styles.modalBackdrop} 
+            activeOpacity={1} 
+            onPress={hideSavedModel}
+          />
+          <Animated.View
+            style={[
+              styles.modalContent,
+              {
+                transform: [{translateY: slideAnim}],
+              },
+            ]}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <View style={styles.modalHandle} />
+              <Text style={styles.modalTitle}>
+                Saved Events 
+              </Text>
+            </View>
+
+            {/* Comments List */}
+            <KeyboardAvoidingView 
+              style={styles.modalBody}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+            >
+              <ScrollView
+                style={styles.commentsScrollView}
+                contentContainerStyle={styles.commentsContainer}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+             <View></View>
+              </ScrollView>
             </KeyboardAvoidingView>
           </Animated.View>
         </View>
@@ -706,8 +837,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 6,
+    padding: 6,
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
     backgroundColor: '#F7F7F7',
@@ -715,7 +845,6 @@ const styles = StyleSheet.create({
     marginHorizontal:10,
     marginBottom:15,
     elevation: 1,
-    // width: "50%",
   },
   inputAvatar: {
     width: 45,
@@ -725,9 +854,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    // paddingHorizontal: 15,
     paddingVertical: 10,
-    // backgroundColor: '#F5F5F5',
     borderRadius: 20,
     fontSize: 14,
     color: '#2A2A2A',

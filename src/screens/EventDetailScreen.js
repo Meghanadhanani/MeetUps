@@ -490,7 +490,7 @@ const EventDetailScreen = ({route}) => {
             Ticket Price
           </Text>
           <Text style={{color: '#2A2A2A', fontSize: 20, fontWeight: 500}}>
-            ₹ {events.ticket_price}
+            {events.is_free ? "free" :  `₹ ${events.ticket_price}`}
           </Text>
         </View>
         <TouchableOpacity

@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -27,7 +27,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
-import { isDebug } from '../utils/StorageUtils';
+import {isDebug} from '../utils/StorageUtils';
 import AnimatedHeader from './AnimatedHeader';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -38,63 +38,61 @@ const HomeScreen = ({navigation}) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState();
-    const [allEvents, setAllEvents] = useState([]); // Store all events for filtering
-
-const [featuredEvent, setFeaturedEvent] = useState([])
-
+  const [allEvents, setAllEvents] = useState([]);
+  const [featuredEvent, setFeaturedEvent] = useState([]);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [addCommentText, setAddCommentText] = useState('');
 
-
-  const GetFeaturedEvents = async()=>{
-    const token = await getUserToken()
+  const GetFeaturedEvents = async () => {
+    const token = await getUserToken();
     try {
-    const resposne = await axios.get(GET_FEATURED_EVENTS_API, {
-      headers:{
-         Authorization: `Bearer ${token}`,
-      }
-    })
-  const allFeaturedEvents = resposne.data.featured_events;
-setFeaturedEvent(allFeaturedEvents)
-    isDebug && console.log("res for featured api", resposne.data.featured_events);
-    
-  } catch (error) {
-    isDebug && console.log("errrrr", error);
-    
-  }
-}
-
-
+      const resposne = await axios.get(GET_FEATURED_EVENTS_API, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const allFeaturedEvents = resposne.data.featured_events;
+      setFeaturedEvent(allFeaturedEvents);
+      isDebug &&
+        console.log('res for featured api', resposne.data.featured_events);
+    } catch (error) {
+      isDebug && console.log('errrrr', error);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
-      // Show/hide tab bar based on bottom sheet state
       navigation.getParent()?.setOptions({
-        tabBarStyle: isBottomSheetOpen ? { display: 'none' } : undefined
+        tabBarStyle: isBottomSheetOpen ? {display: 'none'} : undefined,
       });
-    }, [isBottomSheetOpen, navigation])
+    }, [isBottomSheetOpen, navigation]),
   );
 
-
- const handleSearch = () => {
+  const handleSearch = () => {
     setQuery(input);
-    
+
     if (!input.trim()) {
       setEvents(allEvents);
       return;
     }
-
-    // Filter events based on event name and location
     const filteredEvents = allEvents.filter(event => {
       const eventName = event.event_name?.toLowerCase() || '';
       const eventLocation = event.location?.toLowerCase() || '';
       const searchTerm = input.toLowerCase().trim();
-      
-      return eventName.includes(searchTerm) || eventLocation.includes(searchTerm);
+
+      return (
+        eventName.includes(searchTerm) || eventLocation.includes(searchTerm)
+      );
     });
 
     setEvents(filteredEvents);
   };
-
+  useEffect(() => {
+    if (!input.trim()) {
+      setEvents(allEvents);
+       setQuery(''); // Reset list when input is empty
+    }
+  }, [input]); // Runs whenever input changes
   const GetEventList = async () => {
     try {
       isDebug && console.log('fetching data started');
@@ -104,15 +102,16 @@ setFeaturedEvent(allFeaturedEvents)
       const resposne = await axios.get(GET_EVENTLIST_API, {
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json', // Fixed: was multipart/form-data
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
-      isDebug && console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
+      isDebug &&
+        console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
 
       isDebug && console.log('resposne', resposne.data);
       const sortedEvents = resposne.data.sort((a, b) => b.id - a.id);
-      setAllEvents(sortedEvents); // Store all events
+      setAllEvents(sortedEvents);
       setEvents(sortedEvents);
     } catch (error) {
       console.error('Error fetching event list:', error);
@@ -120,27 +119,23 @@ setFeaturedEvent(allFeaturedEvents)
       setLoading(false);
     }
   };
- useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       navigation.getParent()?.setOptions({
-        tabBarStyle: isBottomSheetOpen ? { display: 'none' } : undefined
+        tabBarStyle: isBottomSheetOpen ? {display: 'none'} : undefined,
       });
-    }, [isBottomSheetOpen, navigation])
+    }, [isBottomSheetOpen, navigation]),
   );
 
-useFocusEffect(
-  useCallback(() => {
-    GetEventList(); 
-    GetFeaturedEvents();
-
-    return () => {
-      setQuery(""); // Reset search query when leaving the screen
-    };
-  }, [])
-);
-
-  const [addCommentText, setAddCommentText] = useState('');
-
+  useFocusEffect(
+    useCallback(() => {
+      GetEventList();
+      GetFeaturedEvents();
+      return () => {
+        setQuery('');
+      };
+    }, []),
+  );
 
   const headerItemOpacity = scrollY.interpolate({
     inputRange: [0, 30],
@@ -304,7 +299,7 @@ useFocusEffect(
               </Animated.View>
             </Animated.View>
           </Animated.View> */}
-  <AnimatedHeader
+          <AnimatedHeader
             navigation={navigation}
             scrollY={scrollY}
             input={input}
@@ -324,32 +319,50 @@ useFocusEffect(
               showsHorizontalScrollIndicator={false}
               style={styles.horizontalScrollView}>
               {featuredEvent.map((item, index) => (
-                <TouchableOpacity key={index} style={styles.featuredEventCard}  onPress={() => navigation.navigate("EventDetailScreen", { events: item })}>
-                   {item.event_images?.length > 0 ? (
-                                <Image
-                  source={{uri:item.event_images[0].url}}
-                    // source={require('../assets/FeatureEvent.png')}
-                    width={'100%'}
-                    height={'100%'}
-                    resizeMode="cover"
-                  />
-                              ) : (
-                                <Image
-                  // source={{uri:item.event_images[0].url}}
-                    source={require('../assets/FeatureEvent.png')}
-                    width={'100%'}
-                    height={'100%'}
-                    resizeMode="cover"
-                  />
-                              )}
-                 
+                <TouchableOpacity
+                  key={index}
+                  style={styles.featuredEventCard}
+                  onPress={() =>
+                    navigation.navigate('EventDetailScreen', {events: item})
+                  }>
+                  {item.event_images?.length > 0 ? (
+                    <Image
+                      source={{uri: item.event_images[0].url}}
+                      // source={require('../assets/FeatureEvent.png')}
+                      width={'100%'}
+                      height={'100%'}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Image
+                      // source={{uri:item.event_images[0].url}}
+                      source={require('../assets/FeatureEvent.png')}
+                      width={'100%'}
+                      height={'100%'}
+                      resizeMode="cover"
+                    />
+                  )}
+                  <View
+                    style={{
+                      backgroundColor: '#E6E6E6',
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      borderRadius: 15,
+                      position: 'absolute',
+                      bottom: 5,
+                      right: 5,
+                    }}>
+                    <Text>{item.total_likes}</Text>
+                  </View>
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          
+
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.sectionTitle}>Upcoming Events {query && ` (${events.length} found)`}</Text>
+              <Text style={styles.sectionTitle}>
+                Upcoming Events {query && ` (${events.length} found)`}
+              </Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -365,7 +378,7 @@ useFocusEffect(
                 <DownArrowIcon />
               </View>
             </View>
-{query && events.length === 0 && !loading && (
+            {query && events.length === 0 && !loading && (
               <View style={styles.noResultsContainer}>
                 <Text style={styles.noResultsText}>
                   No events found for "{query}"
@@ -379,7 +392,11 @@ useFocusEffect(
               <FlatList
                 data={events}
                 renderItem={({item}) => (
-                  <EventCard item={item} navigation={navigation} setIsBottomSheetOpen={setIsBottomSheetOpen}/>
+                  <EventCard
+                    item={item}
+                    navigation={navigation}
+                    setIsBottomSheetOpen={setIsBottomSheetOpen}
+                  />
                 )}
                 keyExtractor={item => item.id.toString()}
                 showsVerticalScrollIndicator={false}
@@ -424,7 +441,7 @@ useFocusEffect(
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-   noResultsContainer: {
+  noResultsContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
