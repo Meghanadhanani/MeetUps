@@ -14,7 +14,7 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import { BottomSheet } from '@rneui/themed';
+import {BottomSheet} from '@rneui/themed';
 import CommentIcon from '../assets/svgs/CommentICon.svg';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
 import LocationIcon from '../assets/svgs/LocationIcon.svg';
@@ -53,13 +53,16 @@ const EventCard = ({item, navigation}) => {
   const {setIsTabVisible} = useTabVisibility();
   const [addCommentText, setAddCommentText] = useState('');
   const [comments, setComments] = useState([]);
+  const [savedItems, setSavedItems] = useState([]);
   const [total_comments, setTotalComments] = useState(0);
   const [isCommentsVisible, setIsCommentsVisible] = useState(false);
-  const [isSavedBottomSheetVisible, setIsSavedBottomSheetVisible] = useState(false);
-  const [shouldOpenSavedBottomSheet, setShouldOpenSavedBottomSheet] = useState(false);
+  const [isSavedBottomSheetVisible, setIsSavedBottomSheetVisible] =
+    useState(false);
+  const [shouldOpenSavedBottomSheet, setShouldOpenSavedBottomSheet] =
+    useState(false);
 
   const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
-  
+
   const handleLikeToggle = async () => {
     if (isLoading) return;
 
@@ -154,11 +157,12 @@ const EventCard = ({item, navigation}) => {
   };
 
   const handleCommentPress = async () => {
-    console.log('presedddddddddddddddd');
+    isDebug && console.log('presedddddddddddddddd');
 
     try {
       setIsLoading(true);
-      console.log('URL being hit:', `${GET_COMMENTS_API}/${item.id}`);
+      isDebug &&
+        console.log('URL being hit:', `${GET_COMMENTS_API}/${item.id}`);
       const response = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
       isDebug && console.log('Comments response:', response.data);
 
@@ -178,7 +182,6 @@ const EventCard = ({item, navigation}) => {
 
       showCommentsBottomSheet();
     } catch (error) {
-      // showCommentsBottomSheet();
       isDebug &&
         console.log('Error handling comment press:', error.response.data);
     } finally {
@@ -256,10 +259,10 @@ const EventCard = ({item, navigation}) => {
           setShouldOpenSavedBottomSheet(true); // trigger bottom sheet
         }
 
-        getSavedEventsList(); // optional
+        getSavedEventsList();
       }
     } catch (error) {
-      console.log('Error:', error.response?.data || error.message);
+      isDebug && console.log('Error:', error.response?.data || error.message);
     }
   };
 
@@ -273,22 +276,37 @@ const EventCard = ({item, navigation}) => {
   const getSavedEventsList = async () => {
     try {
       const token = await getUserToken();
-      console.log('token from saved', token);
+      isDebug && console.log('token from saved', token);
 
       const response = await axios.get(GET_SAVED_EVENTS_LIST_API, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(
-        'ressss from saved eevetns list api: ',
-        response.data.saved_events,
-      );
+      isDebug &&
+        console.log(
+          'ressss from saved eevetns list api: ',
+          response.data.saved_events,
+        );
+      if (response.data && response.data.saved_events) {
+        const allsavedItems = response.data.saved_events.map(saveItem => {
+          return {
+            text: saveItem.event_name,
+            commentedby: saveItem.user?.username || 'Unknown User',
+            createdAt: saveItem.created_at || new Date().toISOString(),
+            photo: saveItem.event_images[0].url || null,
+            eventDate:saveItem.event_date,
+            eventTime:saveItem.event_time
+          };
+        });
+        // setTotalComments(response.data.total_comments);
+        setSavedItems(allsavedItems);
+      }
     } catch (error) {
-      console.log('errrrr in getting saved evetns', error.response);
+      isDebug && console.log('errrrr in getting saved evetns', error.response);
     }
   };
-  
+
   useEffect(() => {
     // getSavedEventsList()
   }, []);
@@ -437,7 +455,9 @@ const EventCard = ({item, navigation}) => {
           {/* Header */}
           <View style={styles.bottomSheetHeader}>
             <View style={styles.bottomSheetHandle} />
-            <Text style={styles.bottomSheetTitle}>Comments ({total_comments})</Text>
+            <Text style={styles.bottomSheetTitle}>
+              Comments ({total_comments})
+            </Text>
           </View>
 
           {/* Comments List */}
@@ -532,7 +552,9 @@ const EventCard = ({item, navigation}) => {
           {/* Header */}
           <View style={styles.bottomSheetHeader}>
             <View style={styles.bottomSheetHandle} />
-            <Text style={styles.bottomSheetTitle}>Saved Events</Text>
+            <Text style={styles.bottomSheetTitle}>
+              Collections ({savedItems.length})
+            </Text>
           </View>
 
           {/* Content */}
@@ -545,12 +567,46 @@ const EventCard = ({item, navigation}) => {
               contentContainerStyle={styles.commentsContainer}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}>
-              <View style={styles.noCommentsContainer}>
-                <Text style={styles.noCommentsText}>Event saved successfully!</Text>
-                <Text style={styles.noCommentsText}>
-                  You can view your saved events in your profile.
-                </Text>
-              </View>
+              {savedItems.length === 0 ? (
+                <View style={styles.noCommentsContainer}>
+                  <Text style={styles.noCommentsText}>No comments yet.</Text>
+                  <Text style={styles.noCommentsText}>
+                    Start the conversation
+                  </Text>
+                </View>
+              ) : (
+                savedItems.map((comment, index) => (
+                  <View key={index} style={styles.commentItem}>
+                    <View style={styles.commentContent}>
+                      <Image
+                        source={
+                          comment.photo
+                            ? {uri: comment.photo}
+                            : require('../assets/PersonImage.png')
+                        }
+                        style={styles.savedImage}
+                      />
+                      <View style={styles.commentTextContainer}>
+                        <View style={styles.commentHeader}>
+                          <Text style={styles.commentText}>
+                            {comment.text}
+                          </Text>
+                          <Text style={styles.commentTime}>
+                            {/* {formatTimeAgo(comment.createdAt)} */}
+                          </Text>
+                        </View>
+                        <Text style={styles.commentUsername}>
+                          {formatDate(comment.eventDate) || '4 March, 2025'} |{' '}
+                          {formatTime(comment.eventTime) || '9 AM onwards'}
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity style={styles.commentLikeButton}>
+                      <SaveFillIcon />
+                    </TouchableOpacity>
+                  </View>
+                ))
+              )}
             </ScrollView>
           </KeyboardAvoidingView>
         </View>
@@ -695,8 +751,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    maxHeight: SCREEN_HEIGHT * 0.8,
-    minHeight: SCREEN_HEIGHT * 0.6,
+    maxHeight: SCREEN_HEIGHT * 0.9,
+    minHeight: SCREEN_HEIGHT * 0.7,
   },
   bottomSheetHeader: {
     alignItems: 'center',
@@ -706,7 +762,7 @@ const styles = StyleSheet.create({
   },
   bottomSheetHandle: {
     width: 50,
-    height: 4,
+    height: 3,
     backgroundColor: '#C4C4C4',
     borderRadius: 2,
     marginBottom: 10,
@@ -739,7 +795,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   commentContent: {
     flexDirection: 'row',
@@ -751,6 +807,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+  },
+  savedImage:{
+    width: 50,
+    height: 50,
+    borderRadius: 10,
   },
   commentTextContainer: {
     flex: 1,
