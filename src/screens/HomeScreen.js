@@ -29,6 +29,7 @@ import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
 import {isDebug} from '../utils/StorageUtils';
 import AnimatedHeader from './AnimatedHeader';
+import { Skeleton } from '@rneui/themed';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -46,6 +47,7 @@ const HomeScreen = ({navigation}) => {
   const GetFeaturedEvents = async () => {
     const token = await getUserToken();
     try {
+      setLoading(true)
       const resposne = await axios.get(GET_FEATURED_EVENTS_API, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -56,6 +58,7 @@ const HomeScreen = ({navigation}) => {
       isDebug &&
         console.log('res for featured api', resposne.data.featured_events);
     } catch (error) {
+      setLoading(false)
       isDebug && console.log('errrrr', error);
     }
   };
@@ -106,9 +109,7 @@ const HomeScreen = ({navigation}) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      isDebug &&
-        console.log('PHOTO URL:', resposne.created_by?.photo?.slice(0, 50));
-
+      
       isDebug && console.log('resposne', resposne.data);
       const sortedEvents = resposne.data.sort((a, b) => b.id - a.id);
       setAllEvents(sortedEvents);
@@ -315,48 +316,56 @@ const HomeScreen = ({navigation}) => {
             <Text style={styles.sectionTitle}>Featured Events</Text>
 
             <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.horizontalScrollView}>
-              {featuredEvent.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.featuredEventCard}
-                  onPress={() =>
-                    navigation.navigate('EventDetailScreen', {events: item})
-                  }>
-                  {item.event_images?.length > 0 ? (
-                    <Image
-                      source={{uri: item.event_images[0].url}}
-                      // source={require('../assets/FeatureEvent.png')}
-                      width={'100%'}
-                      height={'100%'}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Image
-                      // source={{uri:item.event_images[0].url}}
-                      source={require('../assets/FeatureEvent.png')}
-                      width={'100%'}
-                      height={'100%'}
-                      resizeMode="cover"
-                    />
-                  )}
-                  <View
-                    style={{
-                      backgroundColor: '#E6E6E6',
-                      paddingHorizontal: 5,
-                      paddingVertical: 3,
-                      borderRadius: 15,
-                      position: 'absolute',
-                      bottom: 5,
-                      right: 5,
-                    }}>
-                    <Text>{item.total_likes}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={styles.horizontalScrollView}
+>
+  {loading ? (
+    [1, 2, 3].map((_, index) => (
+      <View key={index} style={styles.featuredEventCard}>
+        <Skeleton width={'100%'} height={'100%'} style={{ borderRadius: 10 }}  skeletonStyle={{ backgroundColor: '9ca2ff' }}/>
+      </View>
+    ))
+  ) : (
+    featuredEvent.map((item, index) => (
+      <TouchableOpacity
+        key={index}
+        style={styles.featuredEventCard}
+        onPress={() =>
+          navigation.navigate('EventDetailScreen', { events: item })
+        }>
+        {item.event_images?.length > 0 ? (
+          <Image
+            source={{ uri: item.event_images[0].url }}
+            width={'100%'}
+            height={'100%'}
+            resizeMode="cover"
+          />
+        ) : (
+          <Image
+            source={require('../assets/FeatureEvent.png')}
+            width={'100%'}
+            height={'100%'}
+            resizeMode="cover"
+          />
+        )}
+        <View
+          style={{
+            backgroundColor: '#E6E6E6',
+            paddingHorizontal: 5,
+            paddingVertical: 3,
+            borderRadius: 15,
+            position: 'absolute',
+            bottom: 5,
+            right: 5,
+          }}>
+          <Text>{item.total_likes}</Text>
+        </View>
+      </TouchableOpacity>
+    ))
+  )}
+</ScrollView>
+
 
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -389,6 +398,20 @@ const HomeScreen = ({navigation}) => {
               </View>
             )}
             <View style={{gap: 15}}>
+            {loading ? (
+  <>
+    {[...Array(3)].map((_, index) => (
+      <View key={index} style={{ marginBottom: 15 }}>
+        <Skeleton
+          style={styles.cardContainer}
+          height={360}
+          borderRadius={20}
+          // animation="wave"
+        />
+      </View>
+    ))}
+  </>
+) : (
               <FlatList
                 data={events}
                 renderItem={({item}) => (
@@ -401,7 +424,7 @@ const HomeScreen = ({navigation}) => {
                 keyExtractor={item => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-              />
+              />)}
             </View>
 
             <View style={styles.createEventCard}>
@@ -430,7 +453,7 @@ const HomeScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             {/* {isDebug && console.log('length', events.length === 0)} */}
-            {loading && events.length === 0 && <Loader />}
+            {/* {loading && events.length === 0 && <Loader />} */}
           </Animated.ScrollView>
         </View>
       </BottomSheetModalProvider>
@@ -441,6 +464,19 @@ const HomeScreen = ({navigation}) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+
+  cardContainer: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F1F0FF',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
   noResultsContainer: {
     alignItems: 'center',
     justifyContent: 'center',

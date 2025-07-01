@@ -8,19 +8,20 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Modal,
-  Animated,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { BottomSheet } from '@rneui/themed';
 import CommentIcon from '../assets/svgs/CommentICon.svg';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
 import LocationIcon from '../assets/svgs/LocationIcon.svg';
 import RedLikeIcon from '../assets/svgs/RedFillLike.svg';
 import SaveIcon from '../assets/svgs/SaveIcon.svg';
+import SaveFillIcon from '../assets/svgs/SavedFillIcon.svg';
+
 import TimerIcon from '../assets/svgs/TimerIcon.svg';
 import UnLikeHeartIcon from '../assets/svgs/UnLikeICon.svg';
 import VerifiedIcon from '../assets/svgs/Verified.svg';
@@ -39,13 +40,13 @@ import {
   getUserToken,
 } from '../utils/UtilFunctions';
 import {useTabVisibility} from './TabVisibilityContext';
-import { isDebug } from '../utils/StorageUtils';
+import {isDebug} from '../utils/StorageUtils';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const EventCard = ({item, navigation}) => {
   // console.log("itemmm",item);
-  
+
   const [isLiked, setIsLiked] = useState(item.is_liked || false);
   const [likeCount, setLikeCount] = useState(item.total_likes || 0);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,11 +54,12 @@ const EventCard = ({item, navigation}) => {
   const [addCommentText, setAddCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [total_comments, setTotalComments] = useState(0);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isSavedModalVisible, setIsSavedModalVisible] = useState(false);
+  const [isCommentsVisible, setIsCommentsVisible] = useState(false);
+  const [isSavedBottomSheetVisible, setIsSavedBottomSheetVisible] = useState(false);
+  const [shouldOpenSavedBottomSheet, setShouldOpenSavedBottomSheet] = useState(false);
 
-  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
+  const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
+  
   const handleLikeToggle = async () => {
     if (isLoading) return;
 
@@ -105,10 +107,11 @@ const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
         isDebug && console.log('Like response:', response.data);
       }
     } catch (error) {
-      isDebug && console.log(
-        'Error toggling like:',
-        error.response?.data || error.message,
-      );
+      isDebug &&
+        console.log(
+          'Error toggling like:',
+          error.response?.data || error.message,
+        );
       setIsLiked(previousIsLiked);
       setLikeCount(previousLikeCount);
 
@@ -130,51 +133,32 @@ const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
     navigation.navigate('EventDetailScreen', {events: item});
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const showCommentsBottomSheet = () => {
+    setIsCommentsVisible(true);
     setIsTabVisible(false);
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
   };
 
-  const showSavedModal = ()=>{
-    setIsSavedModalVisible(true);
+  const showSavedBottomSheet = () => {
+    setIsSavedBottomSheetVisible(true);
     setIsTabVisible(false);
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }
-  const hideModal = () => {
-    Animated.timing(slideAnim, {
-      toValue: SCREEN_HEIGHT,
-      duration: 250,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsModalVisible(false);
-      setIsTabVisible(true);
-    });
   };
- const hideSavedModel = ()=>{
-   Animated.timing(slideAnim, {
-      toValue: SCREEN_HEIGHT,
-      duration: 250,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsSavedModalVisible(false);
-      setIsTabVisible(true);
-    });
- }
+
+  const hideCommentsBottomSheet = () => {
+    setIsCommentsVisible(false);
+    setIsTabVisible(true);
+  };
+
+  const hideSavedBottomSheet = () => {
+    setIsSavedBottomSheetVisible(false);
+    setIsTabVisible(true);
+  };
+
   const handleCommentPress = async () => {
-    console.log("presedddddddddddddddd");
-    
+    console.log('presedddddddddddddddd');
+
     try {
       setIsLoading(true);
-      console.log("URL being hit:", `${GET_COMMENTS_API}/${item.id}`);
+      console.log('URL being hit:', `${GET_COMMENTS_API}/${item.id}`);
       const response = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
       isDebug && console.log('Comments response:', response.data);
 
@@ -191,12 +175,12 @@ const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
         setComments(allcomments);
         isDebug && console.log('total comments:', response.data.total_comments);
       }
-      
-      showModal();
-      
+
+      showCommentsBottomSheet();
     } catch (error) {
-      // showModal();
-      isDebug && console.log('Error handling comment press:', error.response.data);
+      // showCommentsBottomSheet();
+      isDebug &&
+        console.log('Error handling comment press:', error.response.data);
     } finally {
       setIsLoading(false);
     }
@@ -207,13 +191,13 @@ const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
       isDebug && console.log('Comment must be at least 3 characters long');
       return;
     }
-    
+
     const token = await getUserToken();
     if (!token) {
       isDebug && console.log('No auth token found');
       return;
     }
-    
+
     try {
       const data = {
         comment_text: addCommentText,
@@ -227,9 +211,9 @@ const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
           },
         },
       );
-      
+
       setAddCommentText('');
-      
+
       // Refresh comments after adding
       const refreshResponse = await axios.get(`${GET_COMMENTS_API}/${item.id}`);
       if (refreshResponse.data && refreshResponse.data.comments) {
@@ -244,63 +228,70 @@ const [isSaveEvents, setIsSaveEvents] = useState(item.is_saved || false);
         setTotalComments(refreshResponse.data.total_comments);
         setComments(allcomments);
       }
-      
     } catch (error) {
       isDebug && console.log('Error adding comment:', error);
     }
   };
 
+  const handleSaveEvents = async () => {
+    try {
+      const token = await getUserToken();
 
+      const response = await axios.post(
+        `${ADD_SAVE_EVENTS_API}/${item.id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-const handleSaveEvents = async()=>{
-try {
-  const token = await getUserToken()
-  console.log("savedddd token", token);
-  
-  const resposne = await axios.post(`${ADD_SAVE_EVENTS_API}/${item.id}`,{}, {
-    headers:{
-      Authorization:`Bearer ${token}`
+      if (response.data.success) {
+        const isNowSaved = !isSaveEvents; // what it will become
+
+        setIsSaveEvents(isNowSaved); // update the icon
+
+        if (isNowSaved) {
+          setShouldOpenSavedBottomSheet(true); // trigger bottom sheet
+        }
+
+        getSavedEventsList(); // optional
+      }
+    } catch (error) {
+      console.log('Error:', error.response?.data || error.message);
     }
-  })
-  console.log("res from saved api", resposne.data);
-  console.log("ios saveddd ",item.is_saved);
-  
-  
-  if(resposne.data.success){
-    console.log("sucesss", resposne.data.success);
-    
- setIsSaveEvents(!isSaveEvents)
- showSavedModal()
-   getSavedEventsList()
-  }
-} catch (error) {
-  console.log("errrrrrrr", error.response.data);
-  
-}
-}
+  };
 
-
-const getSavedEventsList = async()=>{
-  try {
-    const token =await getUserToken()
-    console.log("token from saved", token);
-    
-    const response = await axios.get(GET_SAVED_EVENTS_LIST_API,{
-      headers:{
-      Authorization:`Bearer ${token}`
+  useEffect(() => {
+    if (shouldOpenSavedBottomSheet) {
+      showSavedBottomSheet();
+      setShouldOpenSavedBottomSheet(false);
     }
-    })
-    console.log("ressss from saved eevetns list api: ",response.data.saved_events );
-    
-  } catch (error) {
-    console.log("errrrr in getting saved evetns", error.response);
-    
-  }
-}
-useEffect(() => {
-  // getSavedEventsList()
+  }, [isSaveEvents]);
 
-}, [])
+  const getSavedEventsList = async () => {
+    try {
+      const token = await getUserToken();
+      console.log('token from saved', token);
+
+      const response = await axios.get(GET_SAVED_EVENTS_LIST_API, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(
+        'ressss from saved eevetns list api: ',
+        response.data.saved_events,
+      );
+    } catch (error) {
+      console.log('errrrr in getting saved evetns', error.response);
+    }
+  };
+  
+  useEffect(() => {
+    // getSavedEventsList()
+  }, []);
 
   return (
     <TouchableOpacity
@@ -398,10 +389,7 @@ useEffect(() => {
                 justifyContent: 'space-between',
               }}>
               <TouchableOpacity
-                style={[
-                  styles.engagementItem,
-                  
-                ]}
+                style={[styles.engagementItem]}
                 onPress={handleLikeToggle}
                 hitSlop={30}
                 // disabled={isLoading}
@@ -419,193 +407,154 @@ useEffect(() => {
                 onPress={handleCommentPress}
                 disabled={isLoading}>
                 <CommentIcon width={20} height={20} color="#6A66FF" />
-                <Text style={styles.engagementText}>{item.total_comments || 0}</Text>
+                <Text style={styles.engagementText}>
+                  {item.total_comments || 0}
+                </Text>
               </TouchableOpacity>
               <View style={styles.engagementItem}>
                 <TouchableOpacity hitSlop={20} onPress={handleSaveEvents}>
-                  {isSaveEvents ? ( <SaveIcon width={20} height={20} />) : (
-                    <UnLikeHeartIcon width={20} height={20} />
+                  {isSaveEvents ? (
+                    <SaveFillIcon width={20} height={20} />
+                  ) : (
+                    <SaveIcon width={20} height={20} />
                   )}
-                 
                 </TouchableOpacity>
               </View>
             </View>
-            {/* <View style={styles.attendeesContainer}>
-              <Image
-                source={require('../assets/PersonImage.png')}
-                style={styles.attendeeAvatar}
-              />
-              <Image
-                source={require('../assets/PersonImage.png')}
-                style={[styles.attendeeAvatar, {marginLeft: -10}]}
-              />
-              <Image
-                source={require('../assets/PersonImage.png')}
-                style={[styles.attendeeAvatar, {marginLeft: -10}]}
-              />
-              <Text style={styles.attendeeCount}>+40k</Text>
-            </View> */}
           </View>
         </View>
       </View>
 
-      {/* Comments Modal */}
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="none"
-        onRequestClose={hideModal}
-        statusBarTranslucent={true}>
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity 
-            style={styles.modalBackdrop} 
-            activeOpacity={1} 
-            onPress={hideModal}
-          />
-          <Animated.View
-            style={[
-              styles.modalContent,
-              {
-                transform: [{translateY: slideAnim}],
-              },
-            ]}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <View style={styles.modalHandle} />
-              <Text style={styles.modalTitle}>
-                Comments ({total_comments})
-              </Text>
-            </View>
+      {/* Comments BottomSheet */}
+      <BottomSheet
+        isVisible={isCommentsVisible}
+        onBackdropPress={hideCommentsBottomSheet}
+        backdropStyle={styles.bottomSheetBackdrop}
+        modalProps={{
+          statusBarTranslucent: true,
+        }}>
+        <View style={styles.bottomSheetContent}>
+          {/* Header */}
+          <View style={styles.bottomSheetHeader}>
+            <View style={styles.bottomSheetHandle} />
+            <Text style={styles.bottomSheetTitle}>Comments ({total_comments})</Text>
+          </View>
 
-            {/* Comments List */}
-            <KeyboardAvoidingView 
-              style={styles.modalBody}
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-            >
-              <ScrollView
-                style={styles.commentsScrollView}
-                contentContainerStyle={styles.commentsContainer}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-              >
-                {comments.length === 0 ? (
-                  <View style={styles.noCommentsContainer}>
-                    <Text style={styles.noCommentsText}>No comments yet.</Text>
-                    <Text style={styles.noCommentsText}>Start the conversation</Text>
-                  </View>
-                ) : (
-                  comments.map((comment, index) => (
-                    <View key={index} style={styles.commentItem}>
-                      <View style={styles.commentContent}>
-                        <Image
-                          source={
-                            comment.photo
-                              ? {uri: comment.photo}
-                              : require('../assets/PersonImage.png')
-                          }
-                          style={styles.commentAvatar}
-                        />
-                        <View style={styles.commentTextContainer}>
-                          <View style={styles.commentHeader}>
-                            <Text style={styles.commentUsername}>
-                              {comment.commentedby}
-                            </Text>
-                            <Text style={styles.commentTime}>
-                              {formatTimeAgo(comment.createdAt)}
-                            </Text>
-                          </View>
-                          <Text style={styles.commentText}>{comment.text}</Text>
+          {/* Comments List */}
+          <KeyboardAvoidingView
+            style={styles.bottomSheetBody}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+            <ScrollView
+              style={styles.commentsScrollView}
+              contentContainerStyle={styles.commentsContainer}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}>
+              {comments.length === 0 ? (
+                <View style={styles.noCommentsContainer}>
+                  <Text style={styles.noCommentsText}>No comments yet.</Text>
+                  <Text style={styles.noCommentsText}>
+                    Start the conversation
+                  </Text>
+                </View>
+              ) : (
+                comments.map((comment, index) => (
+                  <View key={index} style={styles.commentItem}>
+                    <View style={styles.commentContent}>
+                      <Image
+                        source={
+                          comment.photo
+                            ? {uri: comment.photo}
+                            : require('../assets/PersonImage.png')
+                        }
+                        style={styles.commentAvatar}
+                      />
+                      <View style={styles.commentTextContainer}>
+                        <View style={styles.commentHeader}>
+                          <Text style={styles.commentUsername}>
+                            {comment.commentedby}
+                          </Text>
+                          <Text style={styles.commentTime}>
+                            {formatTimeAgo(comment.createdAt)}
+                          </Text>
                         </View>
+                        <Text style={styles.commentText}>{comment.text}</Text>
                       </View>
-                      <TouchableOpacity style={styles.commentLikeButton}>
-                        <RedLikeIcon />
-                      </TouchableOpacity>
                     </View>
-                  ))
-                )}
-              </ScrollView>
+                    <TouchableOpacity style={styles.commentLikeButton}>
+                      <RedLikeIcon />
+                    </TouchableOpacity>
+                  </View>
+                ))
+              )}
+            </ScrollView>
 
-              {/* Input Section */}
-              <View style={styles.inputContainer}>
-                <Image
-                  source={require('../assets/PersonImage.png')}
-                  style={styles.inputAvatar}
-                />
-                <TextInput
-                  value={addCommentText}
-                  onChangeText={setAddCommentText}
-                  placeholder="Add a comment"
-                  placeholderTextColor={"#A3A3A3"}
-                  style={styles.textInput}
-                  multiline={false}
-                  returnKeyType="send"
-                  onSubmitEditing={handleAddCommentPress}
-                  autoCorrect={false}
-                  autoCapitalize="sentences"
-                />
-                {addCommentText.length > 2 && (
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={handleAddCommentPress}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.addButtonText}>Add</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </KeyboardAvoidingView>
-          </Animated.View>
-        </View>
-      </Modal>
-
-
-
-       <Modal
-        visible={isSavedModalVisible}
-        transparent={true}
-        animationType="none"
-        onRequestClose={hideSavedModel}
-        statusBarTranslucent={true}>
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity 
-            style={styles.modalBackdrop} 
-            activeOpacity={1} 
-            onPress={hideSavedModel}
-          />
-          <Animated.View
-            style={[
-              styles.modalContent,
-              {
-                transform: [{translateY: slideAnim}],
-              },
-            ]}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <View style={styles.modalHandle} />
-              <Text style={styles.modalTitle}>
-                Saved Events 
-              </Text>
+            {/* Input Section */}
+            <View style={styles.inputContainer}>
+              <Image
+                source={require('../assets/PersonImage.png')}
+                style={styles.inputAvatar}
+              />
+              <TextInput
+                value={addCommentText}
+                onChangeText={setAddCommentText}
+                placeholder="Add a comment"
+                placeholderTextColor={'#A3A3A3'}
+                style={styles.textInput}
+                multiline={false}
+                returnKeyType="send"
+                onSubmitEditing={handleAddCommentPress}
+                autoCorrect={false}
+                autoCapitalize="sentences"
+              />
+              {addCommentText.length > 2 && (
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={handleAddCommentPress}
+                  activeOpacity={0.8}>
+                  <Text style={styles.addButtonText}>Add</Text>
+                </TouchableOpacity>
+              )}
             </View>
-
-            {/* Comments List */}
-            <KeyboardAvoidingView 
-              style={styles.modalBody}
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-            >
-              <ScrollView
-                style={styles.commentsScrollView}
-                contentContainerStyle={styles.commentsContainer}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-              >
-             <View></View>
-              </ScrollView>
-            </KeyboardAvoidingView>
-          </Animated.View>
+          </KeyboardAvoidingView>
         </View>
-      </Modal>
+      </BottomSheet>
+
+      {/* Saved Events BottomSheet */}
+      <BottomSheet
+        isVisible={isSavedBottomSheetVisible}
+        onBackdropPress={hideSavedBottomSheet}
+        backdropStyle={styles.bottomSheetBackdrop}
+        modalProps={{
+          statusBarTranslucent: true,
+        }}>
+        <View style={styles.bottomSheetContent}>
+          {/* Header */}
+          <View style={styles.bottomSheetHeader}>
+            <View style={styles.bottomSheetHandle} />
+            <Text style={styles.bottomSheetTitle}>Saved Events</Text>
+          </View>
+
+          {/* Content */}
+          <KeyboardAvoidingView
+            style={styles.bottomSheetBody}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+            <ScrollView
+              style={styles.commentsScrollView}
+              contentContainerStyle={styles.commentsContainer}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}>
+              <View style={styles.noCommentsContainer}>
+                <Text style={styles.noCommentsText}>Event saved successfully!</Text>
+                <Text style={styles.noCommentsText}>
+                  You can view your saved events in your profile.
+                </Text>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </View>
+      </BottomSheet>
     </TouchableOpacity>
   );
 };
@@ -738,41 +687,36 @@ const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.6,
   },
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
+  // BottomSheet Styles
+  bottomSheetBackdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
   },
-  modalBackdrop: {
-    flex: 1,
-  },
-  modalContent: {
+  bottomSheetContent: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     maxHeight: SCREEN_HEIGHT * 0.8,
     minHeight: SCREEN_HEIGHT * 0.6,
   },
-  modalHeader: {
+  bottomSheetHeader: {
     alignItems: 'center',
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
   },
-  modalHandle: {
+  bottomSheetHandle: {
     width: 50,
     height: 4,
     backgroundColor: '#C4C4C4',
     borderRadius: 2,
     marginBottom: 10,
   },
-  modalTitle: {
+  bottomSheetTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#2A2A2A',
   },
-  modalBody: {
+  bottomSheetBody: {
     flex: 1,
   },
   commentsScrollView: {
@@ -841,9 +785,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
     backgroundColor: '#F7F7F7',
-    borderRadius:50,
-    marginHorizontal:10,
-    marginBottom:15,
+    borderRadius: 50,
+    marginHorizontal: 10,
+    marginBottom: 15,
     elevation: 1,
   },
   inputAvatar: {
@@ -859,7 +803,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2A2A2A',
     maxHeight: 100,
-
   },
   addButton: {
     marginLeft: 10,

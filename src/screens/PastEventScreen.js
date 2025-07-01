@@ -29,6 +29,7 @@ import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
 import { isDebug } from '../utils/StorageUtils';
 import AnimatedHeader from './AnimatedHeader';
+import { Skeleton } from '@rneui/themed';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -233,6 +234,20 @@ useFocusEffect(
             </View>
 
             <View style={{gap: 15}}>
+            {loading ? (
+  <>
+    {[...Array(3)].map((_, index) => (
+      <View key={index} style={{ marginBottom: 15 }}>
+        <Skeleton
+          style={styles.cardContainer}
+          height={360}
+          borderRadius={20}
+          // animation="wave"
+        />
+      </View>
+    ))}
+  </>
+) : (
               <FlatList
                 data={events}
                 renderItem={({item}) => (
@@ -241,7 +256,7 @@ useFocusEffect(
                 keyExtractor={item => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-              />
+              />)}
             </View>
 
             <View style={styles.createEventCard}>
@@ -270,7 +285,6 @@ useFocusEffect(
               </TouchableOpacity>
             </View>
             {/* {isDebug && console.log('length', events.length === 0)} */}
-            {loading && events.length === 0 && <Loader />}
           </Animated.ScrollView>
         </View>
       </BottomSheetModalProvider>
@@ -282,6 +296,19 @@ export default PastEventScreen
 
 
 const styles = StyleSheet.create({
+  
+  cardContainer: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F1F0FF',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
