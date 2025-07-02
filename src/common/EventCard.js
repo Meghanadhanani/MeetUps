@@ -288,22 +288,26 @@ const EventCard = ({item, navigation}) => {
           'ressss from saved eevetns list api: ',
           response.data.saved_events,
         );
+      const defaultImage = require('../assets/UpcomingEventImage.png');
+
       if (response.data && response.data.saved_events) {
         const allsavedItems = response.data.saved_events.map(saveItem => {
+          const hasImage =
+            saveItem.event_images && saveItem.event_images.length > 0;
           return {
             text: saveItem.event_name,
             commentedby: saveItem.user?.username || 'Unknown User',
             createdAt: saveItem.created_at || new Date().toISOString(),
-            photo: saveItem.event_images[0].url || null,
-            eventDate:saveItem.event_date,
-            eventTime:saveItem.event_time
+            photo: hasImage ? saveItem.event_images[0].url : defaultImage,
+            eventDate: saveItem.event_date,
+            eventTime: saveItem.event_time,
           };
-        });
-        // setTotalComments(response.data.total_comments);
+        }).sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
+
         setSavedItems(allsavedItems);
       }
     } catch (error) {
-      isDebug && console.log('errrrr in getting saved evetns', error.response);
+      isDebug && console.log('errrrr in getting saved evetns', error);
     }
   };
 
@@ -387,7 +391,7 @@ const EventCard = ({item, navigation}) => {
             <View style={styles.detailItem}>
               <TimerIcon width={16} height={16} color="#6A66FF" />
               <Text style={styles.detailText}>
-                {formatDate(item.event_date) || '4 March, 2025'} |{' '}
+                {formatDate(item.event_date) || '4 March, 2025'} |
                 {formatTime(item.event_time) || '9 AM onwards'}
               </Text>
             </View>
@@ -580,20 +584,16 @@ const EventCard = ({item, navigation}) => {
                     <View style={styles.commentContent}>
                       <Image
                         source={
-                          comment.photo
+                          typeof comment.photo === 'string'
                             ? {uri: comment.photo}
-                            : require('../assets/PersonImage.png')
+                            : comment.photo // this will be the local `require` fallback
                         }
                         style={styles.savedImage}
                       />
                       <View style={styles.commentTextContainer}>
                         <View style={styles.commentHeader}>
-                          <Text style={styles.commentText}>
-                            {comment.text}
-                          </Text>
-                          <Text style={styles.commentTime}>
-                            {/* {formatTimeAgo(comment.createdAt)} */}
-                          </Text>
+                          <Text style={styles.commentText}>{comment.text}</Text>
+                          <Text style={styles.commentTime}></Text>
                         </View>
                         <Text style={styles.commentUsername}>
                           {formatDate(comment.eventDate) || '4 March, 2025'} |{' '}
@@ -808,7 +808,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
   },
-  savedImage:{
+  savedImage: {
     width: 50,
     height: 50,
     borderRadius: 10,
