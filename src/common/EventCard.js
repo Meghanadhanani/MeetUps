@@ -236,35 +236,39 @@ const EventCard = ({item, navigation}) => {
     }
   };
 
-  const handleSaveEvents = async () => {
-    try {
-      const token = await getUserToken();
+// In EventCard.js - Replace the handleSaveEvents function
 
-      const response = await axios.post(
-        `${ADD_SAVE_EVENTS_API}/${item.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+const handleSaveEvents = async () => {
+  // Optimistically update the UI immediately
+  const previousSaveState = isSaveEvents;
+  const newSaveState = !isSaveEvents;
+  setIsSaveEvents(newSaveState);
+
+  try {
+    const token = await getUserToken();
+    const response = await axios.post(
+      `${ADD_SAVE_EVENTS_API}/${item.id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      },
+    );
 
-      if (response.data.success) {
-        const isNowSaved = !isSaveEvents; // what it will become
-
-        setIsSaveEvents(isNowSaved); // update the icon
-
-        if (isNowSaved) {
-          setShouldOpenSavedBottomSheet(true); // trigger bottom sheet
-        }
-
-        getSavedEventsList();
+    if (response.data.success) {
+      if (newSaveState) {
+        setShouldOpenSavedBottomSheet(true);
       }
-    } catch (error) {
-      isDebug && console.log('Error:', error.response?.data || error.message);
+      getSavedEventsList();
+    } else {
+      setIsSaveEvents(previousSaveState);
     }
-  };
+  } catch (error) {
+    isDebug && console.log('Error:', error.response?.data || error.message);
+    setIsSaveEvents(previousSaveState);
+  }
+};
 
   useEffect(() => {
     if (shouldOpenSavedBottomSheet) {

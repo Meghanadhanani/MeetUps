@@ -232,7 +232,7 @@ const HomeScreen = ({navigation}) => {
   showsHorizontalScrollIndicator={false}
   style={styles.horizontalScrollView}
 >
-  {loading ? (
+            {loading && featuredEvent.length === 0 ? (
     [1, 2, 3].map((_, index) => (
       <View key={index} style={styles.featuredEventCard}>
         <Skeleton width={'100%'} height={'100%'} style={{ borderRadius: 10 }}  skeletonStyle={{ backgroundColor: '9ca2ff' }}/>
@@ -310,7 +310,7 @@ const HomeScreen = ({navigation}) => {
               </View>
             )}
             <View style={{gap: 15}}>
-            {loading ? (
+            {loading && events.length === 0 ? (
   <>
     {[...Array(3)].map((_, index) => (
       <View key={index} style={{ marginBottom: 15 }}>

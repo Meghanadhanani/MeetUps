@@ -42,10 +42,6 @@ const [input, setInput] = useState('');
 const [featuredEvent, setFeaturedEvent] = useState([])
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-
-
-
-
   useFocusEffect(
     useCallback(() => {
       // Show/hide tab bar based on bottom sheet state
@@ -146,7 +142,7 @@ useFocusEffect(
             </View>
 
             <View style={{gap: 15}}>
-            {loading ? (
+            {loading && events.length === 0 ? (
   <>
     {[...Array(3)].map((_, index) => (
       <View key={index} style={{ marginBottom: 15 }}>
