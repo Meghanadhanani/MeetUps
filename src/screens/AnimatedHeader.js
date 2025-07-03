@@ -15,6 +15,7 @@ import Logo from '../assets/svgs/LogoSvg.svg';
 import NotificationIcon from '../assets/svgs/notification.svg';
 import PlusIcon from '../assets/svgs/PlusIcon.svg';
 import SearchIcon from '../assets/svgs/search.svg';
+import { showToastMSGInfo } from '../utils/ToastMessages';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -23,7 +24,9 @@ const AnimatedHeader = ({
   scrollY, 
   input, 
   setInput, 
-  onSearch 
+  onSearch,
+  refreshEventsNavigation,
+  
 }) => {
   const handleSearch = () => {
     if (onSearch) {
@@ -128,10 +131,10 @@ const AnimatedHeader = ({
         <View style={styles.iconsRow}>
           <TouchableOpacity
             style={styles.iconContainer}
-            onPress={() => navigation.navigate('CreateEventScreen')}>
+            onPress={() => navigation.navigate('CreateEventScreen',{ refreshEvents: refreshEventsNavigation,})}>
             <PlusIcon />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconContainer}>
+          <TouchableOpacity style={styles.iconContainer} onPress={()=> showToastMSGInfo("Coming soon")}>
             <NotificationIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconContainer}>

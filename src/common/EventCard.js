@@ -41,11 +41,21 @@ import {
 } from '../utils/UtilFunctions';
 import {useTabVisibility} from './TabVisibilityContext';
 import {isDebug} from '../utils/StorageUtils';
+import { useFocusEffect } from '@react-navigation/native';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
-const EventCard = ({item, navigation}) => {
-  // console.log("itemmm",item);
+const EventCard = ({item, navigation, onBottomSheetClose,onFeaturedListRefresh}) => {
+  // // console.log('bottom sheet close', onBottomSheetClose);
+  //   useFocusEffect(
+  //     useCallback(() => {
+  //       onBottomSheetClose
+  //       // GetFeaturedEvents();
+  //       return () => {
+  //         // setQuery('');
+  //       };
+  //     }, []),
+  //   );
 
   const [isLiked, setIsLiked] = useState(item.is_liked || false);
   const [likeCount, setLikeCount] = useState(item.total_likes || 0);
@@ -109,6 +119,7 @@ const EventCard = ({item, navigation}) => {
         );
         isDebug && console.log('Like response:', response.data);
       }
+      
     } catch (error) {
       isDebug &&
         console.log(
@@ -129,6 +140,10 @@ const EventCard = ({item, navigation}) => {
       }
     } finally {
       setIsLoading(false);
+      setTimeout(() => {
+        onFeaturedListRefresh?.()
+      }, 100);
+
     }
   };
 
@@ -149,6 +164,7 @@ const EventCard = ({item, navigation}) => {
   const hideCommentsBottomSheet = () => {
     setIsCommentsVisible(false);
     setIsTabVisible(true);
+      onBottomSheetClose();  
   };
 
   const hideSavedBottomSheet = () => {
@@ -236,39 +252,36 @@ const EventCard = ({item, navigation}) => {
     }
   };
 
-// In EventCard.js - Replace the handleSaveEvents function
-
-const handleSaveEvents = async () => {
-  // Optimistically update the UI immediately
-  const previousSaveState = isSaveEvents;
-  const newSaveState = !isSaveEvents;
-  setIsSaveEvents(newSaveState);
-
-  try {
-    const token = await getUserToken();
-    const response = await axios.post(
-      `${ADD_SAVE_EVENTS_API}/${item.id}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (response.data.success) {
-      if (newSaveState) {
-        setShouldOpenSavedBottomSheet(true);
-      }
-      getSavedEventsList();
-    } else {
-      setIsSaveEvents(previousSaveState);
+  const handleSaveEvents = async () => {
+    const isNowSaved = !isSaveEvents; // what it will become
+    isDebug && console.log('is now saved', isNowSaved);
+    if (isNowSaved) {
+      setShouldOpenSavedBottomSheet(true);
     }
-  } catch (error) {
-    isDebug && console.log('Error:', error.response?.data || error.message);
-    setIsSaveEvents(previousSaveState);
-  }
-};
+    setIsSaveEvents(isNowSaved);
+    try {
+      const token = await getUserToken();
+
+      const response = await axios.post(
+        `${ADD_SAVE_EVENTS_API}/${item.id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.data.success) {
+        getSavedEventsList();
+        isDebug && console.log('res from saved api', response.data);
+      }
+    } catch (error) {
+      setIsSaveEvents(!isNowSaved);
+
+      isDebug && console.log('Error:', error.response?.data || error.message);
+    }
+  };
 
   useEffect(() => {
     if (shouldOpenSavedBottomSheet) {
@@ -295,18 +308,20 @@ const handleSaveEvents = async () => {
       const defaultImage = require('../assets/UpcomingEventImage.png');
 
       if (response.data && response.data.saved_events) {
-        const allsavedItems = response.data.saved_events.map(saveItem => {
-          const hasImage =
-            saveItem.event_images && saveItem.event_images.length > 0;
-          return {
-            text: saveItem.event_name,
-            commentedby: saveItem.user?.username || 'Unknown User',
-            createdAt: saveItem.created_at || new Date().toISOString(),
-            photo: hasImage ? saveItem.event_images[0].url : defaultImage,
-            eventDate: saveItem.event_date,
-            eventTime: saveItem.event_time,
-          };
-        }).sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
+        const allsavedItems = response.data.saved_events
+          .map(saveItem => {
+            const hasImage =
+              saveItem.event_images && saveItem.event_images.length > 0;
+            return {
+              text: saveItem.event_name,
+              commentedby: saveItem.user?.username || 'Unknown User',
+              createdAt: saveItem.created_at || new Date().toISOString(),
+              photo: hasImage ? saveItem.event_images[0].url : defaultImage,
+              eventDate: saveItem.event_date,
+              eventTime: saveItem.event_time,
+            };
+          })
+          .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
         setSavedItems(allsavedItems);
       }
@@ -577,9 +592,9 @@ const handleSaveEvents = async () => {
               showsVerticalScrollIndicator={false}>
               {savedItems.length === 0 ? (
                 <View style={styles.noCommentsContainer}>
-                  <Text style={styles.noCommentsText}>No comments yet.</Text>
+                  <Text style={styles.noCommentsText}>No saved events yet</Text>
                   <Text style={styles.noCommentsText}>
-                    Start the conversation
+                    Start saving your favorite events!
                   </Text>
                 </View>
               ) : (

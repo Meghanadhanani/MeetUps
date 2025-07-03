@@ -47,7 +47,8 @@ import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
 import { isDebug } from '../utils/StorageUtils';
 
-const CreateEventScreen = ({navigation}) => {
+const CreateEventScreen = ({navigation, route,}) => {
+  const {refreshEvents} = route.params;
   const [hosts, setHosts] = useState([
     {id: 1, name: '', instagram: '', linkedin: '', twitter: '', hostImage:null},
   ]);
@@ -170,6 +171,7 @@ formData.append('host_names', JSON.stringify(hostNames));
       if (response.status == 201) {
         showToastMSGNormal('Event Created Successfully');
         setTimeout(() => {
+          refreshEvents()
          navigation.navigate('BottomTabs');
         }, 2000);
        
@@ -642,7 +644,6 @@ formData.append('host_names', JSON.stringify(hostNames));
             placeholderTextColor="#A3A3A3"
             multiline={true}
             returnKeyLabel='done'
-            
             numberOfLines={4}
             textAlignVertical="top"
             value={description}

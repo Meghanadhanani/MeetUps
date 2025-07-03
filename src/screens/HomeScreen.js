@@ -1,3 +1,7 @@
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {useFocusEffect} from '@react-navigation/native';
+import {Skeleton} from '@rneui/themed';
+import axios from 'axios';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Animated,
@@ -10,26 +14,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import ArrowIcon from '../assets/svgs/ArrowIcon.svg';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import DownArrowIcon from '../assets/svgs/DownArrow.svg';
 import CreateEventLogo from '../assets/svgs/DRIP_18.svg';
-import HameBurgerIcon from '../assets/svgs/HamBurger.svg';
-import BlueLogo from '../assets/svgs/LogoInBlue.svg';
-import Logo from '../assets/svgs/LogoSvg.svg';
-import NotificationIcon from '../assets/svgs/notification.svg';
-import PlusIcon from '../assets/svgs/PlusIcon.svg';
-import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
-import axios from 'axios';
 import {GET_EVENTLIST_API, GET_FEATURED_EVENTS_API} from '../utils/ApiHelper';
-import {useFocusEffect} from '@react-navigation/native';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {getUserToken} from '../utils/UtilFunctions';
-import Loader from '../utils/Loader';
 import {isDebug} from '../utils/StorageUtils';
+import {getUserToken} from '../utils/UtilFunctions';
 import AnimatedHeader from './AnimatedHeader';
-import { Skeleton } from '@rneui/themed';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -47,7 +39,7 @@ const HomeScreen = ({navigation}) => {
   const GetFeaturedEvents = async () => {
     const token = await getUserToken();
     try {
-      setLoading(true)
+      setLoading(true);
       const resposne = await axios.get(GET_FEATURED_EVENTS_API, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,7 +50,7 @@ const HomeScreen = ({navigation}) => {
       isDebug &&
         console.log('res for featured api', resposne.data.featured_events);
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       isDebug && console.log('errrrr', error);
     }
   };
@@ -93,7 +85,7 @@ const HomeScreen = ({navigation}) => {
   useEffect(() => {
     if (!input.trim()) {
       setEvents(allEvents);
-       setQuery(''); // Reset list when input is empty
+      setQuery(''); // Reset list when input is empty
     }
   }, [input]); // Runs whenever input changes
   const GetEventList = async () => {
@@ -109,7 +101,7 @@ const HomeScreen = ({navigation}) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       isDebug && console.log('resposne', resposne.data);
       const sortedEvents = resposne.data.sort((a, b) => b.id - a.id);
       setAllEvents(sortedEvents);
@@ -211,13 +203,13 @@ const HomeScreen = ({navigation}) => {
     <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
         <View style={styles.container}>
-        
           <AnimatedHeader
             navigation={navigation}
             scrollY={scrollY}
             input={input}
             setInput={setInput}
             onSearch={handleSearch}
+            refreshEventsNavigation={GetEventList}
           />
           <Animated.ScrollView
             contentContainerStyle={styles.scrollContent}
@@ -228,56 +220,57 @@ const HomeScreen = ({navigation}) => {
             <Text style={styles.sectionTitle}>Featured Events</Text>
 
             <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  style={styles.horizontalScrollView}
->
-            {loading && featuredEvent.length === 0 ? (
-    [1, 2, 3].map((_, index) => (
-      <View key={index} style={styles.featuredEventCard}>
-        <Skeleton width={'100%'} height={'100%'} style={{ borderRadius: 10 }}  skeletonStyle={{ backgroundColor: '9ca2ff' }}/>
-      </View>
-    ))
-  ) : (
-    featuredEvent.map((item, index) => (
-      <TouchableOpacity
-        key={index}
-        style={styles.featuredEventCard}
-        onPress={() =>
-          navigation.navigate('EventDetailScreen', { events: item })
-        }>
-        {item.event_images?.length > 0 ? (
-          <Image
-            source={{ uri: item.event_images[0].url }}
-            width={'100%'}
-            height={'100%'}
-            resizeMode="cover"
-          />
-        ) : (
-          <Image
-            source={require('../assets/FeatureEvent.png')}
-            width={'100%'}
-            height={'100%'}
-            resizeMode="cover"
-          />
-        )}
-        <View
-          style={{
-            backgroundColor: '#E6E6E6',
-            paddingHorizontal: 5,
-            paddingVertical: 3,
-            borderRadius: 15,
-            position: 'absolute',
-            bottom: 5,
-            right: 5,
-          }}>
-          <Text>{item.total_likes}</Text>
-        </View>
-      </TouchableOpacity>
-    ))
-  )}
-</ScrollView>
-
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.horizontalScrollView}>
+              {loading && featuredEvent.length === 0
+                ? [1, 2, 3].map((_, index) => (
+                    <View key={index} style={styles.featuredEventCard}>
+                      <Skeleton
+                        width={'100%'}
+                        height={'100%'}
+                        style={{borderRadius: 10}}
+                        skeletonStyle={{backgroundColor: '9ca2ff'}}
+                      />
+                    </View>
+                  ))
+                : featuredEvent.map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.featuredEventCard}
+                      onPress={() =>
+                        navigation.navigate('EventDetailScreen', {events: item})
+                      }>
+                      {item.event_images?.length > 0 ? (
+                        <Image
+                          source={{uri: item.event_images[0].url}}
+                          width={'100%'}
+                          height={'100%'}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Image
+                          source={require('../assets/FeatureEvent.png')}
+                          width={'100%'}
+                          height={'100%'}
+                          resizeMode="cover"
+                        />
+                      )}
+                      <View
+                        style={{
+                          backgroundColor: '#E6E6E6',
+                          paddingHorizontal: 5,
+                          paddingVertical: 3,
+                          borderRadius: 15,
+                          position: 'absolute',
+                          bottom: 5,
+                          right: 5,
+                        }}>
+                        <Text>{item.total_likes}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+            </ScrollView>
 
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -310,33 +303,36 @@ const HomeScreen = ({navigation}) => {
               </View>
             )}
             <View style={{gap: 15}}>
-            {loading && events.length === 0 ? (
-  <>
-    {[...Array(3)].map((_, index) => (
-      <View key={index} style={{ marginBottom: 15 }}>
-        <Skeleton
-          style={styles.cardContainer}
-          height={360}
-          borderRadius={20}
-          // animation="wave"
-        />
-      </View>
-    ))}
-  </>
-) : (
-              <FlatList
-                data={events}
-                renderItem={({item}) => (
-                  <EventCard
-                    item={item}
-                    navigation={navigation}
-                    setIsBottomSheetOpen={setIsBottomSheetOpen}
-                  />
-                )}
-                keyExtractor={item => item.id.toString()}
-                showsVerticalScrollIndicator={false}
-                scrollEnabled={false}
-              />)}
+              {loading && events.length === 0 ? (
+                <>
+                  {[...Array(3)].map((_, index) => (
+                    <View key={index} style={{marginBottom: 15}}>
+                      <Skeleton
+                        style={styles.cardContainer}
+                        height={360}
+                        borderRadius={20}
+                        // animation="wave"
+                      />
+                    </View>
+                  ))}
+                </>
+              ) : (
+                <FlatList
+                  data={events}
+                  renderItem={({item}) => (
+                    <EventCard
+                      item={item}
+                      navigation={navigation}
+                      setIsBottomSheetOpen={setIsBottomSheetOpen}
+                      onBottomSheetClose={GetEventList}
+                      onFeaturedListRefresh={GetFeaturedEvents}
+                    />
+                  )}
+                  keyExtractor={item => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  scrollEnabled={false}
+                />
+              )}
             </View>
 
             <View style={styles.createEventCard}>
@@ -345,7 +341,11 @@ const HomeScreen = ({navigation}) => {
               </Text>
               <CreateEventLogo width={'100%'} />
               <TouchableOpacity
-                onPress={() => navigation.navigate('CreateEventScreen')}
+                onPress={() =>
+                  navigation.navigate('CreateEventScreen', {
+                    refreshEvents: GetEventList,
+                  })
+                }
                 style={{
                   backgroundColor: '#6D5CFF',
                   width: '100%',
@@ -376,7 +376,6 @@ const HomeScreen = ({navigation}) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-
   cardContainer: {
     backgroundColor: '#FFFFFF',
     width: '100%',

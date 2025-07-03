@@ -21,36 +21,39 @@ import PlusIcon from '../assets/svgs/PlusIcon.svg';
 import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
 import axios from 'axios';
-import {GET_EVENTLIST_API, GET_FEATURED_EVENTS_API, GET_PAST_EVENTS_API} from '../utils/ApiHelper';
+import {
+  GET_EVENTLIST_API,
+  GET_FEATURED_EVENTS_API,
+  GET_PAST_EVENTS_API,
+} from '../utils/ApiHelper';
 import {useFocusEffect} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {getUserToken} from '../utils/UtilFunctions';
 import Loader from '../utils/Loader';
-import { isDebug } from '../utils/StorageUtils';
+import {isDebug} from '../utils/StorageUtils';
 import AnimatedHeader from './AnimatedHeader';
-import { Skeleton } from '@rneui/themed';
+import {Skeleton} from '@rneui/themed';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const PastEventScreen = ({navigation}) => {
-const [input, setInput] = useState('');
+  const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const scrollY = useRef(new Animated.Value(0)).current;
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState();
-const [featuredEvent, setFeaturedEvent] = useState([])
+  const [featuredEvent, setFeaturedEvent] = useState([]);
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   useFocusEffect(
     useCallback(() => {
       // Show/hide tab bar based on bottom sheet state
       navigation.getParent()?.setOptions({
-        tabBarStyle: isBottomSheetOpen ? { display: 'none' } : undefined
+        tabBarStyle: isBottomSheetOpen ? {display: 'none'} : undefined,
       });
-    }, [isBottomSheetOpen, navigation])
+    }, [isBottomSheetOpen, navigation]),
   );
-
 
   const handleSearch = () => {
     setQuery(input);
@@ -70,8 +73,11 @@ const [featuredEvent, setFeaturedEvent] = useState([])
         },
       });
 
-      isDebug && console.log('resposne of past events', resposne.data.past_featured_events
-);
+      isDebug &&
+        console.log(
+          'resposne of past events',
+          resposne.data.past_featured_events,
+        );
       setEvents(resposne.data.past_featured_events);
     } catch (error) {
       console.log('Error fetching event list:', error);
@@ -79,19 +85,19 @@ const [featuredEvent, setFeaturedEvent] = useState([])
       setLoading(false);
     }
   };
- useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       navigation.getParent()?.setOptions({
-        tabBarStyle: isBottomSheetOpen ? { display: 'none' } : undefined
+        tabBarStyle: isBottomSheetOpen ? {display: 'none'} : undefined,
       });
-    }, [isBottomSheetOpen, navigation])
+    }, [isBottomSheetOpen, navigation]),
   );
 
-useFocusEffect(
-  useCallback(() => {
-    GetEventList(); 
-  }, [])
-);
+  useFocusEffect(
+    useCallback(() => {
+      GetEventList();
+    }, []),
+  );
 
   const handleScroll = Animated.event(
     [{nativeEvent: {contentOffset: {y: scrollY}}}],
@@ -104,16 +110,16 @@ useFocusEffect(
     navigation.navigate('EventDetailScreen', {events: item});
   };
   return (
-      <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
         <View style={styles.container}>
-        
-  <AnimatedHeader
+          <AnimatedHeader
             navigation={navigation}
             scrollY={scrollY}
             input={input}
             setInput={setInput}
             onSearch={handleSearch}
+             refreshEventsNavigation={GetEventList}
           />
           <Animated.ScrollView
             contentContainerStyle={styles.scrollContent}
@@ -121,7 +127,6 @@ useFocusEffect(
             onScroll={handleScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}>
-
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={styles.sectionTitle}>Past Events</Text>
@@ -142,29 +147,35 @@ useFocusEffect(
             </View>
 
             <View style={{gap: 15}}>
-            {loading && events.length === 0 ? (
-  <>
-    {[...Array(3)].map((_, index) => (
-      <View key={index} style={{ marginBottom: 15 }}>
-        <Skeleton
-          style={styles.cardContainer}
-          height={360}
-          borderRadius={20}
-          // animation="wave"
-        />
-      </View>
-    ))}
-  </>
-) : (
-              <FlatList
-                data={events}
-                renderItem={({item}) => (
-                  <EventCard item={item} navigation={navigation} setIsBottomSheetOpen={setIsBottomSheetOpen}/>
-                )}
-                keyExtractor={item => item.id.toString()}
-                showsVerticalScrollIndicator={false}
-                scrollEnabled={false}
-              />)}
+              {loading && events.length === 0 ? (
+                <>
+                  {[...Array(3)].map((_, index) => (
+                    <View key={index} style={{marginBottom: 15}}>
+                      <Skeleton
+                        style={styles.cardContainer}
+                        height={360}
+                        borderRadius={20}
+                        // animation="wave"
+                      />
+                    </View>
+                  ))}
+                </>
+              ) : (
+                <FlatList
+                  data={events}
+                  renderItem={({item}) => (
+                    <EventCard
+                      item={item}
+                      navigation={navigation}
+                      setIsBottomSheetOpen={setIsBottomSheetOpen}
+                      onBottomSheetClose={GetEventList}
+                    />
+                  )}
+                  keyExtractor={item => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  scrollEnabled={false}
+                />
+              )}
             </View>
 
             <View style={styles.createEventCard}>
@@ -173,7 +184,7 @@ useFocusEffect(
               </Text>
               <CreateEventLogo width={'100%'} />
               <TouchableOpacity
-                onPress={() => navigation.navigate('CreateEventScreen')}
+                onPress={() => navigation.navigate('CreateEventScreen',{ refreshEvents: GetEventList})}
                 style={{
                   backgroundColor: '#6D5CFF',
                   width: '100%',
@@ -197,14 +208,12 @@ useFocusEffect(
         </View>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
-  )
-}
+  );
+};
 
-export default PastEventScreen
-
+export default PastEventScreen;
 
 const styles = StyleSheet.create({
-  
   cardContainer: {
     backgroundColor: '#FFFFFF',
     width: '100%',
