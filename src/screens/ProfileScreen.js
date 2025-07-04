@@ -1,30 +1,28 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
+  Alert,
+  Dimensions,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-  ScrollView,
-  Dimensions,
-  Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 
-const { width } = Dimensions.get('window');
-const imageSize = (width - 6) / 3; // 3 images per row with 2px gap
+const {width} = Dimensions.get('window');
+const imageSize = (width - 6) / 3;
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('grid');
-
-  // Sample data - replace with your actual data
   const profileData = {
-    profileImage: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&crop=face',
+    profileImage:
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&h=300&fit=crop&crop=face',
     username: 'john_doe',
     displayName: 'John Doe',
-    bio: '📸 Photography enthusiast\n🌍 Travel lover\n☕ Coffee addict\nLiving life one shot at a time ✨',
     website: 'www.johndoe.com',
     posts: 142,
     followers: 1234,
@@ -32,9 +30,43 @@ const ProfileScreen = () => {
     isFollowing: false,
     isPrivate: false,
   };
-
-  // Sample posts data
   const postsData = [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1493770348161-369560ae357d?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1493770348161-369560ae357d?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1493770348161-369560ae357d?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1493770348161-369560ae357d?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
     'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
     'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop',
@@ -47,26 +79,22 @@ const ProfileScreen = () => {
   ];
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await AsyncStorage.removeItem('userData');
-              navigation.replace('LoginScreen');
-            } catch (e) {
-              console.error('Logout failed', e);
-              Alert.alert('Error', 'Something went wrong while logging out.');
-            }
-          },
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await AsyncStorage.removeItem('userData');
+            navigation.replace('LoginScreen');
+          } catch (e) {
+            console.error('Logout failed', e);
+            Alert.alert('Error', 'Something went wrong while logging out.');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const renderStatsItem = (count, label) => (
@@ -76,23 +104,32 @@ const ProfileScreen = () => {
     </View>
   );
 
-  const renderTabIcon = (type) => {
+  const renderTabIcon = type => {
     const isActive = activeTab === type;
     return (
       <TouchableOpacity
         style={[styles.tabButton, isActive && styles.activeTab]}
-        onPress={() => setActiveTab(type)}
-      >
+        onPress={() => setActiveTab(type)}>
         <View style={[styles.tabIcon, isActive && styles.activeTabIcon]}>
           {type === 'grid' ? (
             <View style={styles.gridIcon}>
-              <View style={[styles.gridDot, isActive && styles.activeGridDot]} />
-              <View style={[styles.gridDot, isActive && styles.activeGridDot]} />
-              <View style={[styles.gridDot, isActive && styles.activeGridDot]} />
-              <View style={[styles.gridDot, isActive && styles.activeGridDot]} />
+              <View
+                style={[styles.gridDot, isActive && styles.activeGridDot]}
+              />
+              <View
+                style={[styles.gridDot, isActive && styles.activeGridDot]}
+              />
+              <View
+                style={[styles.gridDot, isActive && styles.activeGridDot]}
+              />
+              <View
+                style={[styles.gridDot, isActive && styles.activeGridDot]}
+              />
             </View>
           ) : (
-            <View style={[styles.reelsIcon, isActive && styles.activeReelsIcon]} />
+            <View
+              style={[styles.reelsIcon, isActive && styles.activeReelsIcon]}
+            />
           )}
         </View>
       </TouchableOpacity>
@@ -103,7 +140,7 @@ const ProfileScreen = () => {
     <View style={styles.postsGrid}>
       {postsData.map((imageUrl, index) => (
         <TouchableOpacity key={index} style={styles.postItem}>
-          <Image source={{ uri: imageUrl }} style={styles.postImage} />
+          <Image source={{uri: imageUrl}} style={styles.postImage} />
         </TouchableOpacity>
       ))}
     </View>
@@ -111,23 +148,11 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.headerIcon}>🔒</Text>
-        </TouchableOpacity>
-        <Text style={styles.username}>{profileData.username}</Text>
-        <TouchableOpacity onPress={handleLogout}>
-          <Text style={styles.headerIcon}>☰</Text>
-        </TouchableOpacity>
-      </View> */}
-
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Profile Info */}
         <View style={styles.profileSection}>
           <View style={styles.profileRow}>
             <Image
-              source={{ uri: profileData.profileImage }}
+              source={{uri: profileData.profileImage}}
               style={styles.profileImage}
             />
             <View style={styles.statsContainer}>
@@ -139,11 +164,7 @@ const ProfileScreen = () => {
 
           <View style={styles.profileInfo}>
             <Text style={styles.displayName}>{profileData.displayName}</Text>
-            <Text style={styles.bio}>{profileData.bio}</Text>
-            <Text style={styles.website}>{profileData.website}</Text>
           </View>
-
-          {/* Action Buttons */}
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.editButton}>
               <Text style={styles.editButtonText}>Edit Profile</Text>
@@ -155,32 +176,11 @@ const ProfileScreen = () => {
               <Text style={styles.contactButtonText}>Contact</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Story Highlights */}
-          <View style={styles.highlightsContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {['Travel', 'Food', 'Work', 'Friends'].map((highlight, index) => (
-                <View key={index} style={styles.highlightItem}>
-                  <View style={styles.highlightCircle}>
-                    <Text style={styles.highlightIcon}>
-                      {highlight === 'Travel' ? '✈️' : highlight === 'Food' ? '🍕' : 
-                       highlight === 'Work' ? '💼' : '👥'}
-                    </Text>
-                  </View>
-                  <Text style={styles.highlightText}>{highlight}</Text>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
         </View>
-
-        {/* Tab Navigation */}
         <View style={styles.tabContainer}>
           {renderTabIcon('grid')}
           {renderTabIcon('reels')}
         </View>
-
-        {/* Posts Grid */}
         {renderPostGrid()}
       </ScrollView>
     </View>
@@ -396,11 +396,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
-
-
-
 // import {Image, StyleSheet, Text, View} from 'react-native';
 // import React from 'react';
 
@@ -417,7 +412,7 @@ const styles = StyleSheet.create({
 //               height: 200,
 //               // backgroundColor: 'red',
 //               resizeMode: 'conta',
-  
+
 //             }}
 //           />
 //           </View>

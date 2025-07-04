@@ -1,39 +1,27 @@
-import React, {useCallback, useRef, useState} from 'react';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { useFocusEffect } from '@react-navigation/native';
+import { Skeleton } from '@rneui/themed';
+import axios from 'axios';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   FlatList,
-  Image,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import ArrowIcon from '../assets/svgs/ArrowIcon.svg';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DownArrowIcon from '../assets/svgs/DownArrow.svg';
 import CreateEventLogo from '../assets/svgs/DRIP_18.svg';
-import HameBurgerIcon from '../assets/svgs/HamBurger.svg';
-import BlueLogo from '../assets/svgs/LogoInBlue.svg';
-import Logo from '../assets/svgs/LogoSvg.svg';
-import NotificationIcon from '../assets/svgs/notification.svg';
-import PlusIcon from '../assets/svgs/PlusIcon.svg';
-import SearchIcon from '../assets/svgs/search.svg';
 import EventCard from '../common/EventCard';
-import axios from 'axios';
 import {
-  GET_EVENTLIST_API,
-  GET_FEATURED_EVENTS_API,
-  GET_PAST_EVENTS_API,
+  GET_PAST_EVENTS_API
 } from '../utils/ApiHelper';
-import {useFocusEffect} from '@react-navigation/native';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {getUserToken} from '../utils/UtilFunctions';
-import Loader from '../utils/Loader';
-import {isDebug} from '../utils/StorageUtils';
+import { isDebug } from '../utils/StorageUtils';
+import { getUserToken } from '../utils/UtilFunctions';
 import AnimatedHeader from './AnimatedHeader';
-import {Skeleton} from '@rneui/themed';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -44,6 +32,7 @@ const PastEventScreen = ({navigation}) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState();
   const [featuredEvent, setFeaturedEvent] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   useFocusEffect(
@@ -57,7 +46,29 @@ const PastEventScreen = ({navigation}) => {
 
   const handleSearch = () => {
     setQuery(input);
+
+    if (!input.trim()) {
+      setEvents(allEvents);
+      return;
+    }
+    const filteredEvents = allEvents.filter(event => {
+      const eventName = event.event_name?.toLowerCase() || '';
+      const eventLocation = event.location?.toLowerCase() || '';
+      const searchTerm = input.toLowerCase().trim();
+
+      return (
+        eventName.includes(searchTerm) || eventLocation.includes(searchTerm)
+      );
+    });
+
+    setEvents(filteredEvents);
   };
+    useEffect(() => {
+      if (!input.trim()) {
+        setEvents(allEvents);
+        setQuery(''); // Reset list when input is empty
+      }
+    }, [input]);
 
   const GetEventList = async () => {
     try {
@@ -78,7 +89,10 @@ const PastEventScreen = ({navigation}) => {
           'resposne of past events',
           resposne.data.past_featured_events,
         );
-      setEvents(resposne.data.past_featured_events);
+      // setEvents(resposne.data.past_featured_events);
+       const sortedEvents = resposne.data.past_featured_events
+      setAllEvents(sortedEvents);
+      setEvents(sortedEvents);
     } catch (error) {
       console.log('Error fetching event list:', error);
     } finally {
@@ -129,7 +143,7 @@ const PastEventScreen = ({navigation}) => {
             showsVerticalScrollIndicator={false}>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.sectionTitle}>Past Events</Text>
+              <Text style={styles.sectionTitle}>Past Events {query && ` (${events.length} found)`}</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -145,7 +159,16 @@ const PastEventScreen = ({navigation}) => {
                 <DownArrowIcon />
               </View>
             </View>
-
+ {query && events.length === 0 && !loading && (
+              <View style={styles.noResultsContainer}>
+                <Text style={styles.noResultsText}>
+                  No events found for "{query}"
+                </Text>
+                <Text style={styles.noResultsSubtext}>
+                  Try searching with different keywords or check the spelling
+                </Text>
+              </View>
+            )}
             <View style={{gap: 15}}>
               {loading && events.length === 0 ? (
                 <>
@@ -214,6 +237,25 @@ const PastEventScreen = ({navigation}) => {
 export default PastEventScreen;
 
 const styles = StyleSheet.create({
+   noResultsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  noResultsText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2A2A2A',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  noResultsSubtext: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   cardContainer: {
     backgroundColor: '#FFFFFF',
     width: '100%',

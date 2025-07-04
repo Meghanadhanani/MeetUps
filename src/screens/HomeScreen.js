@@ -1,8 +1,8 @@
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {useFocusEffect} from '@react-navigation/native';
-import {Skeleton} from '@rneui/themed';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { useFocusEffect } from '@react-navigation/native';
+import { Skeleton } from '@rneui/themed';
 import axios from 'axios';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   FlatList,
@@ -14,13 +14,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DownArrowIcon from '../assets/svgs/DownArrow.svg';
 import CreateEventLogo from '../assets/svgs/DRIP_18.svg';
 import EventCard from '../common/EventCard';
-import {GET_EVENTLIST_API, GET_FEATURED_EVENTS_API} from '../utils/ApiHelper';
-import {isDebug} from '../utils/StorageUtils';
-import {getUserToken} from '../utils/UtilFunctions';
+import { GET_EVENTLIST_API, GET_FEATURED_EVENTS_API } from '../utils/ApiHelper';
+import { isDebug } from '../utils/StorageUtils';
+import { getUserToken } from '../utils/UtilFunctions';
 import AnimatedHeader from './AnimatedHeader';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);

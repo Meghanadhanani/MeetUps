@@ -1,20 +1,18 @@
+import { BottomSheet } from '@rneui/themed';
 import axios from 'axios';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  StatusBar,
+  View
 } from 'react-native';
-import {BottomSheet} from '@rneui/themed';
 import CommentIcon from '../assets/svgs/CommentICon.svg';
 import FillHeartIcon from '../assets/svgs/FillHeartIcon.svg';
 import LocationIcon from '../assets/svgs/LocationIcon.svg';
@@ -33,15 +31,14 @@ import {
   GET_SAVED_EVENTS_LIST_API,
   REMOVE_FAVOURITE_API,
 } from '../utils/ApiHelper';
+import { isDebug } from '../utils/StorageUtils';
 import {
   formatDate,
   formatTime,
   formatTimeAgo,
   getUserToken,
 } from '../utils/UtilFunctions';
-import {useTabVisibility} from './TabVisibilityContext';
-import {isDebug} from '../utils/StorageUtils';
-import { useFocusEffect } from '@react-navigation/native';
+import { useTabVisibility } from './TabVisibilityContext';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 

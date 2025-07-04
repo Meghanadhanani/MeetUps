@@ -1,3 +1,6 @@
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
+import React, { useCallback, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -6,33 +9,30 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
-import CustomBackBtn from '../common/CustomBackBtn';
-import ShareBtn from '../assets/svgs/ShareBtn.svg';
-import {GET_EVENTLIST_BYID_API} from '../utils/ApiHelper';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import axios from 'axios';
 import CalenderIcon from '../assets/svgs/Calender.svg';
-import LocationIcon from '../assets/svgs/LocationBlueIcon.svg';
 import ClockIcon from '../assets/svgs/ClockBlueIcon.svg';
-import LanguageIcon from '../assets/svgs/Language.svg';
-import PetAllowanceIcon from '../assets/svgs/PetAllowanceIcon.svg';
-import BlueLogo from '../assets/svgs/LogoInBlue.svg';
-import LayoutIcon from '../assets/svgs/layoutIcon.svg';
 import InstaColouredIcon from '../assets/svgs/InstaColouredIcon.svg';
+import LanguageIcon from '../assets/svgs/Language.svg';
 import LinkedinColourIcon from '../assets/svgs/LinkedinColourIcon.svg';
+import LocationIcon from '../assets/svgs/LocationBlueIcon.svg';
+import BlueLogo from '../assets/svgs/LogoInBlue.svg';
+import PetAllowanceIcon from '../assets/svgs/PetAllowanceIcon.svg';
+import ShareBtn from '../assets/svgs/ShareBtn.svg';
 import TwitterBlackIcon from '../assets/svgs/TwitterBlackIcon.svg';
+import LayoutIcon from '../assets/svgs/layoutIcon.svg';
+import CustomBackBtn from '../common/CustomBackBtn';
+import { GET_EVENTLIST_BYID_API } from '../utils/ApiHelper';
 
 import AgeIcon from '../assets/svgs/AgeIcon.svg';
 
 import SeatIcon from '../assets/svgs/SeatIcon.svg';
 
+import { isDebug } from '../utils/StorageUtils';
 import {
   formatDate,
   formatDescription,
   formatTime,
 } from '../utils/UtilFunctions';
-import { isDebug } from '../utils/StorageUtils';
 const EventDetailScreen = ({route}) => {
   
   const {events} = route.params;
@@ -70,8 +70,6 @@ const EventDetailScreen = ({route}) => {
   };
   const handleScroll = event => {
     const scrollY = event.nativeEvent.contentOffset.y;
-    // Adjust this threshold based on when you want the title to appear
-    // 450 is approximately when the event name section starts to scroll up
     const threshold = 450;
 
     if (scrollY > threshold && !showTitle) {
@@ -490,7 +488,7 @@ const EventDetailScreen = ({route}) => {
             Ticket Price
           </Text>
           <Text style={{color: '#2A2A2A', fontSize: 20, fontWeight: 500}}>
-            {events.is_free ? "free" :  `₹ ${events.ticket_price}`}
+            {events.is_free ? "Free" :  `₹ ${events.ticket_price}`}
           </Text>
         </View>
         <TouchableOpacity

@@ -1,6 +1,6 @@
-import {Animated, StyleSheet, Text, View, Image} from 'react-native';
-import React, {useEffect, useRef} from 'react';
-import {isDebug, StorageUtils} from '../utils/StorageUtils';
+import React, { useEffect } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { isDebug, StorageUtils } from '../utils/StorageUtils';
 
 const SplashScreen = ({navigation}) => {
   useEffect(() => {
